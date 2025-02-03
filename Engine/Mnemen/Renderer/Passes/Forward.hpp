@@ -13,8 +13,11 @@ public:
     Forward(RHI::Ref rhi);
     ~Forward() = default;
 
-    void Render(const Frame& frame) override;
+    void Render(const Frame& frame, Scene& scene) override;
     void UI(const Frame& frame) override;
 private:
     MeshPipeline::Ref mPipeline;
+
+    Texture::Ref mDepthBuffer;
+    View::Ref mDepthView;
 };

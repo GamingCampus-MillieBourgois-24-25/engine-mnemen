@@ -19,6 +19,36 @@ Scene::~Scene()
     mEntities.clear();
 }
 
+void Scene::Update()
+{
+    // Transform update
+    {
+        for (auto [entity, transform] : mRegistry.view<TransformComponent>().each()) {
+            transform.Update();
+        }
+    }
+
+    // Camera Update
+    {
+        auto view = mRegistry.view<TransformComponent, CameraComponent>();
+        for (auto [entity, transform, camera] : view.each()) {
+            camera.Update(transform.Position, transform.Rotation);
+        }
+    }
+}
+
+SceneCamera Scene::GetMainCamera()
+{
+    for (auto& entity : mEntities) {
+        if (entity->HasComponent<CameraComponent>()) {
+            CameraComponent& camera = entity->GetComponent<CameraComponent>();
+            if (camera.Primary) {
+                return { camera.View, camera.Projection };
+            }
+        }
+    }
+}
+
 Entity* Scene::AddEntity(const String& name)
 {
     Entity* newEntity = new Entity(&mRegistry);

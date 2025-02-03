@@ -9,6 +9,7 @@
 #include "Window.hpp"
 #include "../RHI/RHI.hpp"
 #include "../Renderer/Renderer.hpp"
+#include "World/Scene.hpp"
 
 /// @brief Structure that contains the settings of the application
 struct ApplicationSpecs
@@ -54,4 +55,7 @@ protected:
 
     /// @brief The renderer
     Renderer::Ref mRenderer;
+
+    /// @brief Currently loaded scene
+    Scene mScene;
 };

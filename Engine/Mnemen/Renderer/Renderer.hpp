@@ -8,6 +8,8 @@
 #include "../RHI/RHI.hpp"
 #include "RenderPass.hpp"
 
+#include <World/Scene.hpp>
+
 class Renderer
 {
 public:
@@ -16,7 +18,7 @@ public:
     Renderer(RHI::Ref rhi);
     ~Renderer();
 
-    void Render(const Frame& frame);
+    void Render(const Frame& frame, Scene& scene);
     void UI(const Frame& frame);
 private:
     Vector<RenderPass::Ref> mPasses;

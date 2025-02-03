@@ -30,5 +30,5 @@ void Runtime::OnPhysicsTick()
 
 void Runtime::OnImGui()
 {
-    ImGui::ShowDemoWindow();
+   
 }

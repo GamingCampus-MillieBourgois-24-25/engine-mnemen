@@ -36,8 +36,11 @@ Application::~Application()
 void Application::Run()
 {
     while (mWindow->IsOpen()) {
+        
         mWindow->Update();
+        mScene.Update();
         OnUpdate();
+        
         OnPrivateRender();
         Input::PostUpdate();
     }
@@ -51,7 +54,7 @@ void Application::OnPrivateRender()
 
     // Scene render
     {
-        mRenderer->Render(frame);
+        mRenderer->Render(frame, mScene);
     }
 
     // UI

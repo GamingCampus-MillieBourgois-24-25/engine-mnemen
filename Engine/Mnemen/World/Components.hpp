@@ -26,3 +26,17 @@ struct MeshComponent
 
     void Init(const String& string);
 };
+
+struct CameraComponent
+{
+    bool Primary = true;
+    float FOV = 90.0f;
+    float Near = 0.1f;
+    float Far = 200.0f;
+    float AspectRatio = 1.77777777778f;
+
+    glm::mat4 View = glm::mat4(1.0f);
+    glm::mat4 Projection = glm::mat4(1.0f);
+
+    void Update(glm::vec3 Position, glm::vec3 Rotation);
+};

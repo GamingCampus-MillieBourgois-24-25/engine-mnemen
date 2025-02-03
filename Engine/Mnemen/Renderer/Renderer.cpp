@@ -19,10 +19,10 @@ Renderer::~Renderer()
     mPasses.clear();
 }
 
-void Renderer::Render(const Frame& frame)
+void Renderer::Render(const Frame& frame, Scene& scene)
 {
     for (auto& pass : mPasses) {
-        pass->Render(frame);
+        pass->Render(frame, scene);
     }
 }
 
