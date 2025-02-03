@@ -14,6 +14,7 @@ target("Mnemen")
     add_deps("spdlog")
     
     add_files("Engine/**.cpp") -- Might need to change this for multi-platform or multi-API
+    add_headerfiles("Engine/**.hpp")
     add_includedirs("Engine/Mnemen", "ThirdParty/SDL3/include", "ThirdParty/spdlog/include", { public = true })
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
@@ -55,6 +56,7 @@ target("Editor")
     set_encodings("utf-8")
 
     add_files("Editor/*.cpp")
+    add_headerfiles("Editor/**.hpp")
     add_includedirs("Engine", "Editor", "ThirdParty/SDL3/include", "ThirdParty/spdlog/include")
     add_deps("Mnemen")
 
@@ -81,6 +83,7 @@ target("Runtime")
     set_encodings("utf-8")
 
     add_files("Runtime/*.cpp")
+    add_headerfiles("Runtime/**.hpp")
     add_includedirs("Engine", "Runtime", "ThirdParty/SDL3/include", "ThirdParty/spdlog/include")
     add_deps("Mnemen")
 
