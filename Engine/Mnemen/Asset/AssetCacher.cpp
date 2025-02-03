@@ -8,74 +8,74 @@
 
 #include <filesystem>
 
-// AssetCacher::Data AssetCacher::sData;
-// 
-// class NVTTErrorHandler : nvtt::ErrorHandler
-// {
-// public:
-//     virtual void error(nvtt::Error e) override {
-//        switch (e) {
-//            case nvtt::Error::Error_UnsupportedOutputFormat: {
-//                LOG_ERROR("[nvtt] Error_UnsupportedOutputFormat");
-//                break;
-//            }
-//            case nvtt::Error::Error_UnsupportedFeature: {
-//                LOG_ERROR("[nvtt] Error_UnsupportedFeature");
-//                break;
-//            }
-//            case nvtt::Error::Error_Unknown: {
-//                LOG_ERROR("[nvtt] Error_Unknown");
-//                break;
-//            }
-//            case nvtt::Error::Error_InvalidInput: {
-//                LOG_ERROR("[nvtt] Error_InvalidInput");
-//                break;
-//            }
-//            case nvtt::Error::Error_FileWrite: {
-//                LOG_ERROR("[nvtt] Error_FileWrite");
-//                break;
-//            }
-//            case nvtt::Error::Error_FileOpen: {
-//                LOG_ERROR("[nvtt] Error_FileOpen");
-//                break;
-//            }
-//            case nvtt::Error::Error_CudaError: {
-//                LOG_ERROR("[nvtt] Error_CudaError");
-//                break;
-//            }
-//            default: {
-//                LOG_ERROR("[nvtt] unknown error!");
-//                break;
-//            }
-//        }
-//     }
-// };
-// 
-// class TextureWriter : nvtt::OutputHandler
-// {
-// public:
-//     TextureWriter(Vector<UInt8>* bytes) {
-//         mBytes = bytes;
-//     }
-// 
-//     ~TextureWriter() {
-//         mBytes = nullptr;
-//     }
-// 
-//     virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel) override {}
-//     virtual void endImage() override {}
-// 
-//     virtual bool writeData(const void* data, int size) override {
-//         UInt8* readableData = (UInt8*)data;
-//         for (int i = 0; i < size; i++) {
-//             mBytes->push_back(readableData[i]);
-//         }
-//         return true;
-//     }
-// 
-// private:
-//     Vector<UInt8>* mBytes;
-// };
+AssetCacher::Data AssetCacher::sData;
+
+class NVTTErrorHandler : nvtt::ErrorHandler
+{
+public:
+    virtual void error(nvtt::Error e) override {
+       switch (e) {
+           case nvtt::Error::Error_UnsupportedOutputFormat: {
+               LOG_ERROR("[nvtt] Error_UnsupportedOutputFormat");
+               break;
+           }
+           case nvtt::Error::Error_UnsupportedFeature: {
+               LOG_ERROR("[nvtt] Error_UnsupportedFeature");
+               break;
+           }
+           case nvtt::Error::Error_Unknown: {
+               LOG_ERROR("[nvtt] Error_Unknown");
+               break;
+           }
+           case nvtt::Error::Error_InvalidInput: {
+               LOG_ERROR("[nvtt] Error_InvalidInput");
+               break;
+           }
+           case nvtt::Error::Error_FileWrite: {
+               LOG_ERROR("[nvtt] Error_FileWrite");
+               break;
+           }
+           case nvtt::Error::Error_FileOpen: {
+               LOG_ERROR("[nvtt] Error_FileOpen");
+               break;
+           }
+           case nvtt::Error::Error_CudaError: {
+               LOG_ERROR("[nvtt] Error_CudaError");
+               break;
+           }
+           default: {
+               LOG_ERROR("[nvtt] unknown error!");
+               break;
+           }
+       }
+    }
+};
+
+class TextureWriter : nvtt::OutputHandler
+{
+public:
+    TextureWriter(Vector<UInt8>* bytes) {
+        mBytes = bytes;
+    }
+
+    ~TextureWriter() {
+        mBytes = nullptr;
+    }
+
+    virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel) override {}
+    virtual void endImage() override {}
+
+    virtual bool writeData(const void* data, int size) override {
+        UInt8* readableData = (UInt8*)data;
+        for (int i = 0; i < size; i++) {
+            mBytes->push_back(readableData[i]);
+        }
+        return true;
+    }
+
+private:
+    Vector<UInt8>* mBytes;
+};
 
 String AssetCacher::GetCachedAsset(const String& normalPath)
 {
@@ -235,53 +235,53 @@ void AssetCacher::CacheAsset(const String& normalPath)
     file.Header.Filetime = assetFiletime;
 
     switch (type) {
-        // case AssetType::Texture: {
-        //     nvtt::Surface image;
-        //     if (!image.load(normalPath.c_str())) {
-        //         LOG_ERROR("Failed to load texture {0}", normalPath);
-        //         return;
-        //     }
-// 
-        //     int imageWidth = image.width();
-        //     int imageHeight = image.height();
-        //     if (imageWidth != imageHeight) {
-        //         LOG_WARN("Image {0} cannot be compressed due to dimensions that are not squares of 2.", normalPath);
-        //         return;
-        //     }
-        //     int mipCount = image.countMipmaps();
-        //     int finalMipCount = glm::max(1, mipCount - 2); // (Remove mip 2x2 and 1x1)
-// 
-        //     file.Header.TextureHeader.Width = imageWidth;
-        //     file.Header.TextureHeader.Height = imageHeight;
-        //     file.Header.TextureHeader.Levels = finalMipCount;
-        //     LOG_INFO("Caching texture {0} ({1}, {2}, {3})", normalPath, imageWidth, imageHeight, finalMipCount);
-// 
-        //     TextureWriter writer(&file.Bytes);
-        //     NVTTErrorHandler errorHandler;
-// 
-        //     nvtt::OutputOptions outputOptions;
-        //     outputOptions.setErrorHandler(reinterpret_cast<nvtt::ErrorHandler*>(&errorHandler));
-        //     outputOptions.setOutputHandler(reinterpret_cast<nvtt::OutputHandler*>(&writer));
-// 
-        //     nvtt::CompressionOptions compressionOptions;
-        //     compressionOptions.setFormat(nvtt::Format::Format_BC7);
-// 
-        //     for (int i = 0; i < finalMipCount; i++) {
-        //         if (!sData.mContext.compress(image, 0, i, compressionOptions, outputOptions)) {
-        //             LOG_ERROR("Failed to compress texture!");
-        //         }
-// 
-        //         // Prepare the next mip:
-        //         image.toLinearFromSrgb();
-        //         image.premultiplyAlpha();
-// 
-        //         image.buildNextMipmap(nvtt::MipmapFilter_Box);
-// 
-        //         image.demultiplyAlpha();
-        //         image.toSrgb();
-        //     }
-        //     break;
-        // }
+        case AssetType::Texture: {
+            nvtt::Surface image;
+            if (!image.load(normalPath.c_str())) {
+                LOG_ERROR("Failed to load texture {0}", normalPath);
+                return;
+            }
+
+            int imageWidth = image.width();
+            int imageHeight = image.height();
+            if (imageWidth != imageHeight) {
+                LOG_WARN("Image {0} cannot be compressed due to dimensions that are not squares of 2.", normalPath);
+                return;
+            }
+            int mipCount = image.countMipmaps();
+            int finalMipCount = glm::max(1, mipCount - 2); // (Remove mip 2x2 and 1x1)
+
+            file.Header.TextureHeader.Width = imageWidth;
+            file.Header.TextureHeader.Height = imageHeight;
+            file.Header.TextureHeader.Levels = finalMipCount;
+            LOG_INFO("Caching texture {0} ({1}, {2}, {3})", normalPath, imageWidth, imageHeight, finalMipCount);
+
+            TextureWriter writer(&file.Bytes);
+            NVTTErrorHandler errorHandler;
+
+            nvtt::OutputOptions outputOptions;
+            outputOptions.setErrorHandler(reinterpret_cast<nvtt::ErrorHandler*>(&errorHandler));
+            outputOptions.setOutputHandler(reinterpret_cast<nvtt::OutputHandler*>(&writer));
+
+            nvtt::CompressionOptions compressionOptions;
+            compressionOptions.setFormat(nvtt::Format::Format_BC7);
+
+            for (int i = 0; i < finalMipCount; i++) {
+                if (!sData.mContext.compress(image, 0, i, compressionOptions, outputOptions)) {
+                    LOG_ERROR("Failed to compress texture!");
+                }
+
+                // Prepare the next mip:
+                image.toLinearFromSrgb();
+                image.premultiplyAlpha();
+
+                image.buildNextMipmap(nvtt::MipmapFilter_Box);
+
+                image.demultiplyAlpha();
+                image.toSrgb();
+            }
+            break;
+        }
         case AssetType::Shader: {
             ShaderType type = GetShaderTypeFromPath(normalPath);
             file.Header.ShaderHeader.Type = type;
@@ -317,7 +317,7 @@ void AssetCacher::Init(const String& assetDirectory)
         File::CreateDirectoryFromPath(".cache");
     }
 
-    // sData.mContext.enableCudaAcceleration(true);
+    sData.mContext.enableCudaAcceleration(true);
 
     for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(assetDirectory)) {
         String entryPath = dirEntry.path().string();

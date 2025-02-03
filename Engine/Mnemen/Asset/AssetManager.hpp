@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Asset/Shader.hpp>
+#include <Asset/Image.hpp>
 
 #include <RHI/RHI.hpp>
 
@@ -24,7 +25,7 @@ struct Asset
     AssetType Type;
 
     // GLTF Model;
-    // Texture::Ref Texture;
+    Texture::Ref Texture;
     Shader Shader;
 
     UInt32 RefCount;

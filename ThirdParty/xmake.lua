@@ -24,3 +24,7 @@ target("ImGui")
               "ImGui/backends/imgui_impl_dx12.cpp")
     add_headerfiles("ImGui/*.h")
     add_includedirs("imgui/")
+
+target("STB")
+    set_kind("static")
+    add_files("stb.c")

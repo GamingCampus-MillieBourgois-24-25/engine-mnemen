@@ -39,41 +39,41 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
         //     asset->Model.Load(sData.mRHI, path);
         //     break;
         // }
-        // case AssetType::Texture: {
-        //     LOG_DEBUG("Loading texture {0}", path);
-// 
-        //     if (AssetCacher::IsCached(path) && true) {
-        //         AssetFile file = AssetCacher::ReadAsset(path);
-        //         
-        //         TextureDesc desc;
-        //         desc.Width = file.Header.TextureHeader.Width;
-        //         desc.Height = file.Header.TextureHeader.Height;
-        //         desc.Levels = file.Header.TextureHeader.Levels;
-        //         desc.Depth = 1;
-        //         desc.Name = path;
-        //         desc.Format = TextureFormat::BC7;
-        //         desc.Usage = TextureUsage::ShaderResource;
-        //         asset->Texture = sData.mRHI->CreateTexture(desc);
-// 
-        //         Uploader::EnqueueTextureUpload(file.Bytes, asset->Texture);
-        //     } else {
-        //         Image image;
-        //         image.Load(path);
-// 
-        //         TextureDesc desc;
-        //         desc.Width = image.Width;
-        //         desc.Height = image.Height;
-        //         desc.Levels = image.Levels;
-        //         desc.Depth = 1;
-        //         desc.Name = path;
-        //         desc.Format = TextureFormat::RGBA8;
-        //         desc.Usage = TextureUsage::ShaderResource;
-        //         asset->Texture = sData.mRHI->CreateTexture(desc);
-        //     
-        //         Uploader::EnqueueTextureUpload(image, asset->Texture);
-        //     }
-        //     break;
-        // }
+        case AssetType::Texture: {
+            LOG_DEBUG("Loading texture {0}", path);
+        
+            if (AssetCacher::IsCached(path) && true) {
+                AssetFile file = AssetCacher::ReadAsset(path);
+                
+                TextureDesc desc;
+                desc.Width = file.Header.TextureHeader.Width;
+                desc.Height = file.Header.TextureHeader.Height;
+                desc.Levels = file.Header.TextureHeader.Levels;
+                desc.Depth = 1;
+                desc.Name = path;
+                desc.Format = TextureFormat::BC7;
+                desc.Usage = TextureUsage::ShaderResource;
+                asset->Texture = sData.mRHI->CreateTexture(desc);
+        
+                Uploader::EnqueueTextureUpload(file.Bytes, asset->Texture);
+            } else {
+                Image image;
+                image.Load(path);
+        
+                TextureDesc desc;
+                desc.Width = image.Width;
+                desc.Height = image.Height;
+                desc.Levels = image.Levels;
+                desc.Depth = 1;
+                desc.Name = path;
+                desc.Format = TextureFormat::RGBA8;
+                desc.Usage = TextureUsage::ShaderResource;
+                asset->Texture = sData.mRHI->CreateTexture(desc);
+            
+                Uploader::EnqueueTextureUpload(image, asset->Texture);
+            }
+            break;
+        }
         case AssetType::Shader: {
             LOG_DEBUG("Loading shader {0}", path);
 

@@ -14,6 +14,7 @@
 #include <RHI/Buffer.hpp>
 #include <RHI/AccelerationStructure.hpp>
 #include <RHI/RHI.hpp>
+#include <Asset/Image.hpp>
 
 #define KILOBYTES(s) s * 1024
 #define MEGABYTES(s) KILOBYTES(s) * 1024
@@ -24,7 +25,7 @@ class Uploader
 public:
     static void Init(RHI* rhi, Device::Ref device, DescriptorHeaps heaps, Queue::Ref queue);
     static void EnqueueTextureUpload(Vector<UInt8> buffer, Ref<Resource> texture);
-    // static void EnqueueTextureUpload(Image image, Ref<Resource> buffer);
+    static void EnqueueTextureUpload(Image image, Ref<Resource> buffer);
     static void EnqueueBufferUpload(void* data, UInt64 size, Ref<Resource> buffer);
     static void EnqueueAccelerationStructureBuild(Ref<AccelerationStructure> as);
     static void Flush();

@@ -9,6 +9,8 @@
 #include <Asset/Shader.hpp>
 #include <Core/File.hpp>
 
+#include <nvtt/nvtt.h>
+
 struct AssetFile
 {
     struct Header
@@ -40,10 +42,10 @@ public:
 private:
     friend class AssetManager;
 
-    // static struct Data
-    // {
-    //     nvtt::Context mContext;
-    // } sData;
+    static struct Data
+    {
+        nvtt::Context mContext;
+    } sData;
 
     static AssetFile ReadAssetHeader(const String& path);
     static String GetEntryPointFromShaderType(ShaderType type);
