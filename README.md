@@ -9,7 +9,7 @@ Make sure to use the --recursive flag, since this repository makes use of Git su
 
 ## How to build
 
-It is imperative you install [xmake](https://xmake.io/#/getting_started) first via either the official website or PowerShell using this simple command:
+It is imperative you install [xmake](https://xmake.io/#/getting_started) first via either the official website or PowerShell (with admin rights) using this simple command:
 ```powershell
 Invoke-Expression (Invoke-Webrequest 'https://xmake.io/psget.text' -UseBasicParsing).Content
 ```
