@@ -11,3 +11,6 @@
 [submodule "ThirdParty/stb"]
 	path = ThirdParty/stb
 	url = https://github.com/nothings/stb
+[submodule "ThirdParty/meshopt"]
+	path = ThirdParty/meshopt
+	url = https://github.com/zeux/meshoptimizer/

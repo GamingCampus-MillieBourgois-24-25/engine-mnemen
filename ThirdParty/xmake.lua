@@ -28,3 +28,8 @@ target("ImGui")
 target("STB")
     set_kind("static")
     add_files("stb.c")
+
+target("meshopt")
+    set_kind("static")
+    add_files("meshopt/src/*.cpp")
+    add_headerfiles("meshop/src/*.h")

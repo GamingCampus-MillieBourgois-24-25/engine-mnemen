@@ -11,7 +11,7 @@ target("Mnemen")
     set_kind("static")
     set_languages("c++20")
     set_encodings("utf-8")
-    add_deps("spdlog", "ImGui", "STB")
+    add_deps("spdlog", "ImGui", "STB", "meshopt")
     
     add_files("Engine/**.cpp") -- Might need to change this for multi-platform or multi-API
     add_headerfiles("Engine/**.hpp")
@@ -25,7 +25,8 @@ target("Mnemen")
                     "ThirdParty/ImGui/backends",
                     "ThirdParty/PIX/include",
                     "ThirdParty/",
-                    "ThirdParty/nvtt/")
+                    "ThirdParty/nvtt/",
+                    "ThirdParty/meshopt/src")
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
 
@@ -38,7 +39,8 @@ target("Mnemen")
                      "SDL3.lib",
                      "ThirdParty/PIX/lib/WinPixEventRuntime.lib",
                      "ThirdParty/DXC/lib/dxcompiler.lib",
-                     "ThirdParty/nvtt/lib64/nvtt30205.lib")
+                     "ThirdParty/nvtt/lib64/nvtt30205.lib",
+                     "ThirdParty/Assimp/lib/assimp-vc143-mtd.lib")
     end    
 
     if is_mode("debug") then

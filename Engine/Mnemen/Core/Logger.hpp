@@ -25,7 +25,7 @@ private:
 #define LOG_ERROR(...)    ::Logger::GetLogger()->error(__VA_ARGS__)
 #define LOG_CRITICAL(...) ::Logger::GetLogger()->critical(__VA_ARGS__)
 
-#if defined(BEACHED_DEBUG)
+#if defined(MNEMEN_DEBUG)
     #define LOG_DEBUG(...)    ::Logger::GetLogger()->debug(__VA_ARGS__)
 #else
     #define LOG_DEBUG(...)
