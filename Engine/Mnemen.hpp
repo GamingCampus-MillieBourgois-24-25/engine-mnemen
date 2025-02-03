@@ -14,3 +14,5 @@
 #include "Mnemen/Core/Timer.hpp"
 #include "Mnemen/Core/UTF.hpp"
 #include "Mnemen/Core/Window.hpp"
+
+#include "Mnemen/Input/Input.hpp"

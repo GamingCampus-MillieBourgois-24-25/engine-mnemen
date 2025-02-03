@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include <Core/Common.hpp>
-#include <Core/Window.hpp>
+#include "Common.hpp"
+#include "Window.hpp"
+#include "../RHI/RHI.hpp"
 
 /// @brief Structure that contains the settings of the application
 struct ApplicationSpecs
@@ -39,9 +40,14 @@ public:
     /// @brief Runs the application
     void Run();
 protected:
+    void OnPrivateRender();
+
     /// @brief a copy of the application settings
     ApplicationSpecs mApplicationSpecs;
 
     /// @brief The application window
     Ref<Window> mWindow;
+
+    /// @brief The RHI
+    RHI::Ref mRHI;
 };

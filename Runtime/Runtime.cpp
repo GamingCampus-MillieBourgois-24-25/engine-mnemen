@@ -5,7 +5,7 @@
 
 #include "Runtime.hpp"
 
-#include <Input/Input.hpp>
+#include <imgui.h>
 
 Runtime::Runtime(ApplicationSpecs specs)
     : Application(specs)
@@ -30,5 +30,5 @@ void Runtime::OnPhysicsTick()
 
 void Runtime::OnImGui()
 {
-
+    ImGui::ShowDemoWindow();
 }

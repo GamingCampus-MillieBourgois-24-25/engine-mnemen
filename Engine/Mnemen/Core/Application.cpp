@@ -15,8 +15,11 @@ Application::Application(ApplicationSpecs specs)
     Input::Init();
 
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
+    mRHI = MakeRef<RHI>(mWindow);
 
     LOG_INFO("Initialized {0} running Mnemen Engine", specs.GameName);
+
+    mRHI->Wait();
 }
 
 Application::~Application()
@@ -28,9 +31,33 @@ void Application::Run()
 {
     while (mWindow->IsOpen()) {
         mWindow->Update();
-
         OnUpdate();
-
+        OnPrivateRender();
         Input::PostUpdate();
     }
+    mRHI->Wait();
+}
+
+void Application::OnPrivateRender()
+{
+    Frame frame = mRHI->Begin();
+    frame.CommandBuffer->Begin();
+
+    // UI
+    {
+        frame.CommandBuffer->BeginMarker("ImGui");
+        frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
+        frame.CommandBuffer->ClearRenderTarget(frame.BackbufferView, 0.0f, 0.0f, 0.0f);
+        frame.CommandBuffer->SetRenderTargets({ frame.BackbufferView }, nullptr);
+        frame.CommandBuffer->BeginGUI(frame.Width, frame.Height);
+        OnImGui();
+        frame.CommandBuffer->EndGUI();
+        frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::Present);
+        frame.CommandBuffer->EndMarker();
+    }
+
+    frame.CommandBuffer->End();
+    mRHI->Submit({ frame.CommandBuffer });
+    mRHI->End();
+    mRHI->Present(false);
 }

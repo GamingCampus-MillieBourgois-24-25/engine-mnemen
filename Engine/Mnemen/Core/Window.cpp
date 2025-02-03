@@ -7,6 +7,7 @@
 #include "Logger.hpp"
 
 #include <Input/Input.hpp>
+#include <imgui_impl_sdl3.h>
 
 Window::Window(int width, int height, const String& title)
 {
@@ -35,6 +36,17 @@ void Window::Update()
         if (event.type == SDL_EVENT_QUIT) {
             mRunning = false;
         }
+        ImGui_ImplSDL3_ProcessEvent(&event);
         Input::Update(&event);
     }
+}
+
+void Window::PollSize(int& width, int& height)
+{
+    SDL_GetWindowSize(mWindow, &width, &height);
+}
+
+void* Window::GetHandle()
+{
+    return SDL_GetPointerProperty(SDL_GetWindowProperties(mWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
 }

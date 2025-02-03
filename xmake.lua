@@ -11,11 +11,19 @@ target("Mnemen")
     set_kind("static")
     set_languages("c++20")
     set_encodings("utf-8")
-    add_deps("spdlog")
+    add_deps("spdlog", "ImGui")
     
     add_files("Engine/**.cpp") -- Might need to change this for multi-platform or multi-API
     add_headerfiles("Engine/**.hpp")
-    add_includedirs("Engine/Mnemen", "ThirdParty/SDL3/include", "ThirdParty/spdlog/include", "ThirdParty/glm", { public = true })
+    add_includedirs("Engine/Mnemen",
+                    "ThirdParty/SDL3/include",
+                    "ThirdParty/spdlog/include",
+                    "ThirdParty/glm",
+                    "ThirdParty/DirectX/include",
+                    "ThirdParty/DXC/Include",
+                    "ThirdParty/ImGui/",
+                    "ThirdParty/ImGui/backends",
+                    "ThirdParty/PIX/include")
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
 
@@ -25,7 +33,9 @@ target("Mnemen")
                      "kernel32",
                      "d3d12",
                      "dxgi",
-                     "SDL3.lib")
+                     "SDL3.lib",
+                     "ThirdParty/PIX/lib/WinPixEventRuntime.lib",
+                     "ThirdParty/DXC/lib/dxcompiler.lib")
     end    
 
     if is_mode("debug") then
@@ -57,7 +67,7 @@ target("Editor")
 
     add_files("Editor/*.cpp")
     add_headerfiles("Editor/**.hpp")
-    add_includedirs("Engine", "Editor", "ThirdParty/SDL3/include", "ThirdParty/spdlog/include", "ThirdParty/glm")
+    add_includedirs("Engine", "Engine/Mnemen", "Editor", "ThirdParty/SDL3/include", "ThirdParty/spdlog/include", "ThirdParty/glm", "ThirdParty/ImGui/", "ThirdParty/DirectX/include")
     add_deps("Mnemen")
 
     if is_mode("debug") then
@@ -84,7 +94,7 @@ target("Runtime")
 
     add_files("Runtime/*.cpp")
     add_headerfiles("Runtime/**.hpp")
-    add_includedirs("Engine", "Runtime", "ThirdParty/SDL3/include", "ThirdParty/spdlog/include", "ThirdParty/glm")
+    add_includedirs("Engine", "Engine/Mnemen", "Runtime", "ThirdParty/SDL3/include", "ThirdParty/spdlog/include", "ThirdParty/glm", "ThirdParty/ImGui/", "ThirdParty/DirectX/include")
     add_deps("Mnemen")
 
     if is_mode("debug") then

@@ -3,7 +3,7 @@
 // > Create Time: 2025-02-03 15:13:47
 //
 
-#include <Input/Input.hpp>
+#include "Input.hpp"
 #include <Core/Logger.hpp>
 
 Input::InputData Input::sData;

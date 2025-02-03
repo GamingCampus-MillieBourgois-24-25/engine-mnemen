@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include <Core/Common.hpp>
 #include <string>
+
+#include "Common.hpp"
 
 class Assert
 {

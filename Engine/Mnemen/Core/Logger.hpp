@@ -7,7 +7,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include <Core/Common.hpp>
+#include "Common.hpp"
 
 class Logger
 {

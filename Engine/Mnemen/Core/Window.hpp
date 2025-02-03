@@ -24,6 +24,15 @@ public:
 
     /// @brief Updates the window
     void Update();
+
+    /// @brief Returns the size of the window
+    void PollSize(int& width, int& height);
+
+    /// @brief Returns the Win32 handle of the window
+    void* GetHandle();
+
+    /// @brief Returns the SDL handle of the window
+    SDL_Window* GetSDLHandle() { return mWindow; }
 private:
     bool mRunning = true;
     SDL_Window* mWindow = nullptr;

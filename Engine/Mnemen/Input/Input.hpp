@@ -7,7 +7,7 @@
 
 #include <SDL3/SDL.h>
 #include <glm/glm.hpp>
-#include <Core/Common.hpp>
+#include "../Core/Common.hpp"
 
 enum class KeyState
 {
