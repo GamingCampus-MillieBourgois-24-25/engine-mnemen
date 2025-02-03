@@ -1,0 +1,21 @@
+//
+// > Notice: Amélie Heinrich @ 2024
+// > Create Time: 2024-12-03 06:20:19
+//
+
+#pragma once
+
+#include <Core/Common.hpp>
+
+class UTF
+{
+public:
+    /// @brief Converts a string from wide to ascii
+    static String WideToAscii(const wchar_t* text);
+    /// @brief Converts a string from wide to ascii
+    static String WideToAscii(const WideString& text);
+    /// @brief Converts a string from ascii to wide
+    static WideString AsciiToWide(const char* text);
+    /// @brief Converts a string from ascii to wide
+    static WideString AsciiToWide(const String& text);
+};

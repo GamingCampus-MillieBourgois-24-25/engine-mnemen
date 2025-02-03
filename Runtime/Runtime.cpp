@@ -1,0 +1,32 @@
+//
+// > Notice: Amélie Heinrich @ 2024
+// > Create Time: 2025-02-03 12:26:03
+//
+
+#include "Runtime.hpp"
+
+Runtime::Runtime(ApplicationSpecs specs)
+    : Application(specs)
+{
+
+}
+
+Runtime::~Runtime()
+{
+
+}
+
+void Runtime::OnUpdate()
+{
+
+}
+
+void Runtime::OnPhysicsTick()
+{
+
+}
+
+void Runtime::OnImGui()
+{
+
+}

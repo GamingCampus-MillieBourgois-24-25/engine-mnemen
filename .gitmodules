@@ -1,0 +1,6 @@
+[submodule "ThirdParty/spdlog"]
+	path = ThirdParty/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "ThirdParty/GLM"]
+	path = ThirdParty/GLM
+	url = https://github.com/g-truc/glm

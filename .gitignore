@@ -1,0 +1,13 @@
+# Binaries
+.xmake
+build
+
+# IDE files
+.vs
+.vscode
+vsxmake2022
+
+# Engine files and cache
+imgui.ini
+mnemen.log
+.cache
