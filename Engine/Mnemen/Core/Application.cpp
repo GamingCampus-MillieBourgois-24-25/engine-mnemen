@@ -16,6 +16,7 @@ Application::Application(ApplicationSpecs specs)
 
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
     mRHI = MakeRef<RHI>(mWindow);
+    mRenderer = MakeRef<Renderer>(mRHI);
 
     LOG_INFO("Initialized {0} running Mnemen Engine", specs.GameName);
 
@@ -42,6 +43,11 @@ void Application::OnPrivateRender()
 {
     Frame frame = mRHI->Begin();
     frame.CommandBuffer->Begin();
+
+    // Scene render
+    {
+        mRenderer->Render(frame);
+    }
 
     // UI
     {
