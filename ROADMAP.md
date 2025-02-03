@@ -1,14 +1,14 @@
 # Rendering
 
 - API: DirectX12
-- Pipeline: Mesh Shading
+- Pipeline: Mesh Shading (makes culling and geometry generation easier)
 - Lighting: PBR, CSM, SSAO
-- PostFX: Deferred, TAA/FXAA, SSAO, Color Grading, Bloom, DOF
+- PostFX: Deferred, TAA/FXAA, Color Grading, Bloom, DOF
 - GPU driven: Frustum/Occlusion/Cone culling
 
 # Engine
 
-- Windowing, input: SDL3
+- Windowing, input: SDL3 (cross platform and easy to use)
 - Asset loading, compressing: NVTT + Assimp
 - ECS: entt
 - Scene Format: yaml? json?
@@ -21,7 +21,7 @@
 
 # Audio
 
-- Library: FMOD (negotiable)
+- Library: TBD (FMOD? MiniAudio? XAudio2?)
 - Audio sources, audio listeners, spatialized audio
 - Filters?
 
