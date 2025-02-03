@@ -7,13 +7,14 @@
 
 #include <Asset/Shader.hpp>
 #include <Asset/Image.hpp>
+#include <Asset/Mesh.hpp>
 
 #include <RHI/RHI.hpp>
 
 enum class AssetType
 {
     None,
-    GLTF,
+    Mesh,
     Texture,
     Shader,
     EnvironmentMap
@@ -24,7 +25,7 @@ struct Asset
     String Path;
     AssetType Type;
 
-    // GLTF Model;
+    Mesh Mesh;
     Texture::Ref Texture;
     Shader Shader;
 

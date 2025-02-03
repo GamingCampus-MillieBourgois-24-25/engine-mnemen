@@ -1,9 +1,11 @@
 //
 // > Notice: Amélie Heinrich @ 2025
-// > Create Time: 2025-02-03 22:58:16
+// > Create Time: 2025-02-04 00:01:27
 //
 
 #pragma once
+
+#include <Asset/AssetManager.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -16,4 +18,11 @@ struct TransformComponent
     glm::mat4 Matrix;
 
     void Update();
+};
+
+struct MeshComponent
+{
+    Asset::Handle MeshAsset;
+
+    void Init(const String& string);
 };

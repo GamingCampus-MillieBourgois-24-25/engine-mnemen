@@ -34,11 +34,11 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
     asset->Path = path;
 
     switch (type) {
-        // case AssetType::GLTF: {
-        //     LOG_DEBUG("Loading GLTF {0}", path);
-        //     asset->Model.Load(sData.mRHI, path);
-        //     break;
-        // }
+        case AssetType::Mesh: {
+            LOG_DEBUG("Loading Mesh {0}", path);
+            asset->Mesh.Load(sData.mRHI, path);
+            break;
+        }
         case AssetType::Texture: {
             LOG_DEBUG("Loading texture {0}", path);
         
