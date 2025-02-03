@@ -42,9 +42,9 @@ xmake project -k vsxmake -m "debug,release,releasedbg"
 - Alexandre Mans, FX Programmer (amans@gaming.tech)
 - Coralie Thiery, FX Programmer (cthiery@gaming.tech)
 - Axel Moras, FX Programmer (amoras@gaming.tech)
-- Jonathan Devaulchier (jdevaulchier@gaming.tech)
-- Timéo Delmon (timeo.delmon@gmail.com)
-- Bastian N'Diaye (bndiaye@gaming.tech)
+- Jonathan Devaulchier, AI Programmer (jdevaulchier@gaming.tech)
+- Timéo Delmon - Audio Programmer (timeo.delmon@gmail.com)
+- Bastian N'Diaye - Physics Programmer (bndiaye@gaming.tech)
 
 ## Dependencies
 

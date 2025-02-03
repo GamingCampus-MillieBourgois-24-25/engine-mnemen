@@ -5,6 +5,7 @@
 - Lighting: PBR, CSM, SSAO
 - PostFX: Deferred, TAA/FXAA, Color Grading, Bloom, DOF
 - GPU driven: Frustum/Occlusion/Cone culling
+- Other: Custom shader passes? Shader graph?
 
 # Engine
 
@@ -17,7 +18,7 @@
 # Physics
 
 - Library: Jolt
-- Features: Rigidbodies, characters
+- Features: Rigidbodies, characters, vehicles (?)
 
 # Audio
 

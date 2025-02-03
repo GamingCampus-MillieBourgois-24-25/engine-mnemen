@@ -18,6 +18,8 @@ Window::Window(int width, int height, const String& title)
     if (!mWindow) {
         LOG_CRITICAL("Failed to create window!");
     }
+
+    LOG_INFO("Created window {0} ({1}, {2})", title, width, height);
 }
 
 Window::~Window()
