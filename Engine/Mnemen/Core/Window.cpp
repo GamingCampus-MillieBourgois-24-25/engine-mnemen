@@ -6,6 +6,8 @@
 #include "Window.hpp"
 #include "Logger.hpp"
 
+#include <Input/Input.hpp>
+
 Window::Window(int width, int height, const String& title)
 {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -31,5 +33,6 @@ void Window::Update()
         if (event.type == SDL_EVENT_QUIT) {
             mRunning = false;
         }
+        Input::Update(&event);
     }
 }

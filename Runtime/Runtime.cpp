@@ -5,6 +5,8 @@
 
 #include "Runtime.hpp"
 
+#include <Input/Input.hpp>
+
 Runtime::Runtime(ApplicationSpecs specs)
     : Application(specs)
 {
@@ -18,7 +20,9 @@ Runtime::~Runtime()
 
 void Runtime::OnUpdate()
 {
-
+    if (Input::IsKeyPressed(SDLK_A)) {
+        LOG_INFO("A");
+    }
 }
 
 void Runtime::OnPhysicsTick()

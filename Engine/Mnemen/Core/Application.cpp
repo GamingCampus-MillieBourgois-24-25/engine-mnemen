@@ -6,10 +6,13 @@
 #include <Core/Application.hpp>
 #include <Core/Logger.hpp>
 
+#include <Input/Input.hpp>
+
 Application::Application(ApplicationSpecs specs)
     : mApplicationSpecs(specs)
 {
     Logger::Init();
+    Input::Init();
 
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
 
@@ -18,12 +21,16 @@ Application::Application(ApplicationSpecs specs)
 
 Application::~Application()
 {
-    
+    Input::Exit();
 }
 
 void Application::Run()
 {
     while (mWindow->IsOpen()) {
         mWindow->Update();
+
+        OnUpdate();
+
+        Input::PostUpdate();
     }
 }
