@@ -20,9 +20,7 @@ Runtime::~Runtime()
 
 void Runtime::OnUpdate()
 {
-    if (Input::IsKeyPressed(SDLK_A)) {
-        LOG_INFO("A");
-    }
+    
 }
 
 void Runtime::OnPhysicsTick()

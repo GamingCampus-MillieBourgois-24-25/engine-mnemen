@@ -4,6 +4,7 @@
 //
 
 #include <Input/Input.hpp>
+#include <Core/Logger.hpp>
 
 Input::InputData Input::sData;
 
@@ -111,11 +112,19 @@ void Input::Init()
     sData.Keys[SDLK_F24].State = KeyState::Up;
     sData.Keys[SDLK_AC_BACK].State = KeyState::Up;
     sData.Keys[SDLK_AC_FORWARD].State = KeyState::Up;
+
+    sData.Buttons[SDL_BUTTON_LEFT] = false;
+    sData.Buttons[SDL_BUTTON_RIGHT] = false;
+    sData.Buttons[SDL_BUTTON_MIDDLE] = false;
+
+    LOG_INFO("Initialized Input");
 }
 
 void Input::Update(SDL_Event* event)
 {
     UInt64 timestamp = SDL_GetTicks();
+
+    sData.MousePos = GetMousePosition();
 
     switch (event->type) {
         case SDL_EVENT_KEY_DOWN: {
@@ -134,11 +143,21 @@ void Input::Update(SDL_Event* event)
             sData.Keys[key].TimeStamp = timestamp;
             break;
         };
+        case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+            sData.Buttons[event->button.button] = true;
+            break;
+        };
+        case SDL_EVENT_MOUSE_BUTTON_UP: {
+            sData.Buttons[event->button.button] = false;
+            break;
+        };
     }
 }
 
 void Input::PostUpdate()
 {
+    sData.MouseDelta = GetMousePosition() - sData.MousePos;
+
     for (auto& key : sData.Keys) {
         UInt64 timestamp = SDL_GetTicks();
         if (sData.Keys[key.first].State == KeyState::Pressed && sData.Keys[key.first].TimeStamp != timestamp)
@@ -169,4 +188,26 @@ bool Input::IsKeyDown(SDL_Keycode key)
 bool Input::IsKeyUp(SDL_Keycode key)
 {
     return sData.Keys[key].State == KeyState::Up;
+}
+
+bool Input::IsButtonPressed(UInt8 button)
+{
+    return sData.Buttons[button] == true;
+}
+
+bool Input::IsButtonUp(UInt8 button)
+{
+    return sData.Buttons[button] == false;
+}
+
+glm::vec2 Input::GetMousePosition()
+{
+    Float32 x, y;
+    SDL_GetGlobalMouseState(&x, &y);
+    return glm::vec2(x, y);
+}
+
+glm::vec2 Input::GetMouseDelta()
+{
+    return sData.MouseDelta;
 }

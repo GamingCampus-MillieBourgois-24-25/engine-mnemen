@@ -6,6 +6,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <glm/glm.hpp>
 #include <Core/Common.hpp>
 
 enum class KeyState
@@ -49,6 +50,22 @@ public:
     /// @param key The key
     /// @return True if up, false otherwise
     static bool IsKeyUp(SDL_Keycode key);
+
+    /// @brief Returns whether the current button is pressed
+    /// @param button The button
+    /// @return True if pressed, false otherwise
+    static bool IsButtonPressed(UInt8 button);
+
+    /// @brief Returns whether the current button is up
+    /// @param button The button
+    /// @return True if up, false otherwise
+    static bool IsButtonUp(UInt8 button);
+
+    /// @brief Returns the mouse position
+    static glm::vec2 GetMousePosition();
+
+    /// @brief Returns the mouse delta (mouse position - last mouse position)
+    static glm::vec2 GetMouseDelta();
 private:
     struct KeyInfo {
         KeyState State;
@@ -57,6 +74,10 @@ private:
     
     struct InputData
     {
+        glm::vec2 MousePos;
+        glm::vec2 MouseDelta;
+
+        UnorderedMap<UInt8, bool> Buttons;
         UnorderedMap<SDL_Keycode, KeyInfo> Keys;
     };
     static InputData sData;
