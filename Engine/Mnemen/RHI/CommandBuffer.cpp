@@ -111,6 +111,12 @@ void CommandBuffer::SetGraphicsPipeline(GraphicsPipeline::Ref pipeline)
     mList->SetGraphicsRootSignature(pipeline->GetRootSignature()->GetSignature());
 }
 
+void CommandBuffer::SetMeshPipeline(MeshPipeline::Ref pipeline)
+{
+    mList->SetPipelineState(pipeline->GetPipeline());
+    mList->SetGraphicsRootSignature(pipeline->GetSignature()->GetSignature());
+}
+
 void CommandBuffer::SetComputePipeline(ComputePipeline::Ref pipeline)
 {
     mList->SetPipelineState(pipeline->GetPipeline());
@@ -163,6 +169,11 @@ void CommandBuffer::ClearRenderTarget(View::Ref view, float r, float g, float b)
 void CommandBuffer::Draw(int vertexCount)
 {
     mList->DrawInstanced(vertexCount, 1, 0, 0);
+}
+
+void CommandBuffer::DispatchMesh(int meshletCount)
+{
+    mList->DispatchMesh(meshletCount, 1, 1);
 }
 
 void CommandBuffer::DrawIndexed(int indexCount)

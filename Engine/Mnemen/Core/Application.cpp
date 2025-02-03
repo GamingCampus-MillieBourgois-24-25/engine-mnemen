@@ -7,6 +7,8 @@
 #include <Core/Logger.hpp>
 
 #include <Input/Input.hpp>
+#include <Asset/AssetCacher.hpp>
+#include <Asset/AssetManager.hpp>
 
 Application::Application(ApplicationSpecs specs)
     : mApplicationSpecs(specs)
@@ -17,6 +19,9 @@ Application::Application(ApplicationSpecs specs)
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
     mRHI = MakeRef<RHI>(mWindow);
     mRenderer = MakeRef<Renderer>(mRHI);
+
+    AssetManager::Init(mRHI);
+    AssetCacher::Init("Assets");
 
     LOG_INFO("Initialized {0} running Mnemen Engine", specs.GameName);
 
@@ -53,7 +58,6 @@ void Application::OnPrivateRender()
     {
         frame.CommandBuffer->BeginMarker("ImGui");
         frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
-        frame.CommandBuffer->ClearRenderTarget(frame.BackbufferView, 0.0f, 0.0f, 0.0f);
         frame.CommandBuffer->SetRenderTargets({ frame.BackbufferView }, nullptr);
         frame.CommandBuffer->BeginGUI(frame.Width, frame.Height);
         OnImGui();

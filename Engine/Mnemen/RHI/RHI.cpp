@@ -123,6 +123,11 @@ GraphicsPipeline::Ref RHI::CreateGraphicsPipeline(GraphicsPipelineSpecs& specs)
     return MakeRef<GraphicsPipeline>(mDevice, specs);
 }
 
+MeshPipeline::Ref RHI::CreateMeshPipeline(GraphicsPipelineSpecs& specs)
+{
+    return MakeRef<MeshPipeline>(mDevice, specs);
+}
+
 ComputePipeline::Ref RHI::CreateComputePipeline(Shader shader, RootSignature::Ref signature)
 {
     return MakeRef<ComputePipeline>(mDevice, shader, signature);

@@ -8,6 +8,7 @@
 #include <RHI/Queue.hpp>
 #include <RHI/View.hpp>
 #include <RHI/GraphicsPipeline.hpp>
+#include <RHI/MeshPipeline.hpp>
 #include <RHI/ComputePipeline.hpp>
 #include <RHI/Resource.hpp>
 #include <RHI/Buffer.hpp>
@@ -43,6 +44,7 @@ public:
     void SetViewport(float x, float y, float width, float height);
     void SetTopology(Topology topology);
     void SetGraphicsPipeline(GraphicsPipeline::Ref pipeline);
+    void SetMeshPipeline(MeshPipeline::Ref pipeline);
     void SetComputePipeline(ComputePipeline::Ref pipeline);
     void SetRenderTargets(const Vector<View::Ref> targets, View::Ref depth);
     void SetVertexBuffer(Buffer::Ref buffer);
@@ -56,6 +58,7 @@ public:
 
     void Draw(int vertexCount);
     void DrawIndexed(int indexCount);
+    void DispatchMesh(int meshletCount);
     void Dispatch(int x, int y, int z);
 
     void CopyTextureToTexture(::Ref<Resource> dst, ::Ref<Resource> src) { CopyBufferToBuffer(dst, src); } // It's all buffers anyway innit?

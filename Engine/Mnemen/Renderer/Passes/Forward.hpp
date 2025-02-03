@@ -15,4 +15,6 @@ public:
 
     void Render(const Frame& frame) override;
     void UI(const Frame& frame) override;
+private:
+    MeshPipeline::Ref mPipeline;
 };

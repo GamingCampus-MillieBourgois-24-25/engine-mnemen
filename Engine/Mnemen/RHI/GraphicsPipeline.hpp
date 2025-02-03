@@ -37,6 +37,7 @@ struct GraphicsPipelineSpecs
     CullMode Cull = CullMode::None;
     bool CCW = true;
     bool Line = false;
+    bool UseAmplification = false;
 
     Vector<TextureFormat> Formats;
     DepthOperation Depth = DepthOperation::None;

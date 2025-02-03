@@ -15,6 +15,7 @@
 #include <RHI/CommandBuffer.hpp>
 #include <RHI/GraphicsPipeline.hpp>
 #include <RHI/ComputePipeline.hpp>
+#include <RHI/MeshPipeline.hpp>
 #include <RHI/Buffer.hpp>
 #include <RHI/Texture.hpp>
 #include <RHI/Sampler.hpp>
@@ -51,6 +52,8 @@ public:
     RootSignature::Ref CreateRootSignature(const Vector<RootType>& entries, UInt64 pushConstantSize = 0);
     
     GraphicsPipeline::Ref CreateGraphicsPipeline(GraphicsPipelineSpecs& specs);
+
+    MeshPipeline::Ref CreateMeshPipeline(GraphicsPipelineSpecs& specs);
 
     ComputePipeline::Ref CreateComputePipeline(Shader shader, RootSignature::Ref signature);
     
