@@ -11,7 +11,16 @@ target("Mnemen")
     set_kind("static")
     set_languages("c++20")
     set_encodings("utf-8")
-    add_deps("spdlog", "ImGui", "STB", "meshopt")
+    add_deps("spdlog",
+             "ImGui",
+             "STB",
+             "meshopt",
+             "miniaudio",
+             "Jolt",
+             "Recast",
+             "Detour",
+             "DetourCrowd",
+             "DetourDebugUtils")
     
     add_files("Engine/**.cpp") -- Might need to change this for multi-platform or multi-API
     add_headerfiles("Engine/**.hpp")

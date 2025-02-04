@@ -14,3 +14,12 @@
 [submodule "ThirdParty/meshopt"]
 	path = ThirdParty/meshopt
 	url = https://github.com/zeux/meshoptimizer/
+[submodule "ThirdParty/Jolt"]
+	path = ThirdParty/Jolt
+	url = https://github.com/jrouwe/JoltPhysics
+[submodule "ThirdParty/miniaudio"]
+	path = ThirdParty/miniaudio
+	url = https://github.com/mackron/miniaudio
+[submodule "ThirdParty/Recast"]
+	path = ThirdParty/Recast
+	url = https://github.com/recastnavigation/recastnavigation/

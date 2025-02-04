@@ -48,7 +48,7 @@ void Composite::Render(const Frame& frame, Scene& scene)
     } PushConstants = {
         hdr->Descriptor(ViewType::ShaderResource),
         ldr->Descriptor(ViewType::Storage),
-        1.3,
+        2.2,
         0
     };
 

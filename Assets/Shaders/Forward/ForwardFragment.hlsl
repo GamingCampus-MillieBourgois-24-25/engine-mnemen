@@ -43,5 +43,6 @@ float4 PSMain(MeshInput input) : SV_Target
     float4 textureColor = albedoTexture.Sample(linearSampler, input.UV);
     if (textureColor.a < 0.25)
         discard;
+    textureColor.rgb = pow(textureColor.rgb, 2.2);
     return float4(textureColor.rgb, 1.0);
 }
