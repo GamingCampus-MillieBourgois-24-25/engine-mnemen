@@ -13,6 +13,10 @@
 #include <RHI/Uploader.hpp>
 #include <Renderer/RendererTools.hpp>
 
+#include <Physics/PhysicsSystem.hpp>
+#include <Audio/AudioSystem.hpp>
+#include <AI/AISystem.hpp>
+
 Application* Application::sInstance;
 
 Application::Application(ApplicationSpecs specs)
@@ -22,6 +26,9 @@ Application::Application(ApplicationSpecs specs)
 
     Logger::Init();
     Input::Init();
+    PhysicsSystem::Init();
+    AudioSystem::Init();
+    AISystem::Init();
 
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
     mRHI = MakeRef<RHI>(mWindow);
@@ -36,6 +43,9 @@ Application::Application(ApplicationSpecs specs)
 
 Application::~Application()
 {
+    AISystem::Exit();
+    AudioSystem::Exit();
+    PhysicsSystem::Exit();
     Input::Exit();
 }
 
@@ -49,11 +59,29 @@ void Application::Run()
         mLastFrame = time;
         dt /= 1000.0f;
 
-        mWindow->Update();
-        mScene.Update();
-        OnUpdate(dt);
+        // On Physics Update
+        {
+            float minStepDuration = 1.0f / mApplicationSpecs.PhysicsRefreshRate;
+            if (TO_SECONDS(mPhysicsTimer.GetElapsed()) > minStepDuration) {
+                OnPhysicsTick();
+                PhysicsSystem::Update(mScene, minStepDuration);
+                mPhysicsTimer.Restart();
+            }
+        }
+
+        // Update
+        {
+            AISystem::Update(mScene);
+            AudioSystem::Update(mScene);
+            mWindow->Update();
+            mScene.Update();
+            OnUpdate(dt);
+        }
         
-        OnPrivateRender();
+        // Render
+        {
+            OnPrivateRender();
+        }
         Input::PostUpdate();
     }
     mRHI->Wait();

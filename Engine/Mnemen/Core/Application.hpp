@@ -20,6 +20,9 @@ struct ApplicationSpecs
     /// @brief The height of the application window
     int Height;
 
+    /// @brief Refresh rate of the physics system, in hertz
+    float PhysicsRefreshRate = 90.0f;
+
     /// @brief The name of the game
     String GameName;
     /// @brief The title of the game window
@@ -63,6 +66,9 @@ protected:
     /// @brief The DT timer and it's data
     Timer mTimer;
     float mLastFrame = 0.0f;
+
+    /// @brief Physics timer
+    Timer mPhysicsTimer;
 
     /// @brief The RHI
     RHI::Ref mRHI;
