@@ -11,3 +11,7 @@ vsxmake2022
 imgui.ini
 mnemen.log
 .cache
+
+# Documentation generated files
+Documents/html
+Documents/latex

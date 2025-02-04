@@ -48,6 +48,18 @@ xmake project -k vsxmake -m "debug,release,releasedbg"
 
 ## Dependencies
 
+- Assimp
+- D3D12 Agility SDK
+- DXC
+- entt
+- GLM
+- ImGui
+- Jolt
+- MeshOptimizer
+- MiniAudio
+- NVTT
+- PIX
+- Recast
 - SDL3
 - spdlog
-- GLM
+- STB
