@@ -12,6 +12,8 @@
 #include "Passes/SSAO.hpp"
 #include "Passes/ColorGrading.hpp"
 
+#include <Core/Logger.hpp>
+
 Renderer::Renderer(RHI::Ref rhi)
 {
     RendererTools::Init(rhi);
@@ -23,6 +25,8 @@ Renderer::Renderer(RHI::Ref rhi)
         MakeRef<ColorGrading>(rhi),
         MakeRef<Composite>(rhi)
     };
+
+    LOG_INFO("Initialized Render System");
 }
 
 Renderer::~Renderer()

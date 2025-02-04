@@ -5,9 +5,11 @@
 
 #include "AudioSystem.hpp"
 
+#include <Core/Logger.hpp>
+
 void AudioSystem::Init()
 {
-
+    LOG_INFO("Initialized Audio system");
 }
 
 void AudioSystem::Exit()

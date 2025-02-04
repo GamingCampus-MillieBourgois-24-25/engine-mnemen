@@ -16,6 +16,7 @@
 #include <Physics/PhysicsSystem.hpp>
 #include <Audio/AudioSystem.hpp>
 #include <AI/AISystem.hpp>
+#include <Script/ScriptSystem.hpp>
 
 Application* Application::sInstance;
 
@@ -29,6 +30,7 @@ Application::Application(ApplicationSpecs specs)
     PhysicsSystem::Init();
     AudioSystem::Init();
     AISystem::Init();
+    ScriptSystem::Init();
 
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
     mRHI = MakeRef<RHI>(mWindow);
@@ -38,11 +40,12 @@ Application::Application(ApplicationSpecs specs)
 
     mRenderer = MakeRef<Renderer>(mRHI);
 
-    LOG_INFO("Initialized {0} running Mnemen Engine", specs.GameName);
+    LOG_INFO("Initialized Mnemen! Ready to rock 8)");
 }
 
 Application::~Application()
 {
+    ScriptSystem::Exit();
     AISystem::Exit();
     AudioSystem::Exit();
     PhysicsSystem::Exit();
@@ -73,6 +76,7 @@ void Application::Run()
         {
             AISystem::Update(mScene);
             AudioSystem::Update(mScene);
+            ScriptSystem::Update(mScene);
             mWindow->Update();
             mScene.Update();
             OnUpdate(dt);

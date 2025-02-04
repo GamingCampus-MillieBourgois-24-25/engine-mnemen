@@ -117,7 +117,7 @@ void Input::Init()
     sData.Buttons[SDL_BUTTON_RIGHT] = false;
     sData.Buttons[SDL_BUTTON_MIDDLE] = false;
 
-    LOG_INFO("Initialized Input");
+    LOG_INFO("Initialized Input System");
 }
 
 void Input::Update(SDL_Event* event)

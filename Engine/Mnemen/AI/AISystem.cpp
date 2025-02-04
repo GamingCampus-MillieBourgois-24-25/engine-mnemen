@@ -5,9 +5,11 @@
 
 #include "AISystem.hpp"
 
+#include <Core/Logger.hpp>
+
 void AISystem::Init()
 {
-
+    LOG_INFO("Initialized AI system");
 }
 
 void AISystem::Exit()

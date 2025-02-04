@@ -14,6 +14,8 @@ AssetManager::Data AssetManager::sData;
 void AssetManager::Init(RHI::Ref rhi)
 {
     sData.mRHI = rhi;
+
+    LOG_INFO("Initialized Asset Manager");
 }
 
 void AssetManager::Clean()

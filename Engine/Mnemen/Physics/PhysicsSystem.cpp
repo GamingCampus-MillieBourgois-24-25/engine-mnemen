@@ -5,9 +5,11 @@
 
 #include "PhysicsSystem.hpp"
 
+#include <Core/Logger.hpp>
+
 void PhysicsSystem::Init()
 {
-
+    LOG_INFO("Initialized Physics System");
 }
 
 void PhysicsSystem::Exit()

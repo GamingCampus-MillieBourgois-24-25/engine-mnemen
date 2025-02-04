@@ -20,7 +20,8 @@ target("Mnemen")
              "Recast",
              "Detour",
              "DetourCrowd",
-             "DetourDebugUtils")
+             "DetourDebugUtils",
+             "Wren")
     
     add_files("Engine/**.cpp") -- Might need to change this for multi-platform or multi-API
     add_headerfiles("Engine/**.hpp")
@@ -42,7 +43,8 @@ target("Mnemen")
                     "ThirdParty/Recast/Detour/Include",
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
-                    "ThirdParty/Recast/DebugUtils/Include")
+                    "ThirdParty/Recast/DebugUtils/Include",
+                    "ThirdParty/Wren/src/include")
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
 
@@ -112,7 +114,8 @@ target("Editor")
                     "ThirdParty/Recast/Detour/Include",
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
-                    "ThirdParty/Recast/DebugUtils/Include")
+                    "ThirdParty/Recast/DebugUtils/Include",
+                    "ThirdParty/Wren/src/include")
     add_deps("Mnemen")
 
     if is_mode("debug") then
@@ -155,7 +158,8 @@ target("Runtime")
                     "ThirdParty/Recast/Detour/Include",
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
-                    "ThirdParty/Recast/DebugUtils/Include")
+                    "ThirdParty/Recast/DebugUtils/Include",
+                    "ThirdParty/Wren/src/include")
     add_deps("Mnemen")
 
     if is_mode("debug") then

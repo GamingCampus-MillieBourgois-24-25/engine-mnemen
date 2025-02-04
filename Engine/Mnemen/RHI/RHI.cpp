@@ -10,6 +10,8 @@
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_dx12.h>
 
+#include <Core/Logger.hpp>
+
 RHI::RHI(::Ref<Window> window)
     : mWindow(window)
 {
@@ -55,6 +57,8 @@ RHI::RHI(::Ref<Window> window)
     initInfo.LegacySingleSrvGpuDescriptor = mFontDescriptor.GPU;
     ImGui_ImplDX12_Init(&initInfo);
     ImGui_ImplDX12_CreateDeviceObjects();
+    
+    LOG_INFO("Initialized D3D12 system");
 }
 
 RHI::~RHI()

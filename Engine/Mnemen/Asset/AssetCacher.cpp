@@ -348,4 +348,6 @@ void AssetCacher::Init(const String& assetDirectory)
     
         CacheAsset(entryPath);
     }
+
+    LOG_INFO("Initialized Asset Cacher");
 }
