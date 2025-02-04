@@ -10,9 +10,13 @@
 
 AssetCacher::Data AssetCacher::sData;
 
-class NVTTErrorHandler : nvtt::ErrorHandler
+/// @brief A custom error handler for NVTT (NVIDIA Texture Tools).
+/// @details This class is used to handle different error scenarios that may arise during texture compression using NVTT.
+class NVTTErrorHandler : public nvtt::ErrorHandler
 {
 public:
+    /// @brief Handles errors encountered during texture compression.
+    /// @param e The error encountered by NVTT.
     virtual void error(nvtt::Error e) override {
        switch (e) {
            case nvtt::Error::Error_UnsupportedOutputFormat: {
@@ -51,20 +55,38 @@ public:
     }
 };
 
-class TextureWriter : nvtt::OutputHandler
+/// @brief A custom output handler for NVTT to write texture data to memory.
+/// @details This class is used to handle the output of the compressed texture and store it into a `Vector<UInt8>`.
+class TextureWriter : public nvtt::OutputHandler
 {
 public:
+    /// @brief Constructor that initializes the output handler with a vector of bytes to store texture data.
+    /// @param bytes A pointer to a `Vector<UInt8>` where texture data will be written.
     TextureWriter(Vector<UInt8>* bytes) {
         mBytes = bytes;
     }
 
+    /// @brief Destructor that resets the pointer to the vector.
     ~TextureWriter() {
         mBytes = nullptr;
     }
 
+    /// @brief Called when a new image begins during texture compression.
+    /// @param size The size of the image data.
+    /// @param width The width of the image.
+    /// @param height The height of the image.
+    /// @param depth The depth of the image.
+    /// @param face The face index for cube maps.
+    /// @param miplevel The mip level of the image.
     virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel) override {}
+
+    /// @brief Called when the current image ends during texture compression.
     virtual void endImage() override {}
 
+    /// @brief Writes data to the `Vector<UInt8>`.
+    /// @param data A pointer to the data to be written.
+    /// @param size The size of the data to write.
+    /// @return `true` if data was written successfully, `false` otherwise.
     virtual bool writeData(const void* data, int size) override {
         UInt8* readableData = (UInt8*)data;
         for (int i = 0; i < size; i++) {
@@ -74,8 +96,9 @@ public:
     }
 
 private:
-    Vector<UInt8>* mBytes;
+    Vector<UInt8>* mBytes; ///< Pointer to a `Vector<UInt8>` where texture data is written.
 };
+
 
 String AssetCacher::GetCachedAsset(const String& normalPath)
 {

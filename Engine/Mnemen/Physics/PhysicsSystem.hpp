@@ -7,11 +7,32 @@
 
 #include "World/Scene.hpp"
 
+/// @brief A system for handling physics simulation in the application.
+/// 
+/// The `PhysicsSystem` class provides static methods for initializing, updating, and exiting 
+/// the physics system. It processes physics updates based on the current state of the scene.
 class PhysicsSystem
 {
 public:
+    /// @brief Initializes the physics system.
+    /// 
+    /// This method sets up the necessary resources and configurations for the physics system.
+    /// It must be called before any physics operations can take place.
     static void Init();
+
+    /// @brief Exits the physics system and cleans up resources.
+    /// 
+    /// This method shuts down the physics system and releases any resources used during its 
+    /// operation. It should be called when the system is no longer needed.
     static void Exit();
 
+    /// @brief Updates the physics system based on the given scene and minimum step duration.
+    /// 
+    /// This method performs the physics simulation for the current frame, including collisions, 
+    /// movement, and other physics-related operations. It ensures that the system progresses in 
+    /// a consistent manner based on the scene's current state.
+    /// 
+    /// @param scene The scene object that provides the current state of entities for physics processing.
+    /// @param minStepDuration The minimum duration (in seconds) of a physics simulation step.
     static void Update(Scene& scene, float minStepDuration);
 };

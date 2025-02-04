@@ -12,70 +12,71 @@
 #include "World/Scene.hpp"
 #include "Timer.hpp"
 
-/// @brief Structure that contains the settings of the application
+/// @struct ApplicationSpecs
+/// @brief Stores configuration settings for the application.
 struct ApplicationSpecs
 {
-    /// @brief The width of the application window
-    int Width;
-    /// @brief The height of the application window
-    int Height;
+    int Width; ///< Width of the application window in pixels.
+    int Height; ///< Height of the application window in pixels.
 
-    /// @brief Refresh rate of the physics system, in hertz
-    float PhysicsRefreshRate = 90.0f;
+    float PhysicsRefreshRate = 90.0f; ///< Physics update rate in Hertz.
 
-    /// @brief The name of the game
-    String GameName;
-    /// @brief The title of the game window
-    String WindowTitle;
+    String GameName; ///< Name of the game/application.
+    String WindowTitle; ///< Title displayed on the game window.
 };
 
-/// @brief Uniform class used to describe an application using the engine
+/// @class Application
+/// @brief Base class representing an application using the engine.
+///
+/// This class provides the core framework for an application, including
+/// update cycles, rendering, and physics processing.
 class Application
 {
 public:
+    /// @brief Constructs an application with the given specifications.
+    /// @param specs The configuration settings for the application.
     Application(ApplicationSpecs specs);
+    
+    /// @brief Destroys the application and cleans up resources.
     ~Application();
 
-    /// @brief Called once every frame
+    /// @brief Called once per frame to update application logic.
+    /// @param dt Delta time since the last frame in seconds.
     virtual void OnUpdate(float dt) = 0;
-    /// @brief Called once every physics update, 90hz
+
+    /// @brief Called at a fixed time step for physics updates (90 Hz by default).
     virtual void OnPhysicsTick() = 0;
-    /// @brief Called between begin/end frame for ImGui
+
+    /// @brief Called during the UI rendering phase to handle ImGui drawing.
     virtual void OnImGui() = 0;
 
-    /// @brief Runs the application
+    /// @brief Starts the application loop.
     void Run();
 
-    /// @brief Gets the current window
+    /// @brief Retrieves the main application window.
+    /// @return A shared pointer to the window instance.
     Ref<Window> GetWindow() { return mWindow; }
 
-    /// @brief Returns current instance of application
+    /// @brief Retrieves the current application instance.
+    /// @return Pointer to the singleton application instance.
     static Application* Get() { return sInstance; }
 protected:
+    /// @brief Handles internal rendering operations.
     void OnPrivateRender();
 
-    /// @brief The application singleton
-    static Application* sInstance;
+    static Application* sInstance; ///< Singleton instance of the application.
+    
+    ApplicationSpecs mApplicationSpecs; ///< Cached application settings.
+    Ref<Window> mWindow; ///< Main application window.
 
-    /// @brief a copy of the application settings
-    ApplicationSpecs mApplicationSpecs;
+    Timer mTimer; ///< Delta-time tracking timer.
+    float mLastFrame = 0.0f; ///< Time of the last frame update.
 
-    /// @brief The application window
-    Ref<Window> mWindow;
+    Timer mPhysicsTimer; ///< Timer for fixed-step physics updates.
 
-    /// @brief The DT timer and it's data
-    Timer mTimer;
-    float mLastFrame = 0.0f;
-
-    /// @brief Physics timer
-    Timer mPhysicsTimer;
-
-    /// @brief The RHI
-    RHI::Ref mRHI;
-
-    /// @brief The renderer
-    Renderer::Ref mRenderer;
-
-    /// @brief Currently loaded scene
-    Scene mScene;
+    RHI::Ref mRHI; ///< Rendering Hardware Interface.
+    Renderer::Ref mRenderer; ///< Renderer instance.
+    
+    Scene mScene; ///< Currently active scene.
 };
+

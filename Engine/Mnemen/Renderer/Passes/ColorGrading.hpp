@@ -7,6 +7,11 @@
 
 #include <Renderer/RenderPass.hpp>
 
+/// @brief A class that implements a color grading render pass.
+///
+/// The `ColorGrading` class is a specific render pass that applies color grading effects to the scene.
+/// Color grading is used to adjust the overall color balance and tones of the rendered image, allowing
+/// for artistic effects or corrections. This class extends the `RenderPass` class.
 class ColorGrading : public RenderPass
 {
 public:
