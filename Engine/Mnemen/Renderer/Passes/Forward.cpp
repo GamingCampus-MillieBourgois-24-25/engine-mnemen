@@ -24,7 +24,7 @@ Forward::Forward(RHI::Ref rhi)
         desc.Height = height;
         desc.Levels = 1;
         desc.Depth = 1;
-        desc.Name = "Color Buffer";
+        desc.Name = "HDR Color Buffer";
         desc.Usage = TextureUsage::RenderTarget | TextureUsage::Storage | TextureUsage::ShaderResource;
         desc.Format = TextureFormat::RGBA16Float;
        
@@ -41,7 +41,7 @@ Forward::Forward(RHI::Ref rhi)
         desc.Height = height;
         desc.Levels = 1;
         desc.Depth = 1;
-        desc.Name = "Depth Buffer";
+        desc.Name = "Main Depth Buffer";
         desc.Usage = TextureUsage::DepthTarget;
         desc.Format = TextureFormat::Depth32;
        

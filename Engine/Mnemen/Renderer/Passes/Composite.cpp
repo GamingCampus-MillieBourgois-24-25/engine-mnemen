@@ -25,7 +25,7 @@ Composite::Composite(RHI::Ref rhi)
     desc.Height = height;
     desc.Levels = 1;
     desc.Depth = 1;
-    desc.Name = "Depth Buffer";
+    desc.Name = "LDR Color Buffer";
     desc.Usage = TextureUsage::RenderTarget | TextureUsage::Storage | TextureUsage::ShaderResource;
     desc.Format = TextureFormat::RGBA8;
     

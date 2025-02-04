@@ -11,6 +11,7 @@ This folder contains a variety of documents related to the engine, coding style,
 - [Basics of D3D12](FX/BASICS_OF_D3D12.md)
 - [Writing a PostFX Pass using Mnemen's RenderPass API](FX/RENDER_PASS_API.md)
 - [HLSL Guide](FX/HLSL_GUIDE.md)
+- [Using PIX](FX/PIX.md)
 
 ### Resources
 - [Graphics APIs](Resources/RESOURCES_GRAPHICS_APIS.md)
