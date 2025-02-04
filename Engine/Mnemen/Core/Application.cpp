@@ -10,6 +10,8 @@
 #include <Asset/AssetCacher.hpp>
 #include <Asset/AssetManager.hpp>
 
+#include <RHI/Uploader.hpp>
+
 Application::Application(ApplicationSpecs specs)
     : mApplicationSpecs(specs)
 {
@@ -18,14 +20,13 @@ Application::Application(ApplicationSpecs specs)
 
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
     mRHI = MakeRef<RHI>(mWindow);
-    mRenderer = MakeRef<Renderer>(mRHI);
 
     AssetManager::Init(mRHI);
     AssetCacher::Init("Assets");
 
-    LOG_INFO("Initialized {0} running Mnemen Engine", specs.GameName);
+    mRenderer = MakeRef<Renderer>(mRHI);
 
-    mRHI->Wait();
+    LOG_INFO("Initialized {0} running Mnemen Engine", specs.GameName);
 }
 
 Application::~Application()
@@ -35,6 +36,8 @@ Application::~Application()
 
 void Application::Run()
 {
+    Uploader::Flush();
+    mRHI->Wait();
     while (mWindow->IsOpen()) {
         float time = mTimer.GetElapsed();
         float dt = time - mLastFrame;

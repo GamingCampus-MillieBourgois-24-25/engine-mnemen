@@ -20,5 +20,7 @@ public:
     virtual void OnImGui() override;
 private:
     Camera mCamera;
+
     Entity* mCameraEntity;
+    Entity* mSponza;
 };

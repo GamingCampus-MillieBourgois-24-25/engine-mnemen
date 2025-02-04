@@ -23,6 +23,7 @@ public:
     void Update();
     SceneCamera GetMainCamera();
 
+    entt::registry* GetRegistry() { return &mRegistry; }
     Entity* AddEntity(const String& name = "Sigma Entity");
     void RemoveEntity(Entity* e);
 private:

@@ -155,11 +155,22 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
     out.MeshletCount = meshlets.size();
 
     out.VertexBuffer = mRHI->CreateBuffer(vertices.size() * sizeof(Vertex), sizeof(Vertex), BufferType::Vertex, node->Name + " Vertex Buffer");
+    out.VertexBuffer->BuildSRV();
+
     out.IndexBuffer = mRHI->CreateBuffer(indices.size() * sizeof(UInt32), sizeof(UInt32), BufferType::Index, node->Name + " Index Buffer");
+    out.IndexBuffer->BuildSRV();
+
     out.MeshletBuffer = mRHI->CreateBuffer(meshlets.size() * sizeof(meshopt_Meshlet), sizeof(meshopt_Meshlet), BufferType::Storage, node->Name + " Meshlet Buffer");
+    out.MeshletBuffer->BuildSRV();
+
     out.MeshletVertices = mRHI->CreateBuffer(meshletVertices.size() * sizeof(UInt32), sizeof(UInt32), BufferType::Storage, node->Name + " Meshlet Vertices");
-    out.MeshletTriangles = mRHI->CreateBuffer(meshletTriangles.size() * sizeof(UInt32), sizeof(UInt32), BufferType::Storage, node->Name + " Meshlet Triangles");
+    out.MeshletVertices->BuildSRV();
+
+    out.MeshletTriangles = mRHI->CreateBuffer(meshletPrimitives.size() * sizeof(UInt32), sizeof(UInt32), BufferType::Storage, node->Name + " Meshlet Triangles");
+    out.MeshletTriangles->BuildSRV();
+
     out.MeshletBounds = mRHI->CreateBuffer(meshletBounds.size() * sizeof(MeshletBounds), sizeof(MeshletBounds), BufferType::Storage, node->Name + " Meshlet Bounds");
+    out.MeshletBounds->BuildSRV();
 
     out.GeometryStructure = mRHI->CreateBLAS(out.VertexBuffer, out.IndexBuffer, out.VertexCount, out.IndexCount, node->Name + " BLAS");
 
@@ -167,7 +178,7 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
     Uploader::EnqueueBufferUpload(indices.data(), out.IndexBuffer->GetSize(), out.IndexBuffer);
     Uploader::EnqueueBufferUpload(meshlets.data(), out.MeshletBuffer->GetSize(), out.MeshletBuffer);
     Uploader::EnqueueBufferUpload(meshletVertices.data(), out.MeshletVertices->GetSize(), out.MeshletVertices);
-    Uploader::EnqueueBufferUpload(meshletTriangles.data(), out.MeshletTriangles->GetSize(), out.MeshletTriangles);
+    Uploader::EnqueueBufferUpload(meshletPrimitives.data(), out.MeshletTriangles->GetSize(), out.MeshletTriangles);
     Uploader::EnqueueBufferUpload(meshletBounds.data(), out.MeshletBounds->GetSize(), out.MeshletBounds);
 
     VertexCount += out.VertexCount;
