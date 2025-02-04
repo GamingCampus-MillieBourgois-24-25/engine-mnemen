@@ -10,6 +10,7 @@
 #include "../RHI/RHI.hpp"
 #include "../Renderer/Renderer.hpp"
 #include "World/Scene.hpp"
+#include "Timer.hpp"
 
 /// @brief Structure that contains the settings of the application
 struct ApplicationSpecs
@@ -33,7 +34,7 @@ public:
     ~Application();
 
     /// @brief Called once every frame
-    virtual void OnUpdate() = 0;
+    virtual void OnUpdate(float dt) = 0;
     /// @brief Called once every physics update, 90hz
     virtual void OnPhysicsTick() = 0;
     /// @brief Called between begin/end frame for ImGui
@@ -49,6 +50,10 @@ protected:
 
     /// @brief The application window
     Ref<Window> mWindow;
+
+    /// @brief The DT timer and it's data
+    Timer mTimer;
+    float mLastFrame = 0.0f;
 
     /// @brief The RHI
     RHI::Ref mRHI;

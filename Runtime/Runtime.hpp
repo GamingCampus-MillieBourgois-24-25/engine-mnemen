@@ -13,7 +13,7 @@ public:
     Runtime(ApplicationSpecs specs);
     ~Runtime();
 
-    virtual void OnUpdate() override;
+    virtual void OnUpdate(float dt) override;
     virtual void OnPhysicsTick() override;
     virtual void OnImGui() override;
 };

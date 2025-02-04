@@ -38,13 +38,15 @@ Forward::Forward(RHI::Ref rhi)
     specs.DepthEnabled = true;
     specs.DepthFormat = TextureFormat::Depth32;
     specs.CCW = false;
-    specs.Signature = mRHI->CreateRootSignature({}, 0);
+    specs.Signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(glm::mat4) * 2);
     
     mPipeline = mRHI->CreateMeshPipeline(specs);
 }
 
 void Forward::Render(const Frame& frame, Scene& scene)
 {
+    SceneCamera camera = scene.GetMainCamera();
+
     frame.CommandBuffer->BeginMarker("Forward");
     frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
     frame.CommandBuffer->Barrier(mDepthBuffer, ResourceLayout::DepthWrite);
@@ -53,6 +55,7 @@ void Forward::Render(const Frame& frame, Scene& scene)
     frame.CommandBuffer->ClearRenderTarget(frame.BackbufferView, 0.0f, 0.0f, 0.0f);
     frame.CommandBuffer->ClearDepth(mDepthView);
     frame.CommandBuffer->SetMeshPipeline(mPipeline);
+    frame.CommandBuffer->GraphicsPushConstants(&camera, sizeof(camera), 0);
     frame.CommandBuffer->DispatchMesh(1);
     frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::Shader);
     frame.CommandBuffer->Barrier(mDepthBuffer, ResourceLayout::Common);

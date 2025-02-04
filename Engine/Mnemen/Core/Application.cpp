@@ -36,10 +36,14 @@ Application::~Application()
 void Application::Run()
 {
     while (mWindow->IsOpen()) {
-        
+        float time = mTimer.GetElapsed();
+        float dt = time - mLastFrame;
+        mLastFrame = time;
+        dt /= 1000.0f;
+
         mWindow->Update();
         mScene.Update();
-        OnUpdate();
+        OnUpdate(dt);
         
         OnPrivateRender();
         Input::PostUpdate();

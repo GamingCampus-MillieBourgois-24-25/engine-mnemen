@@ -47,6 +47,7 @@ SceneCamera Scene::GetMainCamera()
             }
         }
     }
+    return { glm::mat4(1.0f), glm::mat4(1.0f) };
 }
 
 Entity* Scene::AddEntity(const String& name)

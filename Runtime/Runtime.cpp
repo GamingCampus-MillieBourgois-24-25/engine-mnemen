@@ -18,7 +18,7 @@ Runtime::~Runtime()
 
 }
 
-void Runtime::OnUpdate()
+void Runtime::OnUpdate(float dt)
 {
     
 }
