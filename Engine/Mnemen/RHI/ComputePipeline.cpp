@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-18 23:39:30
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-18 23:39:30
 //
 
 #include <RHI/ComputePipeline.hpp>

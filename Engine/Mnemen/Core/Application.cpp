@@ -1,5 +1,5 @@
 //
-// > Notice: Amélie Heinrich @ 2024
+// > Notice: Amélie Heinrich @ 2025
 // > Create Time: 2025-02-03 12:20:52
 //
 
@@ -11,10 +11,15 @@
 #include <Asset/AssetManager.hpp>
 
 #include <RHI/Uploader.hpp>
+#include <Renderer/RendererTools.hpp>
+
+Application* Application::sInstance;
 
 Application::Application(ApplicationSpecs specs)
     : mApplicationSpecs(specs)
 {
+    sInstance = this;
+
     Logger::Init();
     Input::Init();
 

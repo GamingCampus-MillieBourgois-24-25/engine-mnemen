@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-07 17:18:53
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-07 17:18:53
 //
 
 #include <Core/Random.hpp>

@@ -6,26 +6,47 @@
 #include "Forward.hpp"
 
 #include <Asset/AssetManager.hpp>
+#include <Core/Application.hpp>
 
 Forward::Forward(RHI::Ref rhi)
     : RenderPass(rhi)
 {
+    int width, height;
+    Application::Get()->GetWindow()->PollSize(width, height);
+
     Asset::Handle meshShader = AssetManager::Get("Assets/Shaders/Forward/ForwardMesh.hlsl", AssetType::Shader);
     Asset::Handle fragmentShader = AssetManager::Get("Assets/Shaders/Forward/ForwardFragment.hlsl", AssetType::Shader);
+
+    // Color buffer
+    {
+        TextureDesc desc = {};
+        desc.Width = width;
+        desc.Height = height;
+        desc.Levels = 1;
+        desc.Depth = 1;
+        desc.Name = "Color Buffer";
+        desc.Usage = TextureUsage::RenderTarget | TextureUsage::Storage | TextureUsage::ShaderResource;
+        desc.Format = TextureFormat::RGBA16Float;
+       
+        auto renderTarget = RendererTools::CreateSharedTexture("HDRColorBuffer", desc);
+        renderTarget->AddView(ViewType::RenderTarget);
+        renderTarget->AddView(ViewType::ShaderResource);
+        renderTarget->AddView(ViewType::Storage);
+    }
 
     // Depth buffer
     {
         TextureDesc desc = {};
-        desc.Width = 1280;
-        desc.Height = 720;
+        desc.Width = width;
+        desc.Height = height;
         desc.Levels = 1;
         desc.Depth = 1;
         desc.Name = "Depth Buffer";
         desc.Usage = TextureUsage::DepthTarget;
         desc.Format = TextureFormat::Depth32;
-        mDepthBuffer = mRHI->CreateTexture(desc);
-
-        mDepthView = mRHI->CreateView(mDepthBuffer, ViewType::DepthTarget);
+       
+        auto depthBuffer = RendererTools::CreateSharedTexture("MainDepthBuffer", desc);
+        depthBuffer->AddView(ViewType::DepthTarget);
     }
 
     // Pipeline
@@ -45,32 +66,27 @@ Forward::Forward(RHI::Ref rhi)
         mPipeline = mRHI->CreateMeshPipeline(specs);
     }
 
-    // Camera buffer
-    {
-        for (int i = 0; i < FRAMES_IN_FLIGHT; i++) {
-            mCameraBuffer[i] = mRHI->CreateBuffer(256, 0, BufferType::Constant, "Camera Buffer");
-            mCameraBuffer[i]->BuildCBV();
-        }
-    }
-
-    // Sampler
-    {
-        mSampler = mRHI->CreateSampler(SamplerAddress::Wrap, SamplerFilter::Linear, true);
-    }
+    RendererTools::CreateSharedRingBuffer("CameraRingBuffer", 512);
+    RendererTools::CreateSharedSampler("MaterialSampler", SamplerFilter::Linear, SamplerAddress::Wrap, true);
 }
 
 void Forward::Render(const Frame& frame, Scene& scene)
 {
+    auto cameraBuffer = RendererTools::Get("CameraRingBuffer");
+    auto colorBuffer = RendererTools::Get("HDRColorBuffer");
+    auto depthBuffer = RendererTools::Get("MainDepthBuffer");
+    auto sampler = RendererTools::Get("MaterialSampler");
+
     SceneCamera camera = scene.GetMainCamera();
-    mCameraBuffer[frame.FrameIndex]->CopyMapped(&camera, sizeof(camera));
+    cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(&camera, sizeof(camera));
 
     frame.CommandBuffer->BeginMarker("Forward");
-    frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
-    frame.CommandBuffer->Barrier(mDepthBuffer, ResourceLayout::DepthWrite);
+    frame.CommandBuffer->Barrier(colorBuffer->Texture, ResourceLayout::ColorWrite);
+    frame.CommandBuffer->Barrier(depthBuffer->Texture, ResourceLayout::DepthWrite);
     frame.CommandBuffer->SetViewport(0, 0, frame.Width, frame.Height);
-    frame.CommandBuffer->SetRenderTargets({ frame.BackbufferView }, mDepthView);
-    frame.CommandBuffer->ClearRenderTarget(frame.BackbufferView, 0.0f, 0.0f, 0.0f);
-    frame.CommandBuffer->ClearDepth(mDepthView);
+    frame.CommandBuffer->SetRenderTargets({ colorBuffer->GetView(ViewType::RenderTarget) }, depthBuffer->GetView(ViewType::DepthTarget));
+    frame.CommandBuffer->ClearRenderTarget(colorBuffer->GetView(ViewType::RenderTarget), 0.0f, 0.0f, 0.0f);
+    frame.CommandBuffer->ClearDepth(depthBuffer->GetView(ViewType::DepthTarget));
     frame.CommandBuffer->SetMeshPipeline(mPipeline);
     
     // Draw function for each model
@@ -92,14 +108,14 @@ void Forward::Render(const Frame& frame, Scene& scene)
                 int Albedo;
                 int Sampler;
             } data = {
-                mCameraBuffer[frame.FrameIndex]->CBV(),
+                cameraBuffer->Descriptor(ViewType::None, frame.FrameIndex),
                 primitive.VertexBuffer->SRV(),
                 primitive.IndexBuffer->SRV(),
                 primitive.MeshletBuffer->SRV(),
                 primitive.MeshletVertices->SRV(),
                 primitive.MeshletTriangles->SRV(),
                 material.AlbedoView->GetDescriptor().Index,
-                mSampler->BindlesssSampler()
+                sampler->Descriptor()
             };
             frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
             frame.CommandBuffer->DispatchMesh(primitive.MeshletCount);
@@ -118,8 +134,8 @@ void Forward::Render(const Frame& frame, Scene& scene)
         drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, transform.Matrix);
     }
 
-    frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::Shader);
-    frame.CommandBuffer->Barrier(mDepthBuffer, ResourceLayout::Common);
+    frame.CommandBuffer->Barrier(colorBuffer->Texture, ResourceLayout::Shader);
+    frame.CommandBuffer->Barrier(depthBuffer->Texture, ResourceLayout::Common);
     frame.CommandBuffer->EndMarker();
 }
 

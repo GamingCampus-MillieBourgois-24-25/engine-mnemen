@@ -8,6 +8,7 @@
 #include <RHI/RHI.hpp>
 
 #include "World/Scene.hpp"
+#include "RendererTools.hpp"
 
 class RenderPass
 {

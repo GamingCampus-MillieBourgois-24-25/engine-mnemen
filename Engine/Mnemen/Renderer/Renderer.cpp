@@ -4,13 +4,18 @@
 //
 
 #include "Renderer.hpp"
+#include "RendererTools.hpp"
 
 #include "Passes/Forward.hpp"
+#include "Passes/Composite.hpp"
 
 Renderer::Renderer(RHI::Ref rhi)
 {
+    RendererTools::Init(rhi);
+
     mPasses = {
-        MakeRef<Forward>(rhi)
+        MakeRef<Forward>(rhi),
+        MakeRef<Composite>(rhi)
     };
 }
 

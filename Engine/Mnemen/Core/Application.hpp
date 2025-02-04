@@ -1,5 +1,5 @@
 //
-// > Notice: Amélie Heinrich @ 2024
+// > Notice: Amélie Heinrich @ 2025
 // > Create Time: 2025-02-03 12:17:26
 //
 
@@ -42,8 +42,17 @@ public:
 
     /// @brief Runs the application
     void Run();
+
+    /// @brief Gets the current window
+    Ref<Window> GetWindow() { return mWindow; }
+
+    /// @brief Returns current instance of application
+    static Application* Get() { return sInstance; }
 protected:
     void OnPrivateRender();
+
+    /// @brief The application singleton
+    static Application* sInstance;
 
     /// @brief a copy of the application settings
     ApplicationSpecs mApplicationSpecs;

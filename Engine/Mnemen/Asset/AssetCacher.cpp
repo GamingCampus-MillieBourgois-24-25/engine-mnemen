@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-04 21:39:09
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-04 21:39:09
 //
 
 #include <Asset/AssetCacher.hpp>

@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-04 03:21:22
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-04 03:21:22
 //
 
 #include <RHI/Sampler.hpp>

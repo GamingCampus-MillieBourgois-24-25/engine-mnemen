@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-03 23:55:27
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-03 23:55:27
 //
 
 #include <RHI/Uploader.hpp>

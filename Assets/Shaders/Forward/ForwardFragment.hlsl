@@ -41,7 +41,7 @@ float4 PSMain(MeshInput input) : SV_Target
     SamplerState linearSampler = SamplerDescriptorHeap[Constants.LinearSampler];
 
     float4 textureColor = albedoTexture.Sample(linearSampler, input.UV);
-    if (textureColor.a < 0.5)
+    if (textureColor.a < 0.25)
         discard;
     return float4(textureColor.rgb, 1.0);
 }

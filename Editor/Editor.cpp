@@ -1,5 +1,5 @@
 //
-// > Notice: Amélie Heinrich @ 2024
+// > Notice: Amélie Heinrich @ 2025
 // > Create Time: 2025-02-03 12:26:03
 //
 
@@ -24,7 +24,10 @@ Editor::~Editor()
 
 void Editor::OnUpdate(float dt)
 {
-    mCamera.Update(dt, 1280, 720);
+    int width, height;
+    mWindow->PollSize(width, height);
+
+    mCamera.Update(dt, width, height);
 
     auto& cam = mCameraEntity->GetComponent<CameraComponent>();
     cam.Primary = true;

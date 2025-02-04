@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-12 04:43:57
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-12 04:43:57
 //
 
 #include <RHI/AccelerationStructure.hpp>

@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-12 05:10:54
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-12 05:10:54
 //
 
 #include <RHI/TLAS.hpp>

@@ -1,5 +1,5 @@
 --
--- > Notice: Amélie Heinrich @ 2024
+-- > Notice: Amélie Heinrich @ 2025
 -- > Create Time: 2025-02-03 09:57:56
 --
 
@@ -61,7 +61,15 @@ target("Mnemen")
 
     -- Copy DLLs in build folder
     before_link(function (target)
+        if not os.exists("$(buildir)/$(plat)/$(arch)/$(mode)/Assets/") then
+            os.mkdir("$(buildir)/$(plat)/$(arch)/$(mode)/Assets/")
+        end
+        if not os.exists("$(buildir)/$(plat)/$(arch)/$(mode)/.cache/") then
+            os.mkdir("$(buildir)/$(plat)/$(arch)/$(mode)/.cache/")
+        end
         os.cp("Binaries/*", "$(buildir)/$(plat)/$(arch)/$(mode)/")
+        os.cp("Assets/*", "$(buildir)/$(plat)/$(arch)/$(mode)/Assets/")
+        os.cp(".cache/*", "$(buildir)/$(plat)/$(arch)/$(mode)/.cache/")
     end)
 
 target("Editor")

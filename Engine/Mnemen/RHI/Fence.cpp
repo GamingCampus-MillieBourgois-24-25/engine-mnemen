@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-03 10:03:19
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-03 10:03:19
 //
 
 #include <RHI/Fence.hpp>

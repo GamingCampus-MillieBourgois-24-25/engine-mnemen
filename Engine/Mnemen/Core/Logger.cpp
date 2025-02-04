@@ -1,6 +1,6 @@
 //
-// > Notice: Amélie Heinrich @ 2024
-// > Create Time: 2024-12-03 05:51:34
+// > Notice: Amélie Heinrich @ 2025
+// > Create Time: 2025-12-03 05:51:34
 //
 
 #include <Core/Logger.hpp>
