@@ -118,7 +118,7 @@ String AssetCacher::GetCachedAsset(const String& normalPath)
         h *= m;
     }
 
-    const unsigned char * data2 = (const unsigned char*)data;
+    const UInt8 * data2 = (const UInt8*)data;
     switch(normalPath.size() & 7) {
         case 7: h ^= UInt64(data2[6]) << 48;
         case 6: h ^= UInt64(data2[5]) << 40;

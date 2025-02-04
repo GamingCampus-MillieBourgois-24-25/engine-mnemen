@@ -60,6 +60,10 @@ public:
 private:
     friend class Entity; ///< Allows Entity to access private members of Scene.
     friend class Renderer; ///< Allows Renderer to access private members of Scene.
+    friend class PhysicsSystem; ///< Allows PhysicsSystem to access private members of Scene.
+    friend class AISystem; ///< Allows AISystem to access private members of Scene.
+    friend class AudioSystem; ///< Allows AudioSystem to access private members of Scene.
+    friend class ScriptSystem; ///< Allows ScriptSystem to access private members of Scene.
 
     entt::registry mRegistry; ///< The registry that manages entities and components.
     Vector<Entity*> mEntities; ///< A collection of entities within the scene.

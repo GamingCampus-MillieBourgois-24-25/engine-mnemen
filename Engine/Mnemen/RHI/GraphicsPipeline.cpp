@@ -18,7 +18,7 @@ GraphicsPipeline::GraphicsPipeline(Device::Ref device, GraphicsPipelineSpecs& sp
     pVertexReflection->GetDesc(&vertexDesc);
 
     Vector<D3D12_INPUT_ELEMENT_DESC> InputElementDescs;
-    Vector<std::string> InputElementSemanticNames;
+    Vector<String> InputElementSemanticNames;
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC Desc = {};
     Desc.VS.pShaderBytecode = vertexBytecode.Bytecode.data();
@@ -106,7 +106,7 @@ GraphicsPipeline::GraphicsPipeline(Device::Ref device, GraphicsPipelineSpecs& sp
         InputElementDescs.push_back(InputElement);
     }
     Desc.InputLayout.pInputElementDescs = InputElementDescs.data();
-    Desc.InputLayout.NumElements = static_cast<uint32_t>(InputElementDescs.size());
+    Desc.InputLayout.NumElements = static_cast<UInt32>(InputElementDescs.size());
 
     if (specs.Signature) {
         Desc.pRootSignature = specs.Signature->GetSignature();

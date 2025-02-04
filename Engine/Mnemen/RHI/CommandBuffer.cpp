@@ -125,7 +125,7 @@ void CommandBuffer::SetComputePipeline(ComputePipeline::Ref pipeline)
 
 void CommandBuffer::SetRenderTargets(const Vector<View::Ref> targets, View::Ref depth)
 {
-    std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> cpus;
+    Vector<D3D12_CPU_DESCRIPTOR_HANDLE> cpus;
     for (auto& target : targets) {
         cpus.push_back(target->GetDescriptor().CPU);
     }
@@ -202,7 +202,7 @@ void CommandBuffer::CopyBufferToTexture(::Ref<Resource> dst, ::Ref<Resource> src
 
     mDevice->GetDevice()->GetCopyableFootprints(&desc, 0, desc.MipLevels, 0, footprints.data(), num_rows.data(), row_sizes.data(), &totalSize);
 
-    for (uint32_t i = 0; i < desc.MipLevels; i++) {
+    for (UInt32 i = 0; i < desc.MipLevels; i++) {
         D3D12_TEXTURE_COPY_LOCATION srcCopy = {};
         srcCopy.pResource = src->GetResource();
         srcCopy.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;

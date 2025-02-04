@@ -21,7 +21,8 @@ target("Mnemen")
              "Detour",
              "DetourCrowd",
              "DetourDebugUtils",
-             "Wren")
+             "Wren",
+             "Wren++")
     
     add_files("Engine/**.cpp") -- Might need to change this for multi-platform or multi-API
     add_headerfiles("Engine/**.hpp")

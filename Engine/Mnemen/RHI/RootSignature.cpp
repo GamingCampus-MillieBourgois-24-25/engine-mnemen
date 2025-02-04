@@ -28,8 +28,8 @@ RootSignature::RootSignature(Device::Ref device)
 
 RootSignature::RootSignature(Device::Ref device, const Vector<RootType>& roots, UInt64 pushConstantSize)
 {
-    std::vector<D3D12_ROOT_PARAMETER> Parameters(roots.size());
-    std::vector<D3D12_DESCRIPTOR_RANGE> Ranges(roots.size());
+    Vector<D3D12_ROOT_PARAMETER> Parameters(roots.size());
+    Vector<D3D12_DESCRIPTOR_RANGE> Ranges(roots.size());
     
     for (int i = 0; i < roots.size(); i++) {
         D3D12_DESCRIPTOR_RANGE& descriptorRange = Ranges[i];

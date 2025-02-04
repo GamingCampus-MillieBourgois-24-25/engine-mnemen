@@ -15,10 +15,10 @@
 struct RaytracingInstance
 {
     glm::mat3x4 Transform; ///< 3x4 matrix representing the transformation of the instance (model to world).
-    uint32_t InstanceID : 24; ///< Unique identifier for the instance (24-bit).
-    uint32_t InstanceMask : 8; ///< Mask for the instance, used to control visibility during ray traversal (8-bit).
-    uint32_t InstanceContributionToHitGroupIndex : 24; ///< Contribution index for the hit group this instance belongs to (24-bit).
-    uint32_t Flags : 8; ///< Flags that provide additional information about the instance (e.g., visibility or shadow options).
+    UInt32 InstanceID : 24; ///< Unique identifier for the instance (24-bit).
+    UInt32 InstanceMask : 8; ///< Mask for the instance, used to control visibility during ray traversal (8-bit).
+    UInt32 InstanceContributionToHitGroupIndex : 24; ///< Contribution index for the hit group this instance belongs to (24-bit).
+    UInt32 Flags : 8; ///< Flags that provide additional information about the instance (e.g., visibility or shadow options).
     uint64_t AccelerationStructure; ///< GPU virtual address of the acceleration structure this instance refers to (64-bit).
 };
 

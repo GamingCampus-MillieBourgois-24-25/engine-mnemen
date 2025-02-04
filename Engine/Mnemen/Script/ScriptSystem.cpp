@@ -7,46 +7,49 @@
 
 #include <Core/Logger.hpp>
 
-ScriptSystem::Data ScriptSystem::sData;
-
 void ScriptSystem::Init()
 {
-    WrenConfiguration config = {};
-    config.writeFn = &ScriptSystem::WriteCallback;
-    config.errorFn = &ScriptSystem::ErrorCallback;
-
-    sData.VirtualMachine = wrenNewVM(&config);
+    wrenpp::VM::writeFn = [](const char* text) {
+        LOG_INFO("[SCRIPT_LOG] {0}", text);
+    };
+    wrenpp::VM::errorFn = [](WrenErrorType type, const char* module_name, int line, const char* message) {
+        LOG_ERROR("WREN ERROR: [{0} at {1}] - {2}", module_name, line, message);
+    };
 
     LOG_INFO("Initialized Script System");
 }
 
 void ScriptSystem::Exit()
 {
-    wrenFreeVM(sData.VirtualMachine);
+    // Nothing to do, it auto cleans itself. Yay!!!
 }
 
-void ScriptSystem::Update(Scene& scene)
+void ScriptSystem::Awake(Scene& scene)
 {
+    auto registry = scene.GetRegistry();
+    auto view = registry->view<ScriptComponent>();
     
+    for (auto [entity, script] : view.each()) {
+        script.Handle.Awake();
+    }
 }
 
-void ScriptSystem::WriteCallback(WrenVM* vm, const char* text)
+void ScriptSystem::Update(Scene& scene, float dt)
 {
-    LOG_INFO("[SCRIPT] {0}", text);
+    auto registry = scene.GetRegistry();
+    auto view = registry->view<ScriptComponent>();
+    
+    for (auto [entity, script] : view.each()) {
+        script.Handle.Update(dt);
+    }
 }
 
-void ScriptSystem::ErrorCallback(WrenVM* vm, WrenErrorType errorType, const char* module, const int line, const char* msg)
+void ScriptSystem::Quit(Scene& scene)
 {
-    switch (errorType)
-    {
-        case WREN_ERROR_COMPILE: {
-            LOG_ERROR("[{0} line {1}] [Error] {2}\n", module, line, msg);
-        } break;
-        case WREN_ERROR_STACK_TRACE: {
-            LOG_ERROR("[{0} line {1}] in {2}\n", module, line, msg);
-        } break;
-        case WREN_ERROR_RUNTIME: {
-            LOG_ERROR("[Runtime Error] %s\n", msg);
-        } break;
+    auto registry = scene.GetRegistry();
+    auto view = registry->view<ScriptComponent>();
+    
+    for (auto [entity, script] : view.each()) {
+        script.Handle.Quit();
     }
 }

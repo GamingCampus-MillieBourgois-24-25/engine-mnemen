@@ -20,7 +20,7 @@ void Logger::Init()
     logSinks[0]->set_pattern("%^[%c] [%l] %v%$");
     logSinks[1]->set_pattern("[%c] [%l] %v");
 
-    sLogger = MakeRef<spdlog::logger>("FUTABA", begin(logSinks), end(logSinks));
+    sLogger = MakeRef<spdlog::logger>("MNEMEN", begin(logSinks), end(logSinks));
     spdlog::register_logger(sLogger);
     sLogger->set_level(spdlog::level::trace);
     sLogger->flush_on(spdlog::level::trace);

@@ -77,7 +77,7 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
             break;
         }
         case AssetType::Shader: {
-            LOG_DEBUG("Loading shader {0}", path);
+            LOG_INFO("Loading shader {0}", path);
 
             if (AssetCacher::IsCached(path) && true) {
                 AssetFile file = AssetCacher::ReadAsset(path);
@@ -88,6 +88,11 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
                 ShaderType type = AssetCacher::GetShaderTypeFromPath(path);
                 asset->Shader = ShaderCompiler::Compile(path, AssetCacher::GetEntryPointFromShaderType(type), type);
             }
+            break;
+        }
+        case AssetType::Script: {
+            LOG_INFO("Loading script {0}", path);
+            asset->Script.Load(path);
             break;
         }
     }

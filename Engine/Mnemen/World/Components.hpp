@@ -10,6 +10,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <Script/Script.hpp>
+
 /// @brief A component representing a transform -- the spatial representation of the object.
 struct TransformComponent
 {
@@ -60,4 +62,12 @@ struct CameraComponent
     /// @param Position The position pulled from the transform
     /// @param Rotation The rotation pulled from the transform
     void Update(glm::vec3 Position, glm::vec3 Rotation);
+};
+
+/// @brief A component holding a game script
+struct ScriptComponent
+{
+    Script Handle;
+
+    void Load(const String& path);
 };

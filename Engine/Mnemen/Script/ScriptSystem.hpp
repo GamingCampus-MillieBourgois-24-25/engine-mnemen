@@ -7,7 +7,7 @@
 
 #include "World/Scene.hpp"
 
-#include <wren.h>
+#include <Wren++/Wren++.h>
 
 class ScriptSystem
 {
@@ -15,12 +15,7 @@ public:
     static void Init();
     static void Exit();
 
-    static void Update(Scene& scene);
-private:
-    static struct Data {
-        WrenVM* VirtualMachine;
-    } sData;
-
-    static void WriteCallback(WrenVM* vm, const char* text);
-    static void ErrorCallback(WrenVM* vm, WrenErrorType errorType, const char* module, const int line, const char* msg);
+    static void Awake(Scene& scene);
+    static void Update(Scene& scene, float dt);
+    static void Quit(Scene& scene);
 };

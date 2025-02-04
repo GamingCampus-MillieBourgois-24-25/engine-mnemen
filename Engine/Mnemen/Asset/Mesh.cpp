@@ -72,8 +72,8 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
 {
     MeshPrimitive out;
 
-    std::vector<Vertex> vertices = {};
-    std::vector<UInt32> indices = {};
+    Vector<Vertex> vertices = {};
+    Vector<UInt32> indices = {};
 
     for (int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -95,10 +95,10 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
             indices.push_back(face.mIndices[j]);
     }
 
-    std::vector<meshopt_Meshlet> meshlets = {};
-    std::vector<UInt32> meshletVertices = {};
-    std::vector<Uint8> meshletTriangles = {};
-    std::vector<MeshletBounds> meshletBounds = {};
+    Vector<meshopt_Meshlet> meshlets = {};
+    Vector<UInt32> meshletVertices = {};
+    Vector<Uint8> meshletTriangles = {};
+    Vector<MeshletBounds> meshletBounds = {};
 
     const UInt64 kMaxTriangles = MAX_MESHLET_TRIANGLES;
     const UInt64 kMaxVertices = MAX_MESHLET_VERTICES;
@@ -114,7 +114,7 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
             meshlets.data(),
             meshletVertices.data(),
             meshletTriangles.data(),
-            reinterpret_cast<const uint32_t*>(indices.data()),
+            reinterpret_cast<const UInt32*>(indices.data()),
             indices.size(),
             reinterpret_cast<const float*>(vertices.data()),
             vertices.size(),
@@ -146,7 +146,7 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
     }
 
     // PUSH
-    std::vector<UInt32> meshletPrimitives;
+    Vector<UInt32> meshletPrimitives;
     for (auto& val : meshletTriangles) {
         meshletPrimitives.push_back(static_cast<UInt32>(val));
     }
@@ -186,7 +186,7 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
     aiString str;
     material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
     if (str.length) {
-        std::string texturePath = Directory + '/' + str.C_Str();
+        String texturePath = Directory + '/' + str.C_Str();
 
         meshMaterial.Albedo = AssetManager::Get(texturePath, AssetType::Texture);
         meshMaterial.AlbedoView = mRHI->CreateView(meshMaterial.Albedo->Texture, ViewType::ShaderResource);

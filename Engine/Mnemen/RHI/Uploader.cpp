@@ -30,9 +30,9 @@ void Uploader::EnqueueTextureUpload(Vector<UInt8> buffer, Ref<Resource> texture)
     request.Resource = texture;
     
     D3D12_RESOURCE_DESC desc = texture->GetResource()->GetDesc();
-    std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> footprints(desc.MipLevels);
-    std::vector<UInt32> numRows(desc.MipLevels);
-    std::vector<UInt64> rowSizes(desc.MipLevels);
+    Vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> footprints(desc.MipLevels);
+    Vector<UInt32> numRows(desc.MipLevels);
+    Vector<UInt64> rowSizes(desc.MipLevels);
     uint64_t totalSize = 0;
 
     sData.Device->GetDevice()->GetCopyableFootprints(&desc, 0, desc.MipLevels, 0, footprints.data(), numRows.data(), rowSizes.data(), &totalSize);
@@ -66,9 +66,9 @@ void Uploader::EnqueueTextureUpload(Image image, Ref<Resource> buffer)
     request.Resource = buffer;
     
     D3D12_RESOURCE_DESC desc = buffer->GetResource()->GetDesc();
-    std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> footprints(desc.MipLevels);
-    std::vector<UInt32> numRows(desc.MipLevels);
-    std::vector<UInt64> rowSizes(desc.MipLevels);
+    Vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> footprints(desc.MipLevels);
+    Vector<UInt32> numRows(desc.MipLevels);
+    Vector<UInt64> rowSizes(desc.MipLevels);
     uint64_t totalSize = 0;
 
     sData.Device->GetDevice()->GetCopyableFootprints(&desc, 0, desc.MipLevels, 0, footprints.data(), numRows.data(), rowSizes.data(), &totalSize);

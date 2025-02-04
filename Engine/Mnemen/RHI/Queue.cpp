@@ -37,7 +37,7 @@ void Queue::Signal(::Ref<Fence> fence, UInt64 value)
 
 void Queue::Submit(const Vector<::Ref<CommandBuffer>>& buffers)
 {
-    std::vector<ID3D12CommandList*> lists;
+    Vector<ID3D12CommandList*> lists;
     for (auto& buffer : buffers) {
         lists.push_back(buffer->GetList());
     }

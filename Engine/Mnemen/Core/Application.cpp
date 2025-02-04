@@ -54,8 +54,13 @@ Application::~Application()
 
 void Application::Run()
 {
+    // Flush any uploads before running
     Uploader::Flush();
     mRHI->Wait();
+
+    // Awake script system
+    ScriptSystem::Awake(mScene);
+
     while (mWindow->IsOpen()) {
         float time = mTimer.GetElapsed();
         float dt = time - mLastFrame;
@@ -76,7 +81,7 @@ void Application::Run()
         {
             AISystem::Update(mScene);
             AudioSystem::Update(mScene);
-            ScriptSystem::Update(mScene);
+            ScriptSystem::Update(mScene, dt);
             mWindow->Update();
             mScene.Update();
             OnUpdate(dt);
@@ -88,6 +93,7 @@ void Application::Run()
         }
         Input::PostUpdate();
     }
+    ScriptSystem::Quit(mScene);
     mRHI->Wait();
 }
 
