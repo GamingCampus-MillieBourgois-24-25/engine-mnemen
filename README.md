@@ -3,7 +3,7 @@
 ## Cloning this repository
 
 ```powershell
-git clone https://github.com/GamingCampus-MillieBourgois-24-25/engine-futaba --recursive
+git clone https://github.com/GamingCampus-MillieBourgois-24-25/engine-mnemen --recursive
 ```
 Make sure to use the --recursive flag, since this repository makes use of Git submodules! 
 
