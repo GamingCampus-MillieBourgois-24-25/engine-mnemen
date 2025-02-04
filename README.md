@@ -36,6 +36,10 @@ Use this simple command:
 xmake project -k vsxmake -m "debug,release,releasedbg"
 ```
 
+## Documents
+
+A wide variety of documents regarding the engine, resources, and some other things can be found in the `Documents` folder.
+
 ## Authors
 
 - Amélie Heinrich, Lead Programmer (aheinrich@gaming.tech)

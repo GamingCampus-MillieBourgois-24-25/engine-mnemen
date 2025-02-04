@@ -1,4 +1,4 @@
-# CODING STYLE
+# CODING STYLE - Amélie Heinrich
 
 Classes, member, functions and variables:
 ```cpp

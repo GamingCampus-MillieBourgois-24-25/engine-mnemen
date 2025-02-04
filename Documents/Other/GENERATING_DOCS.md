@@ -1,4 +1,4 @@
-# Generating documentation
+# GENERATING DOCUMENTATION - Amélie Heinrich
 
 To generate documentation, just run
 ```
