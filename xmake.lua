@@ -35,7 +35,14 @@ target("Mnemen")
                     "ThirdParty/PIX/include",
                     "ThirdParty/",
                     "ThirdParty/nvtt/",
-                    "ThirdParty/meshopt/src")
+                    "ThirdParty/meshopt/src",
+                    "ThirdParty/Jolt",
+                    "ThirdParty/miniaudio",
+                    "ThirdParty/Recast/Recast/Include",
+                    "ThirdParty/Recast/Detour/Include",
+                    "ThirdParty/Recast/DetourCrowd/Include",
+                    "ThirdParty/Recast/DetourTileCache/Include",
+                    "ThirdParty/Recast/DebugUtils/Include")
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
 
@@ -98,7 +105,14 @@ target("Editor")
                     "ThirdParty/ImGui/",
                     "ThirdParty/DirectX/include",
                     "ThirdParty/",
-                    "ThirdParty/nvtt/")
+                    "ThirdParty/nvtt/",
+                    "ThirdParty/Jolt",
+                    "ThirdParty/miniaudio",
+                    "ThirdParty/Recast/Recast/Include",
+                    "ThirdParty/Recast/Detour/Include",
+                    "ThirdParty/Recast/DetourCrowd/Include",
+                    "ThirdParty/Recast/DetourTileCache/Include",
+                    "ThirdParty/Recast/DebugUtils/Include")
     add_deps("Mnemen")
 
     if is_mode("debug") then
@@ -134,7 +148,14 @@ target("Runtime")
                     "ThirdParty/ImGui/",
                     "ThirdParty/DirectX/include",
                     "ThirdParty/",
-                    "ThirdParty/nvtt/")
+                    "ThirdParty/nvtt/",
+                    "ThirdParty/Jolt",
+                    "ThirdParty/miniaudio",
+                    "ThirdParty/Recast/Recast/Include",
+                    "ThirdParty/Recast/Detour/Include",
+                    "ThirdParty/Recast/DetourCrowd/Include",
+                    "ThirdParty/Recast/DetourTileCache/Include",
+                    "ThirdParty/Recast/DebugUtils/Include")
     add_deps("Mnemen")
 
     if is_mode("debug") then
