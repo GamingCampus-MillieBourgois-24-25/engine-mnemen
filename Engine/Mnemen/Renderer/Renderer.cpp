@@ -8,6 +8,9 @@
 
 #include "Passes/Forward.hpp"
 #include "Passes/Composite.hpp"
+#include "Passes/DOF.hpp"
+#include "Passes/SSAO.hpp"
+#include "Passes/ColorGrading.hpp"
 
 Renderer::Renderer(RHI::Ref rhi)
 {
@@ -15,6 +18,9 @@ Renderer::Renderer(RHI::Ref rhi)
 
     mPasses = {
         MakeRef<Forward>(rhi),
+        MakeRef<SSAO>(rhi),
+        MakeRef<DOF>(rhi),
+        MakeRef<ColorGrading>(rhi),
         MakeRef<Composite>(rhi)
     };
 }
