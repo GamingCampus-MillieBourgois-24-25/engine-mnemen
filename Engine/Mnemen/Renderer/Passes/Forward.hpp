@@ -20,5 +20,6 @@ private:
 
     Texture::Ref mDepthBuffer;
     View::Ref mDepthView;
+    Sampler::Ref mSampler;
     Array<Buffer::Ref, FRAMES_IN_FLIGHT> mCameraBuffer;
 };

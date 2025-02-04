@@ -8,6 +8,7 @@
 
 #include <meshoptimizer.h>
 
+#include <Asset/AssetManager.hpp>
 #include <RHI/Uploader.hpp>
 
 void Mesh::Load(RHI::Ref rhi, const String& path)
@@ -174,6 +175,23 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
 
     out.GeometryStructure = mRHI->CreateBLAS(out.VertexBuffer, out.IndexBuffer, out.VertexCount, out.IndexCount, node->Name + " BLAS");
 
+    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+    MeshMaterial meshMaterial = {};
+    out.MaterialIndex = Materials.size();
+
+    aiColor3D flatColor(1.0f, 1.0f, 1.0f);
+    material->Get(AI_MATKEY_COLOR_DIFFUSE, flatColor);
+    meshMaterial.MaterialColor = glm::vec3(flatColor.r, flatColor.g, flatColor.b);
+    
+    aiString str;
+    material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
+    if (str.length) {
+        std::string texturePath = Directory + '/' + str.C_Str();
+
+        meshMaterial.Albedo = AssetManager::Get(texturePath, AssetType::Texture);
+        meshMaterial.AlbedoView = mRHI->CreateView(meshMaterial.Albedo->Texture, ViewType::ShaderResource);
+    }
+
     Uploader::EnqueueBufferUpload(vertices.data(), out.VertexBuffer->GetSize(), out.VertexBuffer);
     Uploader::EnqueueBufferUpload(indices.data(), out.IndexBuffer->GetSize(), out.IndexBuffer);
     Uploader::EnqueueBufferUpload(meshlets.data(), out.MeshletBuffer->GetSize(), out.MeshletBuffer);
@@ -184,5 +202,6 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
     VertexCount += out.VertexCount;
     IndexCount += out.IndexCount;
 
+    Materials.push_back(meshMaterial);
     node->Primitives.push_back(out);
 }

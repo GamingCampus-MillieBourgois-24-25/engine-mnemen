@@ -27,6 +27,7 @@ struct CameraMatrices
 struct VertexOut
 {
     float4 Position : SV_POSITION;
+    float2 UV : TEXCOORD;
     uint MeshletIndex : COLOR0;
 };
 
@@ -39,7 +40,8 @@ struct PushConstants
     int MeshletBuffer;
     int MeshletVertices;
     int MeshletTriangleBuffer;
-    int2 Pad;
+    int AlbedoTexture;
+    int LinearSampler;
 };
 
 ConstantBuffer<PushConstants> Constants : register(b0);
@@ -55,6 +57,7 @@ VertexOut GetVertexAttributes(uint meshletIndex, uint vertexIndex)
 
     VertexOut Output = (VertexOut)0;
     Output.Position = mul(Matrices.Projection, mul(Matrices.View, pos));
+    Output.UV = v.TexCoords;
     Output.MeshletIndex = meshletIndex;
 
     return Output;

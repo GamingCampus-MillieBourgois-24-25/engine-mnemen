@@ -52,6 +52,11 @@ Forward::Forward(RHI::Ref rhi)
             mCameraBuffer[i]->BuildCBV();
         }
     }
+
+    // Sampler
+    {
+        mSampler = mRHI->CreateSampler(SamplerAddress::Wrap, SamplerFilter::Linear, true);
+    }
 }
 
 void Forward::Render(const Frame& frame, Scene& scene)
@@ -75,6 +80,8 @@ void Forward::Render(const Frame& frame, Scene& scene)
         }
         glm::mat4 globalTransform = transform * node->Transform;
         for (MeshPrimitive primitive : node->Primitives) {
+            MeshMaterial material = model->Materials[primitive.MaterialIndex];
+
             struct PushConstants {
                 int Matrices;
                 int VertexBuffer;
@@ -82,7 +89,8 @@ void Forward::Render(const Frame& frame, Scene& scene)
                 int MeshletBuffer;
                 int MeshletVertices;
                 int MeshletTriangleBuffer;
-                glm::ivec2 Skibidi;
+                int Albedo;
+                int Sampler;
             } data = {
                 mCameraBuffer[frame.FrameIndex]->CBV(),
                 primitive.VertexBuffer->SRV(),
@@ -90,7 +98,8 @@ void Forward::Render(const Frame& frame, Scene& scene)
                 primitive.MeshletBuffer->SRV(),
                 primitive.MeshletVertices->SRV(),
                 primitive.MeshletTriangles->SRV(),
-                glm::ivec2(0.0f)
+                material.AlbedoView->GetDescriptor().Index,
+                mSampler->BindlesssSampler()
             };
             frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
             frame.CommandBuffer->DispatchMesh(primitive.MeshletCount);

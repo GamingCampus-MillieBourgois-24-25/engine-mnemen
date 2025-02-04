@@ -6,6 +6,7 @@
 struct MeshInput
 {
     float4 Position : SV_POSITION;
+    float2 UV : TEXCOORD;
     uint MeshletIndex : COLOR0;
 };
 
@@ -20,10 +21,27 @@ uint hash(uint a)
     return a;
 }
 
+struct PushConstants
+{
+    int Matrices;
+    int VertexBuffer;
+    int IndexBuffer;
+    int MeshletBuffer;
+    int MeshletVertices;
+    int MeshletTriangleBuffer;
+    int AlbedoTexture;
+    int LinearSampler;
+};
+
+ConstantBuffer<PushConstants> Constants : register(b0);
+
 float4 PSMain(MeshInput input) : SV_Target
 {
-    uint meshletHash = hash(input.MeshletIndex);
-    float3 meshletColor = float3(float(meshletHash & 255), float((meshletHash >> 8) & 255), float((meshletHash >> 16) & 255)) / 255.0;
+    Texture2D<float4> albedoTexture = ResourceDescriptorHeap[Constants.AlbedoTexture];
+    SamplerState linearSampler = SamplerDescriptorHeap[Constants.LinearSampler];
 
-    return float4(meshletColor, 1.0);
+    float4 textureColor = albedoTexture.Sample(linearSampler, input.UV);
+    if (textureColor.a < 0.5)
+        discard;
+    return float4(textureColor.rgb, 1.0);
 }
