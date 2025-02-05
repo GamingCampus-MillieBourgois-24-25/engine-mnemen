@@ -67,7 +67,10 @@ struct CameraComponent
 /// @brief A component holding a game script
 struct ScriptComponent
 {
+    /// @brief The handle of the script
     Script Handle;
 
+    /// @brief Loads the script at the given path
+    /// @param path The path of the script
     void Load(const String& path);
 };

@@ -29,6 +29,7 @@ enum class QueueType
 class Queue
 {
 public:
+    /// @brief Type alias for referencing
     using Ref = Ref<Queue>;
 
     /// @brief Creates a command queue with the specified device and queue type.

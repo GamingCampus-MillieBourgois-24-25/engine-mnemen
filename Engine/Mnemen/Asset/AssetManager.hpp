@@ -45,12 +45,9 @@ struct Asset
 
     using Handle = Ref<Asset>; ///< Alias for asset pointer handle.
 
+    /// @brief Initializes the Asset
     Asset()
         : RefCount(0), Type(AssetType::None) {
-    }
-
-    ~Asset() {
-        RefCount--;
     }
 };
 
