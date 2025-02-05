@@ -6,6 +6,7 @@
 #include "ScriptSystem.hpp"
 
 #include <Core/Logger.hpp>
+#include <Core/Profiler.hpp>
 
 void ScriptSystem::Init()
 {
@@ -36,6 +37,8 @@ void ScriptSystem::Awake(Scene& scene)
 
 void ScriptSystem::Update(Scene& scene, float dt)
 {
+    PROFILE_FUNCTION();
+
     auto registry = scene.GetRegistry();
     auto view = registry->view<ScriptComponent>();
     

@@ -8,6 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <ImGui/imgui.h>
 #include <Core/Application.hpp>
+#include <Core/Profiler.hpp>
 
 Composite::Composite(RHI::Ref rhi)
     : RenderPass(rhi)
@@ -35,6 +36,8 @@ Composite::Composite(RHI::Ref rhi)
 
 void Composite::Render(const Frame& frame, Scene& scene)
 {
+    PROFILE_FUNCTION();
+
     auto hdr = RendererTools::Get("HDRColorBuffer");
     auto ldr = RendererTools::Get("LDRColorBuffer");
 

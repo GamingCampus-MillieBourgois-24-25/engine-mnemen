@@ -11,6 +11,7 @@
 #include <imgui_impl_dx12.h>
 
 #include <Core/Logger.hpp>
+#include <Core/Profiler.hpp>
 
 RHI::RHI(::Ref<Window> window)
     : mWindow(window)
@@ -44,6 +45,9 @@ RHI::RHI(::Ref<Window> window)
     ImGuiIO& IO = ImGui::GetIO();
     IO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     IO.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    IO.FontDefault = IO.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf", 15);
 
     ImGui_ImplSDL3_InitForD3D(window->GetSDLHandle());
     ImGui_ImplDX12_InitInfo initInfo = {};
@@ -109,6 +113,7 @@ void RHI::End()
 
 void RHI::Present(bool vsync)
 {
+    PROFILE_FUNCTION();
     mSurface->Present(vsync);
 }
 

@@ -77,6 +77,29 @@ constexpr Ref<T> MakeRef(Arguments&&... arguments)
     return std::make_shared<T>(std::forward<Arguments>(arguments)...);
 }
 
+/// @brief Unique pointer type alias.
+/// 
+/// A unique pointer to the type `T`.
+/// 
+/// @tparam T The type to be pointed to by the unique pointer.
+template<typename T>
+using Unique = std::unique_ptr<T>;
+
+/// @brief Creates a unique pointer of type `T` with the provided arguments.
+/// 
+/// This function creates and returns a unique pointer of type `T`, 
+/// forwarding the provided arguments to the constructor of `T`.
+/// 
+/// @tparam T The type to be pointed to by the unique pointer.
+/// @tparam Arguments The types of the arguments to forward to the constructor of `T`.
+/// @param arguments Arguments to be forwarded to the constructor of `T`.
+/// @return A unique pointer to the newly created object of type `T`.
+template<typename T, typename... Arguments>
+constexpr Unique<T> MakeUnique(Arguments&&... arguments)
+{
+    return std::make_unique<T>(std::forward<Arguments>(arguments)...);
+}
+
 /// @brief Weak pointer type alias.
 /// 
 /// A weak pointer to the type `T`, which does not affect the reference count.

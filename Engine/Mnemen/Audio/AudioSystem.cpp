@@ -6,6 +6,7 @@
 #include "AudioSystem.hpp"
 
 #include <Core/Logger.hpp>
+#include <Core/Profiler.hpp>
 
 void AudioSystem::Init()
 {
@@ -19,5 +20,5 @@ void AudioSystem::Exit()
 
 void AudioSystem::Update(Scene& scene)
 {
-    
+    PROFILE_FUNCTION();
 }

@@ -4,7 +4,9 @@
 //
 
 #include "Input.hpp"
+
 #include <Core/Logger.hpp>
+#include <Core/Profiler.hpp>
 
 Input::InputData Input::sData;
 

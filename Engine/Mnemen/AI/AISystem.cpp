@@ -6,6 +6,7 @@
 #include "AISystem.hpp"
 
 #include <Core/Logger.hpp>
+#include <Core/Profiler.hpp>
 
 void AISystem::Init()
 {
@@ -19,5 +20,5 @@ void AISystem::Exit()
 
 void AISystem::Update(Scene& scene)
 {
-    
+    PROFILE_FUNCTION();
 }

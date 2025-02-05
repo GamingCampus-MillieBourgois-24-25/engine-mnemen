@@ -5,6 +5,7 @@
 
 #include <Core/Application.hpp>
 #include <Core/Logger.hpp>
+#include <Core/Profiler.hpp>
 
 #include <Input/Input.hpp>
 #include <Asset/AssetCacher.hpp>
@@ -62,6 +63,9 @@ void Application::Run()
     ScriptSystem::Awake(mScene);
 
     while (mWindow->IsOpen()) {
+        Profiler::BeginFrame();
+        PROFILE_SCOPE("App Run");
+
         float time = mTimer.GetElapsed();
         float dt = time - mLastFrame;
         mLastFrame = time;
@@ -69,6 +73,7 @@ void Application::Run()
 
         // On Physics Update
         {
+            PROFILE_SCOPE("Physics Update");
             float minStepDuration = 1.0f / mApplicationSpecs.PhysicsRefreshRate;
             if (TO_SECONDS(mPhysicsTimer.GetElapsed()) > minStepDuration) {
                 OnPhysicsTick();
@@ -77,18 +82,25 @@ void Application::Run()
             }
         }
 
-        // Update
+        // Engine Update
         {
+            PROFILE_SCOPE("Systems Update");
+            mWindow->Update();
             AISystem::Update(mScene);
             AudioSystem::Update(mScene);
             ScriptSystem::Update(mScene, dt);
-            mWindow->Update();
             mScene.Update();
+        }
+
+        // App Update
+        {
+            PROFILE_SCOPE("App Update");
             OnUpdate(dt);
         }
         
         // Render
         {
+            PROFILE_SCOPE("Render");
             OnPrivateRender();
         }
         Input::PostUpdate();
@@ -114,6 +126,7 @@ void Application::OnPrivateRender()
         frame.CommandBuffer->SetRenderTargets({ frame.BackbufferView }, nullptr);
         frame.CommandBuffer->BeginGUI(frame.Width, frame.Height);
         OnImGui();
+        Profiler::OnUI();
         frame.CommandBuffer->EndGUI();
         frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::Present);
         frame.CommandBuffer->EndMarker();

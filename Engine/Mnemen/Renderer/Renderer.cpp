@@ -13,6 +13,7 @@
 #include "Passes/ColorGrading.hpp"
 
 #include <Core/Logger.hpp>
+#include <Core/Profiler.hpp>
 
 Renderer::Renderer(RHI::Ref rhi)
 {
@@ -36,6 +37,7 @@ Renderer::~Renderer()
 
 void Renderer::Render(const Frame& frame, Scene& scene)
 {
+    PROFILE_FUNCTION();
     for (auto& pass : mPasses) {
         pass->Render(frame, scene);
     }

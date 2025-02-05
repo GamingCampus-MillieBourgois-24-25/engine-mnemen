@@ -7,6 +7,7 @@
 
 #include <Asset/AssetManager.hpp>
 #include <Core/Application.hpp>
+#include <Core/Profiler.hpp>
 
 Forward::Forward(RHI::Ref rhi)
     : RenderPass(rhi)
@@ -72,6 +73,8 @@ Forward::Forward(RHI::Ref rhi)
 
 void Forward::Render(const Frame& frame, Scene& scene)
 {
+    PROFILE_FUNCTION();
+
     auto cameraBuffer = RendererTools::Get("CameraRingBuffer");
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
     auto depthBuffer = RendererTools::Get("MainDepthBuffer");
