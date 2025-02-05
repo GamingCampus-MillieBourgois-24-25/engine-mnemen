@@ -36,6 +36,7 @@ Application::Application(ApplicationSpecs specs)
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
     mRHI = MakeRef<RHI>(mWindow);
 
+    Profiler::Init(mRHI);
     AssetManager::Init(mRHI);
     AssetCacher::Init("Assets");
 
@@ -46,6 +47,7 @@ Application::Application(ApplicationSpecs specs)
 
 Application::~Application()
 {
+    Profiler::Exit();
     ScriptSystem::Exit();
     AISystem::Exit();
     AudioSystem::Exit();
@@ -64,8 +66,8 @@ void Application::Run()
 
     while (mWindow->IsOpen()) {
         Profiler::BeginFrame();
-        PROFILE_SCOPE("App Run");
 
+        PROFILE_SCOPE("App Run");
         float time = mTimer.GetElapsed();
         float dt = time - mLastFrame;
         mLastFrame = time;
@@ -100,7 +102,7 @@ void Application::Run()
         
         // Render
         {
-            PROFILE_SCOPE("Render");
+            PROFILE_SCOPE("CPU Render");
             OnPrivateRender();
         }
         Input::PostUpdate();
@@ -114,6 +116,8 @@ void Application::OnPrivateRender()
     Frame frame = mRHI->Begin();
     frame.CommandBuffer->Begin();
 
+    // -PROFILE_SCOPE_GPU("Main Frame", frame.CommandBuffer);
+
     // Scene render
     {
         mRenderer->Render(frame, mScene);
@@ -121,6 +125,7 @@ void Application::OnPrivateRender()
 
     // UI
     {
+        // PROFILE_SCOPE_GPU("ImGui", frame.CommandBuffer);
         frame.CommandBuffer->BeginMarker("ImGui");
         frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
         frame.CommandBuffer->SetRenderTargets({ frame.BackbufferView }, nullptr);
@@ -132,8 +137,11 @@ void Application::OnPrivateRender()
         frame.CommandBuffer->EndMarker();
     }
 
+    // Profiler::ResolveGPUQueries(frame.CommandBuffer);
     frame.CommandBuffer->End();
     mRHI->Submit({ frame.CommandBuffer });
     mRHI->End();
+    // Profiler::ReadbackGPUResults();
+
     mRHI->Present(false);
 }

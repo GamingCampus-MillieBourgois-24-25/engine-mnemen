@@ -143,6 +143,8 @@ public:
     TLAS::Ref CreateTLAS(Buffer::Ref instanceBuffer, UInt32 numInstance, const String& name = "TLAS");
 
 private:
+    friend class GPUTimer;
+
     ::Ref<Window> mWindow = nullptr; ///< The window associated with the RHI instance.
     Device::Ref mDevice = nullptr; ///< The device object representing the GPU.
     Queue::Ref mGraphicsQueue = nullptr; ///< The command queue for submitting graphics commands.

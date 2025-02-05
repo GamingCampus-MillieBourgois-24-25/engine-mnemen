@@ -16,11 +16,32 @@ ProfilerEntry::ProfilerEntry(const String& name)
     mTimer.Restart();
 }
 
+ProfilerEntry::ProfilerEntry(const String& name, CommandBuffer::Ref commandBuffer)
+    : mName(name), mFrame(Profiler::sData.CurrentFrame)
+{
+    mGPU = true;
+    mTimerIndex = Profiler::StartGPUTimer(commandBuffer);
+    mCommandBuffer = commandBuffer;
+}
+
 // Destructor automatically records elapsed time and pushes the entry
 ProfilerEntry::~ProfilerEntry()
 {
     mCPUTime = mTimer.GetElapsed();
+    if (mGPU) {
+        Profiler::StopGPUTimer(mCommandBuffer, mTimerIndex);
+    }
     Profiler::PushEntry(*this);
+}
+
+void Profiler::Init(RHI::Ref rhi)
+{
+    GPUTimer::Init(rhi);
+}
+
+void Profiler::Exit()
+{
+    GPUTimer::Exit();
 }
 
 // BeginFrame: Move to next frame
@@ -51,6 +72,29 @@ void Profiler::PushEntry(const ProfilerEntry& entry)
     sData.Entries[index] = entry;
 }
 
+UInt32 Profiler::StartGPUTimer(CommandBuffer::Ref cmdList)
+{
+    static UInt32 timerIndex = 0;
+    UInt32 index = timerIndex++ % 256;
+    GPUTimer::Start(cmdList, index);
+    return index;
+}
+
+void Profiler::StopGPUTimer(CommandBuffer::Ref cmdList, UInt32 timerIndex)
+{
+    GPUTimer::Stop(cmdList, timerIndex);
+}
+
+void Profiler::ResolveGPUQueries(CommandBuffer::Ref cmdList)
+{
+    GPUTimer::Resolve(cmdList);
+}
+
+void Profiler::ReadbackGPUResults()
+{
+    GPUTimer::Readback();
+}
+
 // ImGui UI rendering
 void Profiler::OnUI()
 {
@@ -58,7 +102,18 @@ void Profiler::OnUI()
     if (ImGui::TreeNodeEx("CPU Profiler", ImGuiTreeNodeFlags_Framed)) {
         for (UInt64 i = 0; i < sData.EntryCount; ++i) {
             const ProfilerEntry& entry = sData.Entries[i];
-            ImGui::Text("%s : %fms", entry.GetName().c_str(), entry.GetCPUTime());
+            if (!entry.IsGPU()) {
+                ImGui::Text("%s : %fms", entry.GetName().c_str(), entry.GetCPUTime());
+            }
+        }
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNodeEx("GPU Profiler", ImGuiTreeNodeFlags_Framed)) {
+        for (UInt64 i = 0; i < sData.EntryCount; ++i) {
+            const ProfilerEntry& entry = sData.Entries[i];
+            if (entry.IsGPU()) {
+                ImGui::Text("%s : %fms", entry.GetName().c_str(), entry.GetGPUTime());
+            }
         }
         ImGui::TreePop();
     }
