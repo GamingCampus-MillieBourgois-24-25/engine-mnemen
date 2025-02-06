@@ -110,6 +110,13 @@ public:
     /// @return A `Filetime` representing the last modification time of the file.
     static Filetime GetLastModified(const String& path);
 
+    /// @brief Loads a JSON file.
+    /// @param path The path of the JSON file to load.
+    /// @return The root of the JSON tree that was parsed.
     static nlohmann::json LoadJSON(const String& path);
+
+    /// @brief Writes JSON to the given file path.
+    /// @param json The JSON data to write.
+    /// @param path The path of the JSON data to write.
     static void WriteJSON(const nlohmann::json& json, const String& path);
 };
