@@ -19,6 +19,7 @@ void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
             continue;
 
         nlohmann::json entityRoot;
+        entityRoot["name"] = entity->Name;
         
         // Transform Component
         TransformComponent transform = entity->GetComponent<TransformComponent>();
