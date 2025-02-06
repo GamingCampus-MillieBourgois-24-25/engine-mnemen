@@ -35,7 +35,7 @@ Renderer::~Renderer()
     mPasses.clear();
 }
 
-void Renderer::Render(const Frame& frame, Scene& scene)
+void Renderer::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
     for (auto& pass : mPasses) {

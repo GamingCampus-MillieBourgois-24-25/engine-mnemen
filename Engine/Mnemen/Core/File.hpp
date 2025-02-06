@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 #include "Common.hpp"
 
 /// @class File
@@ -107,4 +109,7 @@ public:
     /// @param path The path of the file to check.
     /// @return A `Filetime` representing the last modification time of the file.
     static Filetime GetLastModified(const String& path);
+
+    static nlohmann::json LoadJSON(const String& path);
+    static void WriteJSON(const nlohmann::json& json, const String& path);
 };

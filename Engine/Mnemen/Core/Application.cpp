@@ -41,6 +41,7 @@ Application::Application(ApplicationSpecs specs)
     AssetCacher::Init("Assets");
 
     mRenderer = MakeRef<Renderer>(mRHI);
+    mScene = MakeRef<Scene>();
 
     LOG_INFO("Initialized Mnemen! Ready to rock 8)");
 }
@@ -91,7 +92,7 @@ void Application::Run()
             AISystem::Update(mScene);
             AudioSystem::Update(mScene);
             ScriptSystem::Update(mScene, dt);
-            mScene.Update();
+            mScene->Update();
         }
 
         // App Update

@@ -18,7 +18,7 @@ void AudioSystem::Exit()
 
 }
 
-void AudioSystem::Update(Scene& scene)
+void AudioSystem::Update(Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
 }

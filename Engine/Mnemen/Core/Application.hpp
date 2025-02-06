@@ -77,6 +77,6 @@ protected:
     RHI::Ref mRHI; ///< Rendering Hardware Interface.
     Renderer::Ref mRenderer; ///< Renderer instance.
     
-    Scene mScene; ///< Currently active scene.
+    Ref<Scene> mScene; ///< Currently active scene.
 };
 
