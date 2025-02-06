@@ -11,6 +11,8 @@
 #include <Asset/AssetCacher.hpp>
 #include <Asset/AssetManager.hpp>
 
+#include <World/SceneSerializer.hpp>
+
 #include <RHI/Uploader.hpp>
 #include <Renderer/RendererTools.hpp>
 
@@ -41,7 +43,11 @@ Application::Application(ApplicationSpecs specs)
     AssetCacher::Init("Assets");
 
     mRenderer = MakeRef<Renderer>(mRHI);
-    mScene = MakeRef<Scene>();
+    if (specs.StartScene.empty()) {
+        mScene = MakeRef<Scene>();
+    } else {
+        mScene = SceneSerializer::DeserializeScene(specs.StartScene);
+    }
 
     LOG_INFO("Initialized Mnemen! Ready to rock 8)");
 }

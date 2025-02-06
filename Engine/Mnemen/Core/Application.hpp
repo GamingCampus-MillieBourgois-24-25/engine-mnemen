@@ -23,6 +23,7 @@ struct ApplicationSpecs
 
     String GameName; ///< Name of the game/application.
     String WindowTitle; ///< Title displayed on the game window.
+    String StartScene; ///< The path of the start scene. If empty, will create an empty scene.
 };
 
 /// @class Application

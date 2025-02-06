@@ -14,14 +14,6 @@ Editor::Editor(ApplicationSpecs specs)
     mCameraEntity->Private = true;
     auto& cam = mCameraEntity->AddComponent<CameraComponent>();
     cam.Primary = true;
-
-    mSponza = mScene->AddEntity("Sponza");
-
-    auto& mesh = mSponza->AddComponent<MeshComponent>();
-    mesh.Init("Assets/Models/Sponza/Sponza.gltf");
-
-    auto& script = mSponza->AddComponent<ScriptComponent>();
-    script.Load("Assets/Scripts/Hello.wren");
 }
 
 Editor::~Editor()

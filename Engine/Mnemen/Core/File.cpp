@@ -182,7 +182,7 @@ nlohmann::json File::LoadJSON(const String& path)
         LOG_ERROR("Failed to open JSON file {0}", path);
         return {};
     }
-    nlohmann::json root = nlohmann::json::parse(path);
+    nlohmann::json root = nlohmann::json::parse(stream);
     stream.close();
     return root;
 }

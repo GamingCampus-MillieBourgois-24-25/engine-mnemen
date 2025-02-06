@@ -61,3 +61,56 @@ void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
 
     File::WriteJSON(root, path);
 }
+
+Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
+{
+    nlohmann::json root = File::LoadJSON(path);
+
+    Ref<Scene> scene = MakeRef<Scene>();
+
+    auto entityArray = root["entities"];
+    for (auto& jsonEntity : entityArray) {
+        Entity* entity = scene->AddEntity(jsonEntity["name"]);
+
+        TransformComponent& component = entity->GetComponent<TransformComponent>();
+        component.Position.x = jsonEntity["position"][0];
+        component.Position.y = jsonEntity["position"][1];
+        component.Position.z = jsonEntity["position"][2];
+        component.Rotation.x = jsonEntity["rotation"][0];
+        component.Rotation.y = jsonEntity["rotation"][1];
+        component.Rotation.z = jsonEntity["rotation"][2];
+        component.Scale.x = jsonEntity["scale"][0];
+        component.Scale.y = jsonEntity["scale"][1];
+        component.Scale.z = jsonEntity["scale"][2];
+        component.Update();
+
+        // Has mesh?
+        bool hasMesh = jsonEntity["hasMesh"].get<bool>();
+        if (hasMesh) {
+            auto& mesh = entity->AddComponent<MeshComponent>();
+            mesh.Init(jsonEntity["meshPath"]);
+        }
+
+        // Has camera?
+        bool hasCamera = jsonEntity["hasCamera"].get<bool>();
+        if (hasCamera) {
+            auto& camera = entity->AddComponent<CameraComponent>();
+            camera.Primary = jsonEntity["cameraPrimary"].get<bool>();
+            camera.FOV = jsonEntity["cameraFOV"].get<float>();
+            camera.Near = jsonEntity["cameraNear"].get<float>();
+            camera.Far = jsonEntity["cameraFar"].get<float>();
+            camera.AspectRatio = jsonEntity["cameraAspectRatio"].get<float>();
+            camera.Update(component.Position, component.Rotation);
+        }
+
+        // Has script?
+        bool hasScript = jsonEntity["hasScript"].get<bool>();
+        if (hasScript) {
+            auto& script = entity->AddComponent<ScriptComponent>();
+            script.Path = jsonEntity["scriptPath"];
+            script.Handle.SetSource(AssetManager::Get(script.Path, AssetType::Script));
+        }
+    }
+
+    return scene;
+}
