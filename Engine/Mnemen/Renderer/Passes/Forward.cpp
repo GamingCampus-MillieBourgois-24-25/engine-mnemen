@@ -71,7 +71,7 @@ Forward::Forward(RHI::Ref rhi)
     RendererTools::CreateSharedSampler("MaterialSampler", SamplerFilter::Linear, SamplerAddress::Wrap, true);
 }
 
-void Forward::Render(const Frame& frame, Scene& scene)
+void Forward::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
 
@@ -80,7 +80,7 @@ void Forward::Render(const Frame& frame, Scene& scene)
     auto depthBuffer = RendererTools::Get("MainDepthBuffer");
     auto sampler = RendererTools::Get("MaterialSampler");
 
-    SceneCamera camera = scene.GetMainCamera();
+    SceneCamera camera = scene->GetMainCamera();
     cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(&camera, sizeof(camera));
 
     frame.CommandBuffer->BeginMarker("Forward");
@@ -131,7 +131,7 @@ void Forward::Render(const Frame& frame, Scene& scene)
     };
 
     // Iterate over every mesh. This is messy as hell but fuck it
-    auto registry = scene.GetRegistry();
+    auto registry = scene->GetRegistry();
     auto view = registry->view<TransformComponent, MeshComponent>();
     for (auto [entity, transform, mesh]: view.each()) {
         drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, transform.Matrix);

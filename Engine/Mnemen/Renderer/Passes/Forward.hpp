@@ -38,7 +38,7 @@ public:
     /// 
     /// @param frame The frame data that includes rendering parameters.
     /// @param scene The scene to be rendered.
-    void Render(const Frame& frame, Scene& scene) override;
+    void Render(const Frame& frame, ::Ref<Scene> scene) override;
 
     /// @brief Renders the user interface for configuring forward pass settings.
     /// 

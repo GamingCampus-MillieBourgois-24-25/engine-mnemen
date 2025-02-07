@@ -23,6 +23,7 @@ struct ApplicationSpecs
 
     String GameName; ///< Name of the game/application.
     String WindowTitle; ///< Title displayed on the game window.
+    String StartScene; ///< The path of the start scene. If empty, will create an empty scene.
 };
 
 /// @class Application
@@ -77,6 +78,8 @@ protected:
     RHI::Ref mRHI; ///< Rendering Hardware Interface.
     Renderer::Ref mRenderer; ///< Renderer instance.
     
-    Scene mScene; ///< Currently active scene.
+    Ref<Scene> mScene; ///< Currently active scene.
+
+    bool mUIFocused; ///< Whether or not UI elements are focused.
 };
 

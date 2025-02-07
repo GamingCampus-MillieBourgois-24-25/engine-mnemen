@@ -6,6 +6,7 @@
 #include "Renderer.hpp"
 #include "RendererTools.hpp"
 
+#include "Passes/Deferred.hpp"
 #include "Passes/Forward.hpp"
 #include "Passes/Composite.hpp"
 #include "Passes/DOF.hpp"
@@ -15,12 +16,14 @@
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
 
+#include <imgui.h>
+
 Renderer::Renderer(RHI::Ref rhi)
 {
     RendererTools::Init(rhi);
 
     mPasses = {
-        MakeRef<Forward>(rhi),
+        MakeRef<Deferred>(rhi),
         MakeRef<SSAO>(rhi),
         MakeRef<DOF>(rhi),
         MakeRef<ColorGrading>(rhi),
@@ -35,7 +38,7 @@ Renderer::~Renderer()
     mPasses.clear();
 }
 
-void Renderer::Render(const Frame& frame, Scene& scene)
+void Renderer::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
     for (auto& pass : mPasses) {
@@ -45,5 +48,9 @@ void Renderer::Render(const Frame& frame, Scene& scene)
 
 void Renderer::UI(const Frame& frame)
 {
-    
+    ImGui::Begin("Renderer");
+    for (auto& pass : mPasses) {
+        pass->UI(frame);
+    }
+    ImGui::End();
 }

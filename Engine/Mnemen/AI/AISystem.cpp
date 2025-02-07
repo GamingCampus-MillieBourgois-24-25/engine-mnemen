@@ -18,7 +18,7 @@ void AISystem::Exit()
 
 }
 
-void AISystem::Update(Scene& scene)
+void AISystem::Update(Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
 }

@@ -19,6 +19,8 @@ struct Entity
     String Name;
     /// @brief The parent entt registry
     entt::registry* ParentRegistry;
+    /// @brief If this is set to true, it will not be serialized or shown in the editor
+    bool Private = false;
 
     /// @brief Constructor -- sets the parent registry as well
     /// @param registry The parent registry the entity was created from

@@ -41,7 +41,7 @@ public:
     /// 
     /// @param frame The frame data that includes rendering parameters.
     /// @param scene The scene to be rendered, which contains all the objects and data for rendering.
-    void Render(const Frame& frame, Scene& scene);
+    void Render(const Frame& frame, ::Ref<Scene> scene);
 
     /// @brief Renders the user interface for the specified frame.
     /// 

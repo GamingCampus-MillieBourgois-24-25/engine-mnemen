@@ -12,6 +12,7 @@ int main()
     specs.Height = 1080;
     specs.WindowTitle = "MNEMEN EDITOR";
     specs.GameName = "MnmEditor";
+    specs.StartScene = "Assets/Scenes/Test.json";
 
     Editor editor(specs);
     editor.Run();
