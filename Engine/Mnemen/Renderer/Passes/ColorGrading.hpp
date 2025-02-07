@@ -17,8 +17,10 @@ class ColorGrading : public RenderPass
 public:
     ColorGrading(RHI::Ref rhi);
     ~ColorGrading() = default;
-
+   
     void Bake(::Ref<Scene> scene) {}
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
     void UI(const Frame& frame) override;
+private:
+    ComputePipeline::Ref mPipeline;
 };

@@ -7,6 +7,7 @@ struct PushConstants {
   int TextureIndex; 
   float Brightness;   
   float Exposure;
+  float Pad;
 };
 
 ConstantBuffer<PushConstants> Settings : register(b0);
@@ -15,8 +16,8 @@ ConstantBuffer<PushConstants> Settings : register(b0);
 void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
     RWTexture2D<float4> Texture = ResourceDescriptorHeap[Settings.TextureIndex]; 
-    Color = Texture[ThreadID.xy];
-
+    
+    float4 Color = Texture[ThreadID.xy];
     Color *= Settings.Brightness; 
     Color = pow(Color, Settings.Exposure); 
     Texture[ThreadID.xy] = Color;
