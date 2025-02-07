@@ -18,21 +18,28 @@ DOF::DOF(RHI::Ref rhi)
 void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     auto color = RendererTools::Get("HDRColorBuffer");
+    auto depth = RendererTools::Get("GBufferDepth");
 
     struct {
         int Output;
-        glm::vec3 Pad;
+        int DepthIndex;
+        float Far;
+        float Pad;
     } PushConstants = {
         color->Descriptor(ViewType::Storage),
-        glm::vec3(0)
+        depth->Descriptor(ViewType::ShaderResource),
+        200.0f,
+        0.0f
     };
 
     frame.CommandBuffer->BeginMarker("Box Blur");
     frame.CommandBuffer->Barrier(color->Texture, ResourceLayout::Storage);
+    frame.CommandBuffer->Barrier(depth->Texture, ResourceLayout::Shader);
     frame.CommandBuffer->SetComputePipeline(mPipeline);
     frame.CommandBuffer->ComputePushConstants(&PushConstants, sizeof(PushConstants), 0);
     frame.CommandBuffer->Dispatch(frame.Width / 8, frame.Height / 8, 1);
-    frame.CommandBuffer->Barrier(color ->Texture, ResourceLayout::Common);
+    frame.CommandBuffer->Barrier(color->Texture, ResourceLayout::Common);
+    frame.CommandBuffer->Barrier(depth->Texture, ResourceLayout::Common);
     frame.CommandBuffer->EndMarker();
 }
 
