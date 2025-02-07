@@ -56,5 +56,7 @@ public:
 private:
     ComputePipeline::Ref mPipeline; ///< A reference to the compute pipeline used for the composite pass.
     RootSignature::Ref mSignature;  ///< A reference to the root signature for the composite pass.
+
+    float mGamma = 2.2f;
 };
 

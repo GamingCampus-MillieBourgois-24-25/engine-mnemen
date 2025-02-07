@@ -21,6 +21,8 @@
 #include <AI/AISystem.hpp>
 #include <Script/ScriptSystem.hpp>
 
+#include <imgui.h>
+
 Application* Application::sInstance;
 
 Application::Application(ApplicationSpecs specs)
@@ -137,8 +139,14 @@ void Application::OnPrivateRender()
         frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
         frame.CommandBuffer->SetRenderTargets({ frame.BackbufferView }, nullptr);
         frame.CommandBuffer->BeginGUI(frame.Width, frame.Height);
+        
         OnImGui();
         Profiler::OnUI();
+        mRenderer->UI(frame);
+
+        ImGuiIO& io = ImGui::GetIO();
+        mUIFocused = io.WantCaptureMouse || io.WantCaptureKeyboard;
+
         frame.CommandBuffer->EndGUI();
         frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::Present);
         frame.CommandBuffer->EndMarker();
