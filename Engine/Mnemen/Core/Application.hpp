@@ -79,5 +79,7 @@ protected:
     Renderer::Ref mRenderer; ///< Renderer instance.
     
     Ref<Scene> mScene; ///< Currently active scene.
+
+    bool mUIFocused; ///< Whether or not UI elements are focused.
 };
 

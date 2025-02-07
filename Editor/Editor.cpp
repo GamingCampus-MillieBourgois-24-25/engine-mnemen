@@ -26,7 +26,8 @@ void Editor::OnUpdate(float dt)
     int width, height;
     mWindow->PollSize(width, height);
 
-    mCamera.Update(dt, width, height);
+    if (!mUIFocused)
+        mCamera.Update(dt, width, height);
 
     auto& cam = mCameraEntity->GetComponent<CameraComponent>();
     cam.Primary = true;
