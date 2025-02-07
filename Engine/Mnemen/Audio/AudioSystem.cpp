@@ -10,6 +10,8 @@
 
 void AudioSystem::Init()
 {
+    // haiii!!
+
     LOG_INFO("Initialized Audio system");
 }
 
