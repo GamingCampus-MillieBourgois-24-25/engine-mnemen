@@ -44,7 +44,7 @@ public:
     /// 
     /// @param frame The current frame that holds information such as time and buffers.
     /// @param scene The scene to be rendered during this pass.
-    virtual void Render(const Frame& frame, Scene& scene) = 0;
+    virtual void Render(const Frame& frame, ::Ref<Scene> scene) = 0;
 
     /// @brief Handles the UI rendering for this render pass.
     /// 

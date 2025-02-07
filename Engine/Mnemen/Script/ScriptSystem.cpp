@@ -25,9 +25,9 @@ void ScriptSystem::Exit()
     // Nothing to do, it auto cleans itself. Yay!!!
 }
 
-void ScriptSystem::Awake(Scene& scene)
+void ScriptSystem::Awake(Ref<Scene> scene)
 {
-    auto registry = scene.GetRegistry();
+    auto registry = scene->GetRegistry();
     auto view = registry->view<ScriptComponent>();
     
     for (auto [entity, script] : view.each()) {
@@ -35,11 +35,11 @@ void ScriptSystem::Awake(Scene& scene)
     }
 }
 
-void ScriptSystem::Update(Scene& scene, float dt)
+void ScriptSystem::Update(Ref<Scene> scene, float dt)
 {
     PROFILE_FUNCTION();
 
-    auto registry = scene.GetRegistry();
+    auto registry = scene->GetRegistry();
     auto view = registry->view<ScriptComponent>();
     
     for (auto [entity, script] : view.each()) {
@@ -47,9 +47,9 @@ void ScriptSystem::Update(Scene& scene, float dt)
     }
 }
 
-void ScriptSystem::Quit(Scene& scene)
+void ScriptSystem::Quit(Ref<Scene> scene)
 {
-    auto registry = scene.GetRegistry();
+    auto registry = scene->GetRegistry();
     auto view = registry->view<ScriptComponent>();
     
     for (auto [entity, script] : view.each()) {

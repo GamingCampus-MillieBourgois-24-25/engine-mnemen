@@ -24,5 +24,5 @@ public:
     /// @brief Updates the AI system for the given scene.
     /// 
     /// @param scene The scene to update AI components in.
-    static void Update(Scene& scene);
+    static void Update(Ref<Scene> scene);
 };

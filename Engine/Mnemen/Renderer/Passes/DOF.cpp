@@ -11,7 +11,7 @@ DOF::DOF(RHI::Ref rhi)
     // Axel
 }
 
-void DOF::Render(const Frame& frame, Scene& scene)
+void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     // Axel
 }

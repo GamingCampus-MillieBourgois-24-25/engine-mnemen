@@ -34,5 +34,5 @@ public:
     /// 
     /// @param scene The scene object that provides the current state of entities for physics processing.
     /// @param minStepDuration The minimum duration (in seconds) of a physics simulation step.
-    static void Update(Scene& scene, float minStepDuration);
+    static void Update(Ref<Scene> scene, float minStepDuration);
 };

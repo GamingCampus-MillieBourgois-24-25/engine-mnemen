@@ -36,7 +36,7 @@ public:
     /// preprocessing steps necessary for combining the rendered elements into a final output.
     /// 
     /// @param scene The scene to bake the composite pass into.
-    void Bake(Scene& scene);
+    void Bake(::Ref<Scene> scene) {}
 
     /// @brief Executes the composite render pass for a given frame and scene.
     /// 
@@ -44,7 +44,7 @@ public:
     /// 
     /// @param frame The frame data that includes rendering parameters.
     /// @param scene The scene to apply the composite render pass to.
-    void Render(const Frame& frame, Scene& scene) override;
+    void Render(const Frame& frame, ::Ref<Scene> scene) override;
 
     /// @brief Renders the user interface for configuring composite settings.
     /// 

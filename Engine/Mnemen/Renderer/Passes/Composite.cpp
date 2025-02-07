@@ -34,7 +34,7 @@ Composite::Composite(RHI::Ref rhi)
     ldr->AddView(ViewType::Storage);
 }
 
-void Composite::Render(const Frame& frame, Scene& scene)
+void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
 
