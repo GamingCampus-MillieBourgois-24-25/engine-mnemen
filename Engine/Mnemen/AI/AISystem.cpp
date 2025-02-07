@@ -10,6 +10,9 @@
 
 void AISystem::Init()
 {
+    // Hiiii it's Jonathan!! :333
+    // haiiii
+
     LOG_INFO("Initialized AI system");
 }
 
