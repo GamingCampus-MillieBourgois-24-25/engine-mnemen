@@ -11,7 +11,7 @@ ColorGrading::ColorGrading(RHI::Ref rhi)
     // Coralie
 }
 
-void ColorGrading::Render(const Frame& frame, Scene& scene)
+void ColorGrading::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     // Coralie
 }

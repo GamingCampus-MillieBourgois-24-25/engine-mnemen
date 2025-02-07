@@ -7,5 +7,6 @@
 
 void ScriptComponent::Load(const String& path)
 {
+    Path = path;
     Handle.SetSource(AssetManager::Get(path, AssetType::Script));
 }

@@ -67,6 +67,9 @@ struct CameraComponent
 /// @brief A component holding a game script
 struct ScriptComponent
 {
+    /// @brief The path of the script
+    String Path;
+
     /// @brief The handle of the script
     Script Handle;
 

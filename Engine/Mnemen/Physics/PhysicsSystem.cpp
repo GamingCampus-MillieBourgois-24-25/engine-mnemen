@@ -17,7 +17,7 @@ void PhysicsSystem::Exit()
 
 }
 
-void PhysicsSystem::Update(Scene& scene, float minStepDuration)
+void PhysicsSystem::Update(Ref<Scene> scene, float minStepDuration)
 {
     
 }

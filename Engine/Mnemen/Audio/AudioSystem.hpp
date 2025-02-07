@@ -32,5 +32,5 @@ public:
     /// given scene. It can be called every frame to keep audio in sync with game events.
     /// 
     /// @param scene The scene object that provides the current state for audio processing.
-    static void Update(Scene& scene);
+    static void Update(Ref<Scene> scene);
 };

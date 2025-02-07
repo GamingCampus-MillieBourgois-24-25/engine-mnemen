@@ -174,3 +174,25 @@ File::Filetime File::GetLastModified(const String& path)
     result.Low = temp.dwLowDateTime;
     return result;
 }
+
+nlohmann::json File::LoadJSON(const String& path)
+{
+    std::ifstream stream(path);
+    if (!stream.is_open()) {
+        LOG_ERROR("Failed to open JSON file {0}", path);
+        return {};
+    }
+    nlohmann::json root = nlohmann::json::parse(stream);
+    stream.close();
+    return root;
+}
+
+void File::WriteJSON(const nlohmann::json& json, const String& path)
+{
+    std::ofstream stream(path);
+    if (!stream.is_open()) {
+        LOG_ERROR("Failed to open JSON file {0} for writing!", path);
+    }
+    stream << json.dump(4) << std::endl;
+    stream.close();
+}
