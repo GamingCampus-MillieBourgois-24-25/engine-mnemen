@@ -27,6 +27,9 @@ public:
     /// playback and cleaning up.
     static void Exit();
 
+    static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+    static void SetVolume(float newVolume);
+
     /// @brief Updates the audio system based on the current scene.
     /// 
     /// This method processes any audio updates needed based on the current state of the 
@@ -35,5 +38,10 @@ public:
     /// @param scene The scene object that provides the current state for audio processing.
     static void Update(Ref<Scene> scene);
 
-    static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+private:
+    static ma_result result;
+    static ma_decoder decoder;
+    static ma_device_config deviceConfig;
+    static ma_device device;
+    static float volume;
 };
