@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "../ThirdParty/miniaudio/miniaudio.h"
 #include "World/Scene.hpp"
 
 /// @brief A system for managing audio in the application.
@@ -18,7 +19,7 @@ public:
     /// @brief Initializes the audio system.
     /// 
     /// This method sets up the necessary resources for the audio system, like configuring the audio playback system.
-    static void Init();
+    static void Init(const char *pathAudio);
 
     /// @brief Shuts down the audio system.
     /// 
@@ -33,4 +34,6 @@ public:
     /// 
     /// @param scene The scene object that provides the current state for audio processing.
     static void Update(Ref<Scene> scene);
+
+    static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 };
