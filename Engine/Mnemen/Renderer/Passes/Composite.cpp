@@ -34,7 +34,7 @@ Composite::Composite(RHI::Ref rhi)
     ldr->AddView(ViewType::Storage);
 }
 
-void Composite::Render(const Frame& frame, Scene& scene)
+void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
 
@@ -51,7 +51,7 @@ void Composite::Render(const Frame& frame, Scene& scene)
     } PushConstants = {
         hdr->Descriptor(ViewType::ShaderResource),
         ldr->Descriptor(ViewType::Storage),
-        2.2,
+        mGamma,
         0
     };
 
@@ -82,5 +82,8 @@ void Composite::Render(const Frame& frame, Scene& scene)
 
 void Composite::UI(const Frame& frame)
 {
-
+    if (ImGui::TreeNodeEx("Composite", ImGuiTreeNodeFlags_Framed)) {
+        ImGui::SliderFloat("Gamma", &mGamma, 0.1f, 10.0f);
+        ImGui::TreePop();
+    }
 }

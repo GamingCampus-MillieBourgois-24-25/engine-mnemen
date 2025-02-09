@@ -11,7 +11,7 @@ SSAO::SSAO(RHI::Ref rhi)
     // Alex
 }
 
-void SSAO::Render(const Frame& frame, Scene& scene)
+void SSAO::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     // Alex
 }

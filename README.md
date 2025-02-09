@@ -59,6 +59,7 @@ A wide variety of documents regarding the engine, resources, and some other thin
 - GLM
 - ImGui
 - Jolt
+- JSON
 - MeshOptimizer
 - MiniAudio
 - NVTT
@@ -68,3 +69,4 @@ A wide variety of documents regarding the engine, resources, and some other thin
 - spdlog
 - STB
 - Wren
+- Wren++
