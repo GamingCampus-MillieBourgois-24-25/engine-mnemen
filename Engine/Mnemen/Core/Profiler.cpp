@@ -6,6 +6,7 @@
 #include "Profiler.hpp"
 
 #include <imgui.h>
+#include <RHI/Uploader.hpp>
 
 Profiler::Data Profiler::sData = {};
 
@@ -41,6 +42,8 @@ void Profiler::Init(RHI::Ref rhi)
 
 void Profiler::Exit()
 {
+    sData.EntryCount = 0;
+    sData.Resources.clear();
     GPUTimer::Exit();
 }
 
@@ -95,6 +98,24 @@ void Profiler::ReadbackGPUResults()
     GPUTimer::Readback();
 }
 
+Util::UUID Profiler::PushResource(UInt64 size, String Name)
+{
+    Util::UUID uuid = Util::NewUUID();
+    sData.Resources[uuid] = {
+        size, Name
+    };
+    return uuid;
+}
+
+void Profiler::PopResource(Util::UUID id)
+{
+    if (sData.Resources.empty())
+        return;
+    if (sData.Resources.count(id) == 0)
+        return;
+    sData.Resources.erase(id);
+}
+
 // ImGui UI rendering
 void Profiler::OnUI()
 {
@@ -114,6 +135,19 @@ void Profiler::OnUI()
             if (entry.IsGPU()) {
                 ImGui::Text("%s : %fms", entry.GetName().c_str(), entry.GetGPUTime());
             }
+        }
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNodeEx("Resource Tree", ImGuiTreeNodeFlags_Framed)) {
+        for (auto& item : sData.Resources) {
+            Util::UUID uuid = item.first;
+            ProfiledResource resource = item.second;
+            ImGui::PushID((UInt64)uuid);
+            if (ImGui::TreeNode(resource.Name.c_str())) {
+                ImGui::Text("Size: %fmb", (float)(resource.Size / 1024.0f / 1024.0f));
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
         }
         ImGui::TreePop();
     }

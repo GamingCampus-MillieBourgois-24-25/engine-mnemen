@@ -8,6 +8,7 @@
 
 #include <Core/UTF.hpp>
 #include <Core/Assert.hpp>
+#include <Core/Profiler.hpp>
 
 Resource::Resource(Device::Ref device)
     : mParentDevice(device), mResource(nullptr), mLayout(ResourceLayout::Common)
@@ -18,13 +19,16 @@ Resource::~Resource()
 {
     if (mShouldFree) {
         D3DUtils::Release(mResource);
-    }   
+    }
+    Profiler::PopResource(mUUID);
 }
 
 void Resource::SetName(const String& string)
 {
     mName = string;
     mResource->SetName(UTF::AsciiToWide(string).data());
+
+    mUUID = Profiler::PushResource(mAllocSize, mName);
 }
 
 void Resource::Tag(ResourceTag tag)

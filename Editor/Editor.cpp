@@ -41,8 +41,11 @@ void Editor::OnPhysicsTick()
 
 }
 
-void Editor::OnImGui()
+void Editor::OnImGui(const Frame& frame)
 {
+    Profiler::OnUI();
+    mRenderer->UI(frame);
+
     ImGui::Begin("Debug Window");
     if (ImGui::Button("Save Test Scene")) {
         SceneSerializer::SerializeScene(mScene, "Assets/Scenes/Test.json");

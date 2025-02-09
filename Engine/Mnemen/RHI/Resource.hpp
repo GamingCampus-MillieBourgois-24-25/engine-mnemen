@@ -6,6 +6,7 @@
 #pragma once
 
 #include <RHI/Device.hpp>
+#include <Utility/UUID.hpp>
 
 /// @brief Represents the possible resource layouts/states in Direct3D 12.
 enum class ResourceLayout
@@ -117,4 +118,5 @@ protected:
 
 private:
     UInt64 mAllocSize; ///< The total allocated size of the resource (may include padding).
+    Util::UUID mUUID;
 };

@@ -7,6 +7,7 @@
 
 #include <Core/Common.hpp>
 #include <Core/Timer.hpp>
+#include <Utility/UUID.hpp>
 
 #include <RHI/CommandBuffer.hpp>
 #include <RHI/GPUTimer.hpp>
@@ -66,6 +67,15 @@ private:
     CommandBuffer::Ref mCommandBuffer; ///< Associated command buffer for GPU profiling.
 };
 
+/// @brief A resource displayed by the profiler
+struct ProfiledResource
+{
+    /// @brief The size of the resource
+    UInt64 Size;
+    /// @brief The name of the resource
+    String Name;
+};
+
 /// @class Profiler
 /// @brief Manages CPU and GPU profiling entries, including GPU timing queries.
 class Profiler
@@ -105,6 +115,11 @@ public:
     /// @brief Reads back GPU timing results for processing.
     static void ReadbackGPUResults();
 
+    /// @brief Pushes a resource in the render list
+    static Util::UUID PushResource(UInt64 size, String Name);
+
+    /// @brief Pops a resource in the render list
+    static void PopResource(Util::UUID id);
 private:
     friend class ProfilerEntry;
 
@@ -113,6 +128,7 @@ private:
         ProfilerEntry Entries[MAX_PROFILER_ENTRIES]; ///< Array of profiling entries.
         UInt64 EntryCount = 0; ///< Number of active profiling entries.
         UInt64 CurrentFrame = 0; ///< Current frame index.
+        UnorderedMap<Util::UUID, ProfiledResource> Resources; ///< List of profiled resources
     };
 
     static Data sData; ///< Static instance of profiler data.
