@@ -67,13 +67,24 @@ struct CameraComponent
 /// @brief A component holding a game script
 struct ScriptComponent
 {
-    /// @brief The path of the script
-    String Path;
+    /// @brief An instance of a script
+    struct Instance
+    {
+        /// @brief The path of the script
+        String Path;
+        /// @brief The handle of the script
+        Script Handle;
 
-    /// @brief The handle of the script
-    Script Handle;
+        /// @brief Default constructor
+        Instance() = default;
+        /// @brief Default destructor
+        ~Instance() = default;
+    };
 
-    /// @brief Loads the script at the given path
+    /// @brief All attached instances of the script
+    Vector<Ref<Instance>> Instances;
+
+    /// @brief Pushes a script from the given path
     /// @param path The path of the script
-    void Load(const String& path);
+    void PushScript(const String& path);
 };

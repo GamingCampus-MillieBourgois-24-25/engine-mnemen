@@ -5,8 +5,10 @@
 
 #include "Components.hpp"
 
-void ScriptComponent::Load(const String& path)
+void ScriptComponent::PushScript(const String& path)
 {
-    Path = path;
-    Handle.SetSource(AssetManager::Get(path, AssetType::Script));
+    Ref<Instance> instance = MakeRef<Instance>();
+    instance->Path = path;
+    instance->Handle.SetSource(AssetManager::Get(path, AssetType::Script));
+    Instances.push_back(instance);
 }

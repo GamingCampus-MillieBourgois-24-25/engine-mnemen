@@ -31,7 +31,9 @@ void ScriptSystem::Awake(Ref<Scene> scene)
     auto view = registry->view<ScriptComponent>();
     
     for (auto [entity, script] : view.each()) {
-        script.Handle.Awake();
+        for (auto instance : script.Instances) {
+            instance->Handle.Awake();
+        }
     }
 }
 
@@ -43,7 +45,9 @@ void ScriptSystem::Update(Ref<Scene> scene, float dt)
     auto view = registry->view<ScriptComponent>();
     
     for (auto [entity, script] : view.each()) {
-        script.Handle.Update(dt);
+        for (auto instance : script.Instances) {
+            instance->Handle.Update(dt);
+        }
     }
 }
 
@@ -53,6 +57,8 @@ void ScriptSystem::Quit(Ref<Scene> scene)
     auto view = registry->view<ScriptComponent>();
     
     for (auto [entity, script] : view.each()) {
-        script.Handle.Quit();
+        for (auto instance : script.Instances) {
+            instance->Handle.Quit();
+        }
     }
 }

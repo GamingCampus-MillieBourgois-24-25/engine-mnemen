@@ -12,6 +12,7 @@ Editor::Editor(ApplicationSpecs specs)
 {
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity->Private = true;
+    
     auto& cam = mCameraEntity->AddComponent<CameraComponent>();
     cam.Primary = true;
 }
