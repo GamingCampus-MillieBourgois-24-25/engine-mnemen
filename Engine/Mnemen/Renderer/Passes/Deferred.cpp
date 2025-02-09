@@ -8,6 +8,7 @@
 #include <Asset/AssetManager.hpp>
 #include <Core/Application.hpp>
 #include <Core/Profiler.hpp>
+#include <Core/Statistics.hpp>
 
 Deferred::Deferred(RHI::Ref rhi)
     : RenderPass(rhi)
@@ -150,6 +151,7 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
             }
             glm::mat4 globalTransform = transform * node->Transform;
             for (MeshPrimitive primitive : node->Primitives) {
+                Statistics::Get().InstanceCount++;
                 MeshMaterial material = model->Materials[primitive.MaterialIndex];
 
                 struct PushConstants {
@@ -172,7 +174,7 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
                     sampler->Descriptor()
                 };
                 frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
-                frame.CommandBuffer->DispatchMesh(primitive.MeshletCount);
+                frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);
             }
             if (!node->Children.empty()) {
                 for (MeshNode* child : node->Children) {

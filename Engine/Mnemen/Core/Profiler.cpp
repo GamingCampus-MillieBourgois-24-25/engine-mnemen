@@ -5,8 +5,11 @@
 
 #include "Profiler.hpp"
 
-#include <imgui.h>
 #include <RHI/Uploader.hpp>
+#include <Core/Statistics.hpp>
+
+#include <sstream>
+#include <imgui.h>
 
 Profiler::Data Profiler::sData = {};
 
@@ -124,21 +127,57 @@ void Profiler::PopResource(Util::UUID id)
 // ImGui UI rendering
 void Profiler::OnUI()
 {
+    Statistics::Update();
+
     ImGui::Begin("Profiler");
+    if (ImGui::TreeNodeEx("Statistics", ImGuiTreeNodeFlags_Framed)) {
+        ImGui::Text("Instance Count : %llu", Statistics::Get().InstanceCount);
+        ImGui::Text("Triangle Count : %llu", Statistics::Get().TriangleCount);
+        ImGui::Text("Meshlet Count : %llu", Statistics::Get().MeshletCount);
+        ImGui::Text("Draw Call Count : %llu", Statistics::Get().DrawCallCount);
+        ImGui::Text("Dispatch Count : %llu", Statistics::Get().DispatchCount);
+        ImGui::Separator();
+        // Resources
+        // VRAM
+        {
+            UInt64 percentage = (Statistics::Get().UsedVRAM * 100) / Statistics::Get().MaxVRAM;
+            float stupidVRAMPercetange = percentage / 100.0f;
+            std::stringstream ss;
+            ss << "VRAM Usage (" << percentage << "%%): " << (((Statistics::Get().UsedVRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb/" << (((Statistics::Get().MaxVRAM / 1024.0f) / 1024.0f) / 1024.0f) << "gb";
+            std::stringstream percents;
+            percents << percentage << "%";
+            ImGui::Text(ss.str().c_str());
+            ImGui::ProgressBar(stupidVRAMPercetange, ImVec2(0, 0), percents.str().c_str());
+        }
+        ImGui::Separator();
+        // RAM
+        {
+            UInt64 percentage = (Statistics::Get().UsedRAM * 100) / Statistics::Get().MaxRAM;
+            float stupidRAMPercetange = percentage / 100.0f;
+            std::stringstream ss;
+            ss << "RAM Usage (" << percentage << "%%): " << (((Statistics::Get().UsedRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb/" << (((Statistics::Get().MaxRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb";
+            std::stringstream percents;
+            percents << percentage << "%";
+            ImGui::Text(ss.str().c_str());
+            ImGui::ProgressBar(stupidRAMPercetange, ImVec2(0, 0), percents.str().c_str());
+        }
+        ImGui::Separator();
+        // Battery
+        {
+            std::stringstream ss;
+            ss << "Battery (" << Statistics::Get().Battery << "%%)";
+            std::stringstream percentss;
+            percentss << Statistics::Get().Battery << "%";
+            ImGui::Text(ss.str().c_str());
+            ImGui::ProgressBar(Statistics::Get().Battery / 100.0f, ImVec2(0, 0), percentss.str().c_str());
+        }
+        ImGui::TreePop();
+    }
     if (ImGui::TreeNodeEx("CPU Profiler", ImGuiTreeNodeFlags_Framed)) {
         for (UInt64 i = 0; i < sData.EntryCount; ++i) {
             const ProfilerEntry& entry = sData.Entries[i];
             if (!entry.IsGPU()) {
                 ImGui::Text("%s : %fms", entry.GetName().c_str(), entry.GetCPUTime());
-            }
-        }
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNodeEx("GPU Profiler", ImGuiTreeNodeFlags_Framed)) {
-        for (UInt64 i = 0; i < sData.EntryCount; ++i) {
-            const ProfilerEntry& entry = sData.Entries[i];
-            if (entry.IsGPU()) {
-                ImGui::Text("%s : %fms", entry.GetName().c_str(), entry.GetGPUTime());
             }
         }
         ImGui::TreePop();

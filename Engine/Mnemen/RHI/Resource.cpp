@@ -9,6 +9,7 @@
 #include <Core/UTF.hpp>
 #include <Core/Assert.hpp>
 #include <Core/Profiler.hpp>
+#include <Core/Statistics.hpp>
 
 Resource::Resource(Device::Ref device)
     : mParentDevice(device), mResource(nullptr), mLayout(ResourceLayout::Common)
@@ -19,8 +20,9 @@ Resource::~Resource()
 {
     if (mShouldFree) {
         D3DUtils::Release(mResource);
+        Statistics::Get().UsedVRAM -= mAllocSize;
+        Profiler::PopResource(mUUID);
     }
-    Profiler::PopResource(mUUID);
 }
 
 void Resource::SetName(const String& string)
@@ -44,4 +46,5 @@ void Resource::CreateResource(D3D12_HEAP_PROPERTIES* heapProps, D3D12_RESOURCE_D
     ASSERT(SUCCEEDED(result), "Failed to allocate resource!");
 
     mParentDevice->GetDevice()->GetCopyableFootprints(resourceDesc, 0, resourceDesc->MipLevels, 0, nullptr, nullptr, nullptr, &mAllocSize);
+    Statistics::Get().UsedVRAM += mAllocSize;
 }

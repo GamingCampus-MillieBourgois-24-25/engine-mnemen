@@ -8,6 +8,7 @@
 #include <Asset/AssetManager.hpp>
 #include <Core/Application.hpp>
 #include <Core/Profiler.hpp>
+#include <Core/Statistics.hpp>
 
 Forward::Forward(RHI::Ref rhi)
     : RenderPass(rhi)
@@ -121,7 +122,7 @@ void Forward::Render(const Frame& frame, ::Ref<Scene> scene)
                 sampler->Descriptor()
             };
             frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
-            frame.CommandBuffer->DispatchMesh(primitive.MeshletCount);
+            frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);
         }
         if (!node->Children.empty()) {
             for (MeshNode* child : node->Children) {
