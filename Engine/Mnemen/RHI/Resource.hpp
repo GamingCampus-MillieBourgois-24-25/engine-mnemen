@@ -47,11 +47,13 @@ enum class ResourceTag
     /// @brief Tag for model texture resources.
     ModelTexture,
     /// @brief Tag for shader pass input/output resources.
-    ShaderPassIO,
+    RenderPassIO,
     /// @brief Tag for shader pass-specific resources.
-    ShaderPassResource,
+    RenderPassResource,
     /// @brief Tag for GPU readback resources.
-    GPUReadback
+    GPUReadback,
+    /// @brief Max Enum
+    MAX
 };
 
 /// @brief Base class representing a resource in Direct3D 12.

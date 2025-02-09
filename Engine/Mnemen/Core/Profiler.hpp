@@ -74,6 +74,8 @@ struct ProfiledResource
     UInt64 Size;
     /// @brief The name of the resource
     String Name;
+    /// @brief The tags of the resource
+    Set<ResourceTag> Tags;
 };
 
 /// @class Profiler
@@ -117,6 +119,9 @@ public:
 
     /// @brief Pushes a resource in the render list
     static Util::UUID PushResource(UInt64 size, String Name);
+
+    /// @brief Pushes a tag on a profiled resource
+    static void TagResource(Util::UUID id, ResourceTag tag);
 
     /// @brief Pops a resource in the render list
     static void PopResource(Util::UUID id);

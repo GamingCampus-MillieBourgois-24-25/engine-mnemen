@@ -107,6 +107,11 @@ Util::UUID Profiler::PushResource(UInt64 size, String Name)
     return uuid;
 }
 
+void Profiler::TagResource(Util::UUID id, ResourceTag tag)
+{
+    sData.Resources[id].Tags.insert(tag);
+}
+
 void Profiler::PopResource(Util::UUID id)
 {
     if (sData.Resources.empty())
@@ -138,16 +143,37 @@ void Profiler::OnUI()
         }
         ImGui::TreePop();
     }
-    if (ImGui::TreeNodeEx("Resource Tree", ImGuiTreeNodeFlags_Framed)) {
-        for (auto& item : sData.Resources) {
-            Util::UUID uuid = item.first;
-            ProfiledResource resource = item.second;
-            ImGui::PushID((UInt64)uuid);
-            if (ImGui::TreeNode(resource.Name.c_str())) {
-                ImGui::Text("Size: %fmb", (float)(resource.Size / 1024.0f / 1024.0f));
+    if (ImGui::TreeNodeEx("GPU Resource Tree", ImGuiTreeNodeFlags_Framed)) {
+        const char* tags[] = {
+            "Model Geometry",
+            "Material Texture",
+            "Render Pass Shared",
+            "Render Pass Not Shared",
+            "GPU Readback"
+        };
+
+        for (int i = 0; i < (int)ResourceTag::MAX; i++) {
+            ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImVec4)ImColor::HSV(i / 7.0f, 0.7f, 0.7f));
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImVec4)ImColor::HSV(i / 7.0f, 0.8f, 0.8f));
+
+            if (ImGui::TreeNodeEx(tags[i], ImGuiTreeNodeFlags_Framed)) {
+                for (auto& item : sData.Resources) {
+                    Util::UUID uuid = item.first;
+                    ProfiledResource resource = item.second;
+                    if (!resource.Tags.contains((ResourceTag)i))
+                        continue;
+
+                    ImGui::PushID((UInt64)uuid);
+                    if (ImGui::TreeNode(resource.Name.c_str())) {
+                        ImGui::Text("Size: %fmb", (float)(resource.Size / 1024.0f / 1024.0f));
+                        ImGui::TreePop();
+                    }
+                    ImGui::PopID();
+                }
                 ImGui::TreePop();
             }
-            ImGui::PopID();
+            ImGui::PopStyleColor(3);
         }
         ImGui::TreePop();
     }

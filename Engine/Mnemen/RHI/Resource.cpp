@@ -34,6 +34,7 @@ void Resource::SetName(const String& string)
 void Resource::Tag(ResourceTag tag)
 {
     mTags.push_back(tag);
+    Profiler::TagResource(mUUID, tag);
 }
 
 void Resource::CreateResource(D3D12_HEAP_PROPERTIES* heapProps, D3D12_RESOURCE_DESC* resourceDesc, D3D12_RESOURCE_STATES state)

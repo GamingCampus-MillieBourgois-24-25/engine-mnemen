@@ -63,6 +63,7 @@ Ref<RenderPassResource> RendererTools::CreateSharedTexture(const String& name, T
     resource->ParentRHI = sData.RHI;
     resource->Type = RenderPassResourceType::SharedTexture;
     resource->Texture = sData.RHI->CreateTexture(desc);
+    resource->Texture->Tag(ResourceTag::RenderPassIO);
     sData.Resources[name] = resource;
     return sData.Resources[name];
 }
@@ -73,8 +74,9 @@ Ref<RenderPassResource> RendererTools::CreateSharedRingBuffer(const String& name
     resource->Type = RenderPassResourceType::SharedRingBuffer;
     resource->ParentRHI = sData.RHI;
     for (int i = 0; i < FRAMES_IN_FLIGHT; i++) {
-        resource->RBuffer[i] = sData.RHI->CreateBuffer(size, 0, BufferType::Constant, name);
+        resource->RBuffer[i] = sData.RHI->CreateBuffer(size, 0, BufferType::Constant, name + " " + std::to_string(i));
         resource->RBuffer[i]->BuildCBV();
+        resource->RBuffer[i]->Tag(ResourceTag::RenderPassIO);
     }
     sData.Resources[name] = resource;
     return sData.Resources[name];
@@ -88,6 +90,7 @@ Ref<RenderPassResource> RendererTools::CreateSharedRWBuffer(const String& name, 
     resource->Buffer = sData.RHI->CreateBuffer(size, stride, BufferType::Storage, name);
     resource->Buffer->BuildSRV();
     resource->Buffer->BuildUAV();
+    resource->Buffer->Tag(ResourceTag::RenderPassIO);
     sData.Resources[name] = resource;
     return sData.Resources[name];
 }
