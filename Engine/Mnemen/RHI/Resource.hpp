@@ -111,14 +111,14 @@ protected:
     String mName; ///< Name of the resource.
 
     Vector<ResourceTag> mTags; ///< Tags associated with the resource.
+    Util::UUID mUUID; ///< The UUID tracked by the profiler
+    UInt64 mAllocSize; ///< The total allocated size of the resource (may include padding).
 
     /// @brief Creates a new resource.
     /// @param heapProps Properties for the heap where the resource will reside.
     /// @param resourceDesc Description of the resource.
     /// @param state Initial resource state.
     void CreateResource(D3D12_HEAP_PROPERTIES* heapProps, D3D12_RESOURCE_DESC* resourceDesc, D3D12_RESOURCE_STATES state);
-
 private:
-    UInt64 mAllocSize; ///< The total allocated size of the resource (may include padding).
-    Util::UUID mUUID;
+    D3D12_RESOURCE_DESC mDesc;
 };

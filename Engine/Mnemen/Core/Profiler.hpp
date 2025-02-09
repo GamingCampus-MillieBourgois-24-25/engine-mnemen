@@ -76,6 +76,14 @@ struct ProfiledResource
     String Name;
     /// @brief The tags of the resource
     Set<ResourceTag> Tags;
+    /// @brief The width of the resource
+    UInt32 Width;
+    /// @brief The height of the resource
+    UInt32 Height;
+    /// @brief The depth of the resource
+    UInt32 Depth;
+    /// @brief The levels of the resource
+    UInt32 Levels;
 };
 
 /// @class Profiler
@@ -119,6 +127,9 @@ public:
 
     /// @brief Pushes a resource in the render list
     static Util::UUID PushResource(UInt64 size, String Name);
+
+    /// @brief Sets the information of a resource
+    static void SetResourceData(Util::UUID id, UInt32 width, UInt32 height, UInt32 depth, UInt32 levels);
 
     /// @brief Pushes a tag on a profiled resource
     static void TagResource(Util::UUID id, ResourceTag tag);

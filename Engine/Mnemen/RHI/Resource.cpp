@@ -31,6 +31,7 @@ void Resource::SetName(const String& string)
     mResource->SetName(UTF::AsciiToWide(string).data());
 
     mUUID = Profiler::PushResource(mAllocSize, mName);
+    Profiler::SetResourceData(mUUID, mDesc.Width, mDesc.Height, mDesc.DepthOrArraySize, mDesc.MipLevels);
 }
 
 void Resource::Tag(ResourceTag tag)
@@ -41,6 +42,7 @@ void Resource::Tag(ResourceTag tag)
 
 void Resource::CreateResource(D3D12_HEAP_PROPERTIES* heapProps, D3D12_RESOURCE_DESC* resourceDesc, D3D12_RESOURCE_STATES state)
 {
+    memcpy(&mDesc, resourceDesc, sizeof(mDesc));
     mLayout = ResourceLayout(state);
     HRESULT result = mParentDevice->GetDevice()->CreateCommittedResource(heapProps, D3D12_HEAP_FLAG_NONE, resourceDesc, state, nullptr, IID_PPV_ARGS(&mResource));
     ASSERT(SUCCEEDED(result), "Failed to allocate resource!");

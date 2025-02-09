@@ -110,8 +110,24 @@ Util::UUID Profiler::PushResource(UInt64 size, String Name)
     return uuid;
 }
 
+void Profiler::SetResourceData(Util::UUID id, UInt32 width, UInt32 height, UInt32 depth, UInt32 levels)
+{
+    if (sData.Resources.empty())
+        return;
+    if (sData.Resources.count(id) == 0)
+        return;
+    sData.Resources[id].Width = width;
+    sData.Resources[id].Height = height;
+    sData.Resources[id].Depth = depth;
+    sData.Resources[id].Levels = levels;
+}
+
 void Profiler::TagResource(Util::UUID id, ResourceTag tag)
 {
+    if (sData.Resources.empty())
+        return;
+    if (sData.Resources.count(id) == 0)
+        return;
     sData.Resources[id].Tags.insert(tag);
 }
 
@@ -206,6 +222,10 @@ void Profiler::OnUI()
                     ImGui::PushID((UInt64)uuid);
                     if (ImGui::TreeNode(resource.Name.c_str())) {
                         ImGui::Text("Size: %fmb", (float)(resource.Size / 1024.0f / 1024.0f));
+                        ImGui::Text("Width: %u", resource.Width);
+                        ImGui::Text("Height: %u", resource.Height);
+                        ImGui::Text("Depth: %u", resource.Depth);
+                        ImGui::Text("Mip Levels: %u", resource.Levels);
                         ImGui::TreePop();
                     }
                     ImGui::PopID();
