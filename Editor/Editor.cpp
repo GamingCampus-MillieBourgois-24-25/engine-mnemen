@@ -336,6 +336,18 @@ void Editor::AssetBrowser()
 	ImGui::Columns(1);
 }
 
+void Editor::LogWindow()
+{
+    ImGui::Begin("Log");
+    if (ImGui::Button(ICON_FA_ERASER " Clear")) {
+        Logger::sEntries.clear();
+    }
+    for (auto& entry : Logger::sEntries) {
+        ImGui::TextColored(entry.Color, entry.Message.c_str());
+    }
+    ImGui::End();
+}
+
 void Editor::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth)
 {
     ImGuiIO& io = ImGui::GetIO();
