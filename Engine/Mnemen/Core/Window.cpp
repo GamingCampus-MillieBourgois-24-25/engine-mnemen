@@ -50,3 +50,8 @@ void* Window::GetHandle()
 {
     return SDL_GetPointerProperty(SDL_GetWindowProperties(mWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
 }
+
+void Window::Close()
+{
+    mRunning = false;
+}

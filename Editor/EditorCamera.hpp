@@ -25,7 +25,8 @@ public:
     Camera() = default;
     ~Camera() = default;
 
-    void Update(float dt, int width, int height);
+    void UpdateMatrices(int width, int height);
+    void Input(float dt);
 
     glm::mat4 View() const { return mView; }
     glm::mat4 Projection() const { return mProjection; }

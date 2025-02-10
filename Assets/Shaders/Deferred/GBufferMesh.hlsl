@@ -24,6 +24,11 @@ struct CameraMatrices
     column_major float4x4 Projection;
 };
 
+struct ModelMatrices
+{
+    column_major float4x4 Transform;
+};
+
 struct VertexOut
 {
     float4 Position : SV_POSITION;
@@ -36,13 +41,17 @@ struct VertexOut
 struct PushConstants
 {
     int Matrices;
+    int ModelBuffer;
     int VertexBuffer;
     int IndexBuffer;
+
     int MeshletBuffer;
     int MeshletVertices;
     int MeshletTriangleBuffer;
     int AlbedoTexture;
+
     int LinearSampler;
+    int3 Pad;
 };
 
 ConstantBuffer<PushConstants> Constants : register(b0);
@@ -51,13 +60,14 @@ VertexOut GetVertexAttributes(uint meshletIndex, uint vertexIndex)
 {
     StructuredBuffer<Vertex> Vertices = ResourceDescriptorHeap[Constants.VertexBuffer];
     ConstantBuffer<CameraMatrices> Matrices = ResourceDescriptorHeap[Constants.Matrices];
+    ConstantBuffer<ModelMatrices> Model = ResourceDescriptorHeap[Constants.ModelBuffer];
 
     // -------- //
     Vertex v = Vertices[vertexIndex];
     float4 pos = float4(v.Position, 1.0);
 
     VertexOut Output = (VertexOut)0;
-    Output.Position = mul(Matrices.Projection, mul(Matrices.View, pos));
+    Output.Position = mul(Matrices.Projection, mul(Matrices.View, mul(Model.Transform, pos)));
     Output.UV = v.TexCoords;
     Output.Normals = v.Normals;
     Output.MeshletIndex = meshletIndex;

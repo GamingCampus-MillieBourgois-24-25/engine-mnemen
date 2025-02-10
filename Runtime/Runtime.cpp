@@ -10,7 +10,17 @@
 Runtime::Runtime(ApplicationSpecs specs)
     : Application(specs)
 {
+    mScenePlaying = true;
 
+    mCameraEntity = mScene->AddEntity("Editor Camera");
+    mCameraEntity->Private = true;
+    
+    auto& cam = mCameraEntity->AddComponent<CameraComponent>();
+    cam.Primary = true;
+    cam.FOV = 90.0f;
+    cam.Near = 0.1f;
+    cam.Far = 200.0f;
+    cam.AspectRatio = (float)specs.Width / (float)specs.Height;
 }
 
 Runtime::~Runtime()
@@ -28,7 +38,7 @@ void Runtime::OnPhysicsTick()
 
 }
 
-void Runtime::OnImGui()
+void Runtime::OnImGui(const Frame& frame)
 {
    
 }

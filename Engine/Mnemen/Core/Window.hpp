@@ -60,6 +60,9 @@ public:
     /// @return The Win32 handle for the window.
     void* GetHandle();
 
+    /// @brief Closes the window
+    void Close();
+
     /// @brief Retrieves the SDL handle of the window.
     /// 
     /// This method returns the SDL-specific handle for the window, which is useful for SDL-based
