@@ -13,6 +13,7 @@
 Editor::Editor(ApplicationSpecs specs)
     : Application(specs)
 {
+    mScenePlaying = false;
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity->Private = true;
     
@@ -36,11 +37,11 @@ void Editor::OnUpdate(float dt)
     mWindow->PollSize(width, height);
 
     mCamera.UpdateMatrices(std::max(mViewportSize.x, 1.0f), std::max(mViewportSize.y, 1.0f));
-    if (mViewportFocused)
+    if (mViewportFocused && !mScenePlaying)
         mCamera.Input(dt);
 
     auto& cam = mCameraEntity->GetComponent<CameraComponent>();
-    cam.Primary = true;
+    cam.Primary = !mScenePlaying;
     cam.Projection = mCamera.Projection();
     cam.View = mCamera.View();
 }
@@ -64,11 +65,12 @@ void Editor::OnImGui(const Frame& frame)
 
         ImGui::SetCursorPosX(10.0f);
         if (ImGui::Button(ICON_FA_PLAY)) {
-
+            OnAwake();
         }
         ImGui::SameLine();
         if (ImGui::Button(ICON_FA_STOP)) {
-
+            if (mScenePlaying)
+                OnStop();
         }
 
         auto ldr = RendererTools::Get("LDRColorBuffer");
@@ -260,10 +262,27 @@ void Editor::EntityEditor()
         }
         if (mSelectedEntity->HasComponent<ScriptComponent>()) {
             ScriptComponent& scripts = mSelectedEntity->GetComponent<ScriptComponent>();
-            for (auto& script : scripts.Instances) {
+            for (Ref<ScriptComponent::Instance> script : scripts.Instances) {
                 ImGui::PushID((UInt64)script->Path.c_str());
                 if (ImGui::TreeNodeEx(ICON_FA_CODE " Script Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-                    ImGui::Text("Script Path : %s", script->Path.c_str());
+                    ImGui::Text(ICON_FA_FILE);
+                    ImGui::SameLine();
+                    ImGui::Button(script->Path.c_str());
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                            const wchar_t* path = (const wchar_t*)payload->Data;
+					        std::filesystem::path scriptPath(path);
+                            std::string scriptString = scriptPath.string();
+                            if (scriptString.find(".wren") != std::string::npos) {
+                                for (int i = 0; i < scriptString.size(); i++) {
+                                    scriptString[i] = scriptString[i] == '\\' ? '/' : scriptString[i];
+                                }
+                                if (script->Handle.SetSource(AssetManager::Get(scriptString, AssetType::Script)))
+                                    script->Path = scriptString;
+                            }
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
                     ImGui::TreePop();
                 }
                 ImGui::PopID();

@@ -5,27 +5,44 @@
 
 #include "Script.hpp"
 
-void Script::SetSource(Asset::Handle handle)
-{
-    mHandle = handle;
+#include <Core/Logger.hpp>
 
-    mVirtualMachine.executeString(mHandle->Script.Source);
-    mAwake = mVirtualMachine.method("main", "awake", "call()");
-    mQuit = mVirtualMachine.method("main", "quit", "call()");
-    mUpdate = mVirtualMachine.method("main", "update", "call(_)");
+bool Script::SetSource(Asset::Handle handle)
+{
+    mVirtualMachine = wrenpp::VM(); // Reset VM
+    mAwake = {};
+    mQuit = {};
+    mUpdate = {};
+    mLoaded = false;
+
+    auto result = mVirtualMachine.executeString(handle->Script.Source);
+    if (result == wrenpp::Result::Success) {
+        mHandle = handle;
+        mAwake = mVirtualMachine.method("main", "awake", "call()");
+        mQuit = mVirtualMachine.method("main", "quit", "call()");
+        mUpdate = mVirtualMachine.method("main", "update", "call(_)");
+        mLoaded = true;
+        return true;
+    } else  {
+        LOG_ERROR("???");
+    }
+    return false;
 }
 
 void Script::Awake()
 {
-    mAwake();
+    if (mLoaded)
+        mAwake();
 }
 
 void Script::Quit()
 {
-    mQuit();
+    if (mLoaded)
+        mQuit();
 }
 
 void Script::Update(float dt)
 {
-    mUpdate(dt);
+    if (mLoaded)
+        mUpdate(dt);
 }

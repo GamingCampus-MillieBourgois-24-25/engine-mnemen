@@ -56,6 +56,9 @@ public:
     /// @brief Called when the scene is awaken
     void OnAwake();
 
+    /// @brief Called when the scene is stopped
+    void OnStop();
+
     /// @brief Starts the application loop.
     void Run();
 

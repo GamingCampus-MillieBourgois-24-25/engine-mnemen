@@ -66,7 +66,14 @@ Application::~Application()
 
 void Application::OnAwake()
 {
+    mScenePlaying = true;
     ScriptSystem::Awake(mScene);
+}
+
+void Application::OnStop()
+{
+    ScriptSystem::Quit(mScene);
+    mScenePlaying = false;
 }
 
 void Application::Run()
