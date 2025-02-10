@@ -60,8 +60,16 @@ void Editor::OnImGui(const Frame& frame)
 
     // Viewport
     {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin(ICON_FA_GAMEPAD " Viewport");
+
+        ImGui::SetCursorPosX(10.0f);
+        if (ImGui::Button(ICON_FA_PLAY)) {
+
+        }
+        ImGui::SameLine();
+        if (ImGui::Button(ICON_FA_STOP)) {
+
+        }
 
         auto ldr = RendererTools::Get("LDRColorBuffer");
         mViewportFocused = ImGui::IsWindowFocused();
@@ -74,7 +82,6 @@ void Editor::OnImGui(const Frame& frame)
         ImGui::Image((ImTextureID)ldr->GetView(ViewType::ShaderResource)->GetDescriptor().GPU.ptr, mViewportSize);
 
         ImGui::End();
-        ImGui::PopStyleVar();
     }
 
     // Entity Tree

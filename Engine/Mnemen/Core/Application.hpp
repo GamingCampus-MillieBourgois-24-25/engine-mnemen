@@ -53,6 +53,9 @@ public:
     /// @brief Called during the UI rendering phase to handle ImGui drawing.
     virtual void OnImGui(const Frame& frame) = 0;
 
+    /// @brief Called when the scene is awaken
+    void OnAwake();
+
     /// @brief Starts the application loop.
     void Run();
 
@@ -87,5 +90,6 @@ protected:
     Ref<Scene> mScene; ///< Currently active scene.
 
     bool mUIFocused; ///< Whether or not UI elements are focused.
+    bool mScenePlaying; ///< Whether the scene is playing or not.
 };
 
