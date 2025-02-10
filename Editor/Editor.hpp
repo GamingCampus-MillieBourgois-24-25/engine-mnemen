@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Mnemen.hpp>
+#include <imgui.h>
 
 #include "EditorCamera.hpp"
 
@@ -23,4 +24,7 @@ private:
 
     Entity* mCameraEntity;
     Entity* mSponza;
+
+    ImVec2 mViewportSize;
+    bool mViewportFocused = false;
 };
