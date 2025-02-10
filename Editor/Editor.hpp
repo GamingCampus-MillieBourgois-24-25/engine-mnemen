@@ -6,6 +6,8 @@
 #pragma once
 
 #include <Mnemen.hpp>
+#include <imgui.h>
+#include <filesystem>
 
 #include "EditorCamera.hpp"
 
@@ -17,10 +19,26 @@ public:
 
     virtual void OnUpdate(float dt) override;
     virtual void OnPhysicsTick() override;
-    virtual void OnImGui() override;
+    virtual void OnImGui(const Frame& frame) override;
 private:
+    void BeginDockSpace();
+    void HierarchyPanel();
+    void SetColors();
+    void AssetPanel();
+    void EntityEditor();
+    void AssetBrowser();
+    void LogWindow();
+    void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
+
     Camera mCamera;
 
     Entity* mCameraEntity;
-    Entity* mSponza;
+    Entity* mSelectedEntity = nullptr;
+
+    ImVec2 mViewportSize;
+    bool mViewportFocused = false;
+    ImGuiTextFilter mLogFilter;
+
+    std::filesystem::path mBaseDirectory;
+    std::filesystem::path mCurrentDirectory;
 };

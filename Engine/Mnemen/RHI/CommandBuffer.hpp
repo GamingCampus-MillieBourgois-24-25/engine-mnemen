@@ -188,9 +188,10 @@ public:
 
     /// @brief Dispatches a mesh shader workload.
     /// @param meshletCount Number of meshlets to dispatch.
+    /// @param triangleCount For debug only, used to increment the number of triangles in profiler.
     ///
     /// Used in mesh shading for modern GPU rendering techniques.
-    void DispatchMesh(int meshletCount);
+    void DispatchMesh(int meshletCount, int triangleCount = 0);
 
     /// @brief Dispatches a compute shader workload.
     /// @param x Number of thread groups in the X direction.

@@ -25,13 +25,17 @@ uint hash(uint a)
 struct PushConstants
 {
     int Matrices;
+    int ModelBuffer;
     int VertexBuffer;
     int IndexBuffer;
+
     int MeshletBuffer;
     int MeshletVertices;
     int MeshletTriangleBuffer;
     int AlbedoTexture;
+
     int LinearSampler;
+    int3 Pad;
 };
 
 ConstantBuffer<PushConstants> Constants : register(b0);

@@ -51,6 +51,12 @@ void Mesh::FreeNodes(MeshNode* node)
 
 void Mesh::ProcessNode(MeshNode* node, aiNode *assimpNode, const aiScene *scene)
 {
+    // Create node resources
+    for (int i = 0; i < FRAMES_IN_FLIGHT; i++) {
+        node->ModelBuffer[i] = mRHI->CreateBuffer(512, 0, BufferType::Constant, node->Name + " Model Buffer " + std::to_string(i));
+        node->ModelBuffer[i]->BuildCBV();
+    }
+
     for (int i = 0; i < assimpNode->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[assimpNode->mMeshes[i]];
         glm::mat4 transform(1.0f);
@@ -157,21 +163,27 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
 
     out.VertexBuffer = mRHI->CreateBuffer(vertices.size() * sizeof(Vertex), sizeof(Vertex), BufferType::Vertex, node->Name + " Vertex Buffer");
     out.VertexBuffer->BuildSRV();
+    out.VertexBuffer->Tag(ResourceTag::ModelGeometry);
 
     out.IndexBuffer = mRHI->CreateBuffer(indices.size() * sizeof(UInt32), sizeof(UInt32), BufferType::Index, node->Name + " Index Buffer");
     out.IndexBuffer->BuildSRV();
+    out.IndexBuffer->Tag(ResourceTag::ModelGeometry);
 
     out.MeshletBuffer = mRHI->CreateBuffer(meshlets.size() * sizeof(meshopt_Meshlet), sizeof(meshopt_Meshlet), BufferType::Storage, node->Name + " Meshlet Buffer");
     out.MeshletBuffer->BuildSRV();
+    out.MeshletBuffer->Tag(ResourceTag::ModelGeometry);
 
     out.MeshletVertices = mRHI->CreateBuffer(meshletVertices.size() * sizeof(UInt32), sizeof(UInt32), BufferType::Storage, node->Name + " Meshlet Vertices");
     out.MeshletVertices->BuildSRV();
+    out.MeshletVertices->Tag(ResourceTag::ModelGeometry);
 
     out.MeshletTriangles = mRHI->CreateBuffer(meshletPrimitives.size() * sizeof(UInt32), sizeof(UInt32), BufferType::Storage, node->Name + " Meshlet Triangles");
     out.MeshletTriangles->BuildSRV();
+    out.MeshletTriangles->Tag(ResourceTag::ModelGeometry);
 
     out.MeshletBounds = mRHI->CreateBuffer(meshletBounds.size() * sizeof(MeshletBounds), sizeof(MeshletBounds), BufferType::Storage, node->Name + " Meshlet Bounds");
     out.MeshletBounds->BuildSRV();
+    out.MeshletBounds->Tag(ResourceTag::ModelGeometry);
 
     out.GeometryStructure = mRHI->CreateBLAS(out.VertexBuffer, out.IndexBuffer, out.VertexCount, out.IndexCount, node->Name + " BLAS");
 

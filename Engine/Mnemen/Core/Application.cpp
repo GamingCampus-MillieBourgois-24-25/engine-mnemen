@@ -65,14 +65,23 @@ Application::~Application()
     Input::Exit();
 }
 
+void Application::OnAwake()
+{
+    mScenePlaying = true;
+    ScriptSystem::Awake(mScene);
+}
+
+void Application::OnStop()
+{
+    ScriptSystem::Quit(mScene);
+    mScenePlaying = false;
+}
+
 void Application::Run()
 {
     // Flush any uploads before running
     Uploader::Flush();
     mRHI->Wait();
-
-    // Awake script system
-    ScriptSystem::Awake(mScene);
 
     while (mWindow->IsOpen()) {
         Profiler::BeginFrame();
@@ -89,7 +98,9 @@ void Application::Run()
             float minStepDuration = 1.0f / mApplicationSpecs.PhysicsRefreshRate;
             if (TO_SECONDS(mPhysicsTimer.GetElapsed()) > minStepDuration) {
                 OnPhysicsTick();
-                PhysicsSystem::Update(mScene, minStepDuration);
+                if (mScenePlaying) {
+                    PhysicsSystem::Update(mScene, minStepDuration);
+                }
                 mPhysicsTimer.Restart();
             }
         }
@@ -97,10 +108,13 @@ void Application::Run()
         // Engine Update
         {
             PROFILE_SCOPE("Systems Update");
+            
             mWindow->Update();
-            AISystem::Update(mScene);
-            AudioSystem::Update(mScene);
-            ScriptSystem::Update(mScene, dt);
+            if (mScenePlaying) {
+                AISystem::Update(mScene);
+                AudioSystem::Update(mScene);
+                ScriptSystem::Update(mScene, dt);
+            }
             mScene->Update();
         }
 
@@ -126,7 +140,7 @@ void Application::OnPrivateRender()
     Frame frame = mRHI->Begin();
     frame.CommandBuffer->Begin();
 
-    // -PROFILE_SCOPE_GPU("Main Frame", frame.CommandBuffer);
+    // PROFILE_SCOPE_GPU("Main Frame", frame.CommandBuffer);
 
     // Scene render
     {
@@ -141,9 +155,7 @@ void Application::OnPrivateRender()
         frame.CommandBuffer->SetRenderTargets({ frame.BackbufferView }, nullptr);
         frame.CommandBuffer->BeginGUI(frame.Width, frame.Height);
         
-        OnImGui();
-        Profiler::OnUI();
-        mRenderer->UI(frame);
+        OnImGui(frame);
 
         ImGuiIO& io = ImGui::GetIO();
         mUIFocused = io.WantCaptureMouse || io.WantCaptureKeyboard;

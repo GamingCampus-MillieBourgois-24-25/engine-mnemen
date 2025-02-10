@@ -52,21 +52,21 @@ A wide variety of documents regarding the engine, resources, and some other thin
 
 ## Dependencies
 
-- Assimp
-- D3D12 Agility SDK
-- DXC
-- entt
-- GLM
-- ImGui
-- Jolt
-- JSON
-- MeshOptimizer
-- MiniAudio
-- NVTT
-- PIX
-- Recast
-- SDL3
-- spdlog
-- STB
-- Wren
-- Wren++
+- Assimp - 3D Model Loader
+- D3D12 Agility SDK - DirectX 12 extension
+- DXC - Shader Compiler
+- entt - Entity Component System
+- GLM - Mathematics
+- ImGui - Immediate mode GUI
+- Jolt - Physics API
+- JSON - Writing/parsing of JSON files (used for scene files)
+- MeshOptimizer - Mesh optimizing and meshlet generation
+- MiniAudio - Audio API
+- NVTT - Texture compression
+- PIX - GPU debugging
+- Recast - Navigation Meshes and Agents
+- SDL3 - Windowing & Input
+- spdlog - Logging
+- STB - Image loading
+- Wren - Scripting Language
+- Wren++ - Tools for Wren

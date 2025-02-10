@@ -22,7 +22,7 @@ public:
 
     /// @brief Sets the script source from an asset handle.
     /// @param handle The asset handle pointing to the script source.
-    void SetSource(Asset::Handle handle);
+    bool SetSource(Asset::Handle handle);
 
     /// @brief Calls the "Awake" method of the script.
     /// @details This method is typically called when the script is first initialized.
@@ -44,5 +44,6 @@ private:
     wrenpp::Method mUpdate;     ///< Reference to the "Update" method within the script.
 
     Asset::Handle mHandle;      ///< Handle to the script asset.
+    bool mLoaded = false;       ///< Whether or not the script is loaded.
 };
 

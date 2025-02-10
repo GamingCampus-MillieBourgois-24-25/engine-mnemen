@@ -7,6 +7,7 @@
 
 #include <Core/Common.hpp>
 #include <Core/Timer.hpp>
+#include <Utility/UUID.hpp>
 
 #include <RHI/CommandBuffer.hpp>
 #include <RHI/GPUTimer.hpp>
@@ -66,6 +67,25 @@ private:
     CommandBuffer::Ref mCommandBuffer; ///< Associated command buffer for GPU profiling.
 };
 
+/// @brief A resource displayed by the profiler
+struct ProfiledResource
+{
+    /// @brief The size of the resource
+    UInt64 Size;
+    /// @brief The name of the resource
+    String Name;
+    /// @brief The tags of the resource
+    Set<ResourceTag> Tags;
+    /// @brief The width of the resource
+    UInt32 Width;
+    /// @brief The height of the resource
+    UInt32 Height;
+    /// @brief The depth of the resource
+    UInt32 Depth;
+    /// @brief The levels of the resource
+    UInt32 Levels;
+};
+
 /// @class Profiler
 /// @brief Manages CPU and GPU profiling entries, including GPU timing queries.
 class Profiler
@@ -105,6 +125,17 @@ public:
     /// @brief Reads back GPU timing results for processing.
     static void ReadbackGPUResults();
 
+    /// @brief Pushes a resource in the render list
+    static Util::UUID PushResource(UInt64 size, String Name);
+
+    /// @brief Sets the information of a resource
+    static void SetResourceData(Util::UUID id, UInt32 width, UInt32 height, UInt32 depth, UInt32 levels);
+
+    /// @brief Pushes a tag on a profiled resource
+    static void TagResource(Util::UUID id, ResourceTag tag);
+
+    /// @brief Pops a resource in the render list
+    static void PopResource(Util::UUID id);
 private:
     friend class ProfilerEntry;
 
@@ -113,6 +144,7 @@ private:
         ProfilerEntry Entries[MAX_PROFILER_ENTRIES]; ///< Array of profiling entries.
         UInt64 EntryCount = 0; ///< Number of active profiling entries.
         UInt64 CurrentFrame = 0; ///< Current frame index.
+        UnorderedMap<Util::UUID, ProfiledResource> Resources; ///< List of profiled resources
     };
 
     static Data sData; ///< Static instance of profiler data.
