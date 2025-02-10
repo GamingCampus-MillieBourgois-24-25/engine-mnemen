@@ -13,6 +13,7 @@ int main()
     specs.WindowTitle = "MNEMEN EDITOR";
     specs.GameName = "MnmEditor";
     specs.StartScene = "Assets/Scenes/Test.json";
+    specs.CopyToBackBuffer = false;
 
     Editor editor(specs);
     editor.Run();

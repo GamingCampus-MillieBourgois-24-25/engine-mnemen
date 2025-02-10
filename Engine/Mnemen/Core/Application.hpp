@@ -24,6 +24,8 @@ struct ApplicationSpecs
     String GameName; ///< Name of the game/application.
     String WindowTitle; ///< Title displayed on the game window.
     String StartScene; ///< The path of the start scene. If empty, will create an empty scene.
+
+    bool CopyToBackBuffer; ///< If set to true, the output color will be copied to the swapchain. Used in Runtime.
 };
 
 /// @class Application
@@ -49,7 +51,7 @@ public:
     virtual void OnPhysicsTick() = 0;
 
     /// @brief Called during the UI rendering phase to handle ImGui drawing.
-    virtual void OnImGui() = 0;
+    virtual void OnImGui(const Frame& frame) = 0;
 
     /// @brief Starts the application loop.
     void Run();
@@ -57,6 +59,10 @@ public:
     /// @brief Retrieves the main application window.
     /// @return A shared pointer to the window instance.
     Ref<Window> GetWindow() { return mWindow; }
+    
+    /// @brief Returns the settings of the application.
+    /// @return The settings of the application.
+    ApplicationSpecs GetSpecs() { return mApplicationSpecs; }
 
     /// @brief Retrieves the current application instance.
     /// @return Pointer to the singleton application instance.

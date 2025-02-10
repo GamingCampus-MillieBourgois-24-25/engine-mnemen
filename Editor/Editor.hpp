@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Mnemen.hpp>
+#include <imgui.h>
 
 #include "EditorCamera.hpp"
 
@@ -17,10 +18,13 @@ public:
 
     virtual void OnUpdate(float dt) override;
     virtual void OnPhysicsTick() override;
-    virtual void OnImGui() override;
+    virtual void OnImGui(const Frame& frame) override;
 private:
     Camera mCamera;
 
     Entity* mCameraEntity;
     Entity* mSponza;
+
+    ImVec2 mViewportSize;
+    bool mViewportFocused = false;
 };

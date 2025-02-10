@@ -6,6 +6,7 @@
 #pragma once
 
 #include <RHI/Device.hpp>
+#include <Utility/UUID.hpp>
 
 /// @brief Represents the possible resource layouts/states in Direct3D 12.
 enum class ResourceLayout
@@ -46,11 +47,13 @@ enum class ResourceTag
     /// @brief Tag for model texture resources.
     ModelTexture,
     /// @brief Tag for shader pass input/output resources.
-    ShaderPassIO,
+    RenderPassIO,
     /// @brief Tag for shader pass-specific resources.
-    ShaderPassResource,
+    RenderPassResource,
     /// @brief Tag for GPU readback resources.
-    GPUReadback
+    GPUReadback,
+    /// @brief Max Enum
+    MAX
 };
 
 /// @brief Base class representing a resource in Direct3D 12.
@@ -108,13 +111,14 @@ protected:
     String mName; ///< Name of the resource.
 
     Vector<ResourceTag> mTags; ///< Tags associated with the resource.
+    Util::UUID mUUID; ///< The UUID tracked by the profiler
+    UInt64 mAllocSize; ///< The total allocated size of the resource (may include padding).
 
     /// @brief Creates a new resource.
     /// @param heapProps Properties for the heap where the resource will reside.
     /// @param resourceDesc Description of the resource.
     /// @param state Initial resource state.
     void CreateResource(D3D12_HEAP_PROPERTIES* heapProps, D3D12_RESOURCE_DESC* resourceDesc, D3D12_RESOURCE_STATES state);
-
 private:
-    UInt64 mAllocSize; ///< The total allocated size of the resource (may include padding).
+    D3D12_RESOURCE_DESC mDesc;
 };
