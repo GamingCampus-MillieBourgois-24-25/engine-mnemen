@@ -37,6 +37,7 @@ private:
 
     ImVec2 mViewportSize;
     bool mViewportFocused = false;
+    ImGuiTextFilter mLogFilter;
 
     std::filesystem::path mBaseDirectory;
     std::filesystem::path mCurrentDirectory;

@@ -86,6 +86,9 @@ void Editor::OnImGui(const Frame& frame)
     // Entity editor
     EntityEditor();
 
+    // Log Window
+    LogWindow();
+
     ImGui::End();
 }
 
@@ -342,9 +345,15 @@ void Editor::LogWindow()
     if (ImGui::Button(ICON_FA_ERASER " Clear")) {
         Logger::sEntries.clear();
     }
+    ImGui::SameLine();
+    mLogFilter.Draw();
+    const char* logChildName = "LogChild"; 
+    ImGui::BeginChild(logChildName, ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
     for (auto& entry : Logger::sEntries) {
-        ImGui::TextColored(entry.Color, entry.Message.c_str());
+        if (mLogFilter.PassFilter(entry.Message.c_str()))
+            ImGui::TextColored(entry.Color, entry.Message.c_str());
     }
+    ImGui::EndChild();
     ImGui::End();
 }
 

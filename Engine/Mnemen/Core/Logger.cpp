@@ -28,6 +28,8 @@ ImVec4 LevelToColor(spdlog::level::level_enum level)
             return ImVec4(1, 0, 0, 1);
         case spdlog::level::level_enum::warn:
             return ImVec4(0, 1, 1, 1);
+        case spdlog::level::level_enum::debug:
+            return ImVec4(1, 0, 1, 1);
     }
     return ImVec4(1, 1, 1, 1);
 }
@@ -50,7 +52,7 @@ public:
     }
 
     void flush() override {
-        Logger::sEntries.clear();
+        
     }
 
     void set_pattern(const std::string &pattern) override {}
