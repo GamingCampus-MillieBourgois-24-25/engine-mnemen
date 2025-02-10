@@ -5,6 +5,8 @@
 
 #include "ColorGrading.hpp"
 
+#include <imgui.h>
+
 ColorGrading::ColorGrading(RHI::Ref rhi)
     : RenderPass(rhi)
 {
@@ -34,8 +36,8 @@ void ColorGrading::Render(const Frame& frame, ::Ref<Scene> scene)
     }PushConstants = {
         //descriptor of the HDR texture to write to (storage view type)
         color->Descriptor(ViewType::Storage),
-        1.0,
-        1.0,
+        mBrightness,
+        mExposure,
         0.0
     };
 
@@ -64,5 +66,9 @@ void ColorGrading::Render(const Frame& frame, ::Ref<Scene> scene)
 
 void ColorGrading::UI(const Frame& frame)
 {
-    
+    if (ImGui::TreeNodeEx("Color Grading", ImGuiTreeNodeFlags_Framed)) {
+        ImGui::SliderFloat("Brightness", &mBrightness, 0.0f, 10.0f, "%.2f");
+        ImGui::SliderFloat("Exposure", &mExposure, 0.0f, 10.0f, "%.2f");
+        ImGui::TreePop();
+    }
 }

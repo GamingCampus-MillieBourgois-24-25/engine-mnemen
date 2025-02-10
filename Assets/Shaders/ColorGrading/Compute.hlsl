@@ -17,9 +17,13 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
     RWTexture2D<float4> Texture = ResourceDescriptorHeap[Settings.TextureIndex]; 
     
-    float4 Color = Texture[ThreadID.xy];
-    Color *= Settings.Brightness; 
-    Color = pow(Color, Settings.Exposure); 
-    Texture[ThreadID.xy] = Color;
+    int width, height;
+    Texture.GetDimensions(width, height);
 
+    if (ThreadID.x < width && ThreadID.y < height) {
+        float4 Color = Texture[ThreadID.xy];
+        Color *= Settings.Brightness; 
+        Color = pow(Color, 1.0 / Settings.Exposure); 
+        Texture[ThreadID.xy] = Color;
+    }
 }

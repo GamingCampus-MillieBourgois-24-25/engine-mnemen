@@ -23,4 +23,6 @@ public:
     void UI(const Frame& frame) override;
 private:
     ComputePipeline::Ref mPipeline;
+    float mBrightness = 1.0f;
+    float mExposure = 1.0f;
 };
