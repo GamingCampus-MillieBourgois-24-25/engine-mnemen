@@ -5,7 +5,7 @@
             "hasMesh": true,
             "hasScript": true,
             "meshPath": "Assets/Models/Sponza/Sponza.gltf",
-            "name": "Sponza",
+            "name": "Main Model",
             "position": [
                 0.0,
                 0.0,
@@ -22,7 +22,7 @@
                 1.0
             ],
             "scripts": [
-                "Assets/Scripts/Hello.wren",
+                "Assets/Scripts/Bye.wren",
                 "Assets/Scripts/Bye.wren"
             ]
         }

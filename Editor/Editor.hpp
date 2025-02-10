@@ -20,6 +20,7 @@ public:
     virtual void OnUpdate(float dt) override;
     virtual void OnPhysicsTick() override;
     virtual void OnImGui(const Frame& frame) override;
+    virtual void PostPresent() override;
 private:
     void BeginDockSpace();
     void HierarchyPanel();
@@ -36,6 +37,9 @@ private:
 
     Entity* mCameraEntity;
     Entity* mSelectedEntity = nullptr;
+    bool mMarkForDeletion = false;
+    String mModelChange = "";
+    char mInputField[512];
 
     ImVec2 mViewportSize;
     bool mViewportFocused = false;

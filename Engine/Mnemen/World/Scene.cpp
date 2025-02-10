@@ -67,6 +67,7 @@ void Scene::RemoveEntity(Entity* e)
     for (UInt64 i = 0; i < mEntities.size(); i++) {
         if (e->ID == mEntities[i]->ID) {
             mEntities.erase(mEntities.begin() + i);
+            mRegistry.destroy(e->ID);
             delete e;
         }
     }

@@ -62,11 +62,11 @@ RHI::RHI(::Ref<Window> window)
     	0
     };
 
-    IO.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf", 16, NULL, rangesFixed);
+    IO.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf", 18, NULL, rangesFixed);
     IO.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 14, &mergeConfig, rangesIcons);
     IO.Fonts->Build();
 
-    mLargeFont = IO.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 56, nullptr, rangesIcons);
+    mLargeFont = IO.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 64, nullptr, rangesIcons);
 
     ImGui_ImplSDL3_InitForD3D(window->GetSDLHandle());
     ImGui_ImplDX12_InitInfo initInfo = {};

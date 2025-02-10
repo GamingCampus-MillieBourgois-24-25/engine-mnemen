@@ -33,6 +33,14 @@ void Mesh::Load(RHI::Ref rhi, const String& path)
 Mesh::~Mesh()
 {
     FreeNodes(Root);
+    for (auto& material : Materials) {
+        if (material.Albedo) {
+            AssetManager::GiveBack(material.Albedo->Path);
+        }
+        if (material.Normal) {
+            AssetManager::GiveBack(material.Normal->Path);
+        }
+    }
     Materials.clear();
 }
 

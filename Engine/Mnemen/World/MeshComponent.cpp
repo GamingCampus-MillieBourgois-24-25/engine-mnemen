@@ -5,6 +5,11 @@
 
 #include "Components.hpp"
 
+MeshComponent::~MeshComponent()
+{
+    AssetManager::GiveBack(MeshAsset->Path);
+}
+
 void MeshComponent::Init(const String& string)
 {
     MeshAsset = AssetManager::Get(string, AssetType::Mesh);

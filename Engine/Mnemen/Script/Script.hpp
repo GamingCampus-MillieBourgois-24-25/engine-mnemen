@@ -18,7 +18,7 @@ public:
     Script() = default;
 
     /// @brief Default destructor.
-    ~Script() = default;
+    ~Script();
 
     /// @brief Sets the script source from an asset handle.
     /// @param handle The asset handle pointing to the script source.
@@ -37,6 +37,9 @@ public:
     /// @details This method is called every frame to update the script's logic.
     void Update(float dt);
 
+    /// @brief Returns whether or not the asset handle for the script is loaded
+    /// @return True if loaded, false otherwise.
+    bool IsLoaded() { return mLoaded; }
 private:
     wrenpp::VM mVirtualMachine; ///< The Wren virtual machine instance managing the script execution.
     wrenpp::Method mAwake;      ///< Reference to the "Awake" method within the script.

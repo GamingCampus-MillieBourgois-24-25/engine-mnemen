@@ -37,6 +37,8 @@ struct MeshComponent
     /// @brief Initializes the component and loads the mesh at the given string
     /// @param string The path of the component
     void Init(const String& string);
+
+    ~MeshComponent();
 };
 
 /// @brief A component holding camera information

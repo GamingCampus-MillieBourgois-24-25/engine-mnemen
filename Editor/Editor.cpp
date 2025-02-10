@@ -6,6 +6,7 @@
 #include "Editor.hpp"
 
 #include <FontAwesome/FontAwesome.hpp>
+#include <RHI/Uploader.hpp>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -25,6 +26,7 @@ Editor::Editor(ApplicationSpecs specs)
 
     mBaseDirectory = "Assets";
     mCurrentDirectory = "Assets";
+    memset(mInputField, 0, sizeof(mInputField));
 }
 
 Editor::~Editor()
@@ -47,6 +49,25 @@ void Editor::OnUpdate(float dt)
     cam.Primary = !mScenePlaying;
     cam.Projection = mCamera.Projection();
     cam.View = mCamera.View();
+}
+
+void Editor::PostPresent()
+{
+    if (mMarkForDeletion) {
+        mScene->RemoveEntity(mSelectedEntity);
+        mSelectedEntity = nullptr;
+        mMarkForDeletion = false;
+    }
+    if (!mModelChange.empty()) {
+        if (mSelectedEntity) {
+            MeshComponent& mesh = mSelectedEntity->GetComponent<MeshComponent>();
+            AssetManager::GiveBack(mesh.MeshAsset->Path);
+            mesh.Init(mModelChange);
+        }
+        mModelChange = "";
+    }
+    Uploader::Flush();
+    AssetManager::Purge();
 }
 
 void Editor::OnPhysicsTick()
@@ -243,6 +264,18 @@ void Editor::EntityEditor()
 {
     ImGui::Begin(ICON_FA_WRENCH " Entity Editor");
     if (mSelectedEntity) {
+        strcpy(mInputField, mSelectedEntity->Name.c_str());
+        ImGui::InputText("##", mInputField, 512);
+        mSelectedEntity->Name = String(mInputField);
+        ImGui::SameLine();
+        ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+        if (ImGui::Button(ICON_FA_TRASH)) {
+            mMarkForDeletion = true;
+        }
+        ImGui::PopStyleColor(3);
+
         // Transform
         if (ImGui::TreeNodeEx(ICON_FA_HOME " Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
             TransformComponent& transform = mSelectedEntity->GetComponent<TransformComponent>();
@@ -265,7 +298,30 @@ void Editor::EntityEditor()
         // TODO(amelie): upgrade that shyte
         if (mSelectedEntity->HasComponent<MeshComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CUBE " Mesh Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-                ImGui::Text("Mesh Path : %s", mSelectedEntity->GetComponent<MeshComponent>().MeshAsset->Path.c_str());
+                auto& mesh = mSelectedEntity->GetComponent<MeshComponent>();
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (mesh.MeshAsset) {
+                    char temp[512];
+                    sprintf(temp, "%s %s", ICON_FA_FILE, mesh.MeshAsset->Path.c_str());
+                    ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                } else {
+                    ImGui::Button(ICON_FA_FILE " Drag something...", ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                }
+                ImGui::PopStyleVar();
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path modelPath(path);
+                        std::string modelString = modelPath.string();
+                        if (modelString.find(".gltf") != std::string::npos) {
+                            for (int i = 0; i < modelString.size(); i++) {
+                                modelString[i] = modelString[i] == '\\' ? '/' : modelString[i];
+                            }
+                            mModelChange = modelString;
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
                 ImGui::TreePop();
             }
         }
@@ -274,9 +330,15 @@ void Editor::EntityEditor()
             for (Ref<ScriptComponent::Instance> script : scripts.Instances) {
                 ImGui::PushID((UInt64)script->Path.c_str());
                 if (ImGui::TreeNodeEx(ICON_FA_CODE " Script Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-                    ImGui::Text(ICON_FA_FILE);
-                    ImGui::SameLine();
-                    ImGui::Button(script->Path.c_str());
+                    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                    if (script->Handle.IsLoaded()) {
+                        char temp[512];
+                        sprintf(temp, "%s %s", ICON_FA_FILE, script->Path.c_str());
+                        ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                    } else {
+                        ImGui::Button(ICON_FA_FILE " Drag something...", ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                    }
+                    ImGui::PopStyleVar();
                     if (ImGui::BeginDragDropTarget()) {
                         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                             const wchar_t* path = (const wchar_t*)payload->Data;
@@ -332,7 +394,7 @@ void Editor::AssetBrowser()
         if (directoryEntry.is_directory()) {
             icon = ICON_FA_FOLDER;
         }
-        auto& extension = directoryEntry.path().extension().string();
+        auto extension = path.extension().string();
         if (extension.find("hlsl") != std::string::npos) {
             icon = ICON_FA_PAINT_BRUSH;
         } else if (extension.find("wren") != std::string::npos) {

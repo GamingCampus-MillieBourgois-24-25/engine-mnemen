@@ -42,14 +42,9 @@ struct Asset
     Shader Shader;          ///< Shader data if the asset is a shader.
     ScriptSource Script;    ///< Script data if the asset is a script.
 
-    Int32 RefCount;        ///< Reference count for asset management.
+    Int32 RefCount;         ///< Reference count for asset management.
 
     using Handle = Ref<Asset>; ///< Alias for asset pointer handle.
-
-    /// @brief Initializes the Asset
-    Asset()
-        : RefCount(0), Type(AssetType::None) {
-    }
 };
 
 /// @class AssetManager
@@ -72,9 +67,17 @@ public:
     /// @return A handle to the retrieved asset.
     static Asset::Handle Get(const String& path, AssetType type);
 
+    /// @brief Decreases the ref count of the given asset, mostly used for better recycling/cleaning of resources
+    /// @param path The path of the asset to give back
+    static void GiveBack(const String& path);
+
     /// @brief Frees a previously loaded asset.
     /// @param handle The handle to the asset to be freed.
     static void Free(Asset::Handle handle);
+
+    /// @brief Removes every asset that has a the given ref count. Used for purging unused assets when loading a new scene
+    /// @param refCount The refCount of the assets to delete.
+    static void Purge(int refCount = 0);
 
     /// @struct Data
     /// @brief Internal data structure for asset management.

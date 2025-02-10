@@ -23,6 +23,15 @@ void AssetManager::Clean()
     sData.mAssets.clear();
 }
 
+void AssetManager::GiveBack(const String& path)
+{
+    if (sData.mAssets.empty())
+        return;
+    if (sData.mAssets.count(path) > 0) {
+        sData.mAssets[path]->RefCount--;
+    }
+}
+
 Asset::Handle AssetManager::Get(const String& path, AssetType type)
 {
     if (sData.mAssets.count(path) > 0) {
@@ -110,5 +119,15 @@ void AssetManager::Free(Asset::Handle handle)
         LOG_DEBUG("Freeing asset {0}", handle->Path);
         sData.mAssets[handle->Path].reset();
         sData.mAssets.erase(handle->Path);
+    }
+}
+
+void AssetManager::Purge(int refCount)
+{
+    for (auto& asset : sData.mAssets) {
+        if (asset.second->RefCount <= refCount) {
+            asset.second.reset();
+            sData.mAssets.erase(asset.first);
+        }
     }
 }

@@ -125,10 +125,10 @@ void Uploader::EnqueueAccelerationStructureBuild(Ref<AccelerationStructure> as)
     sData.Requests.push_back(request);
 }
 
-void Uploader::Flush()
+bool Uploader::Flush()
 {
     if (sData.Requests.empty())
-        return;
+        return false;
 
     sData.CmdBuffer = MakeRef<CommandBuffer>(sData.Device, sData.UploadQueue, sData.Heaps, true);
     sData.CmdBuffer->Begin();
@@ -169,6 +169,7 @@ void Uploader::Flush()
     // Wait and clear
     sData.Rhi->Wait();
     ClearRequests();
+    return true;
 }
 
 void Uploader::ClearRequests()

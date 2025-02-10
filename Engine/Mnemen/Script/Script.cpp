@@ -7,6 +7,12 @@
 
 #include <Core/Logger.hpp>
 
+Script::~Script()
+{
+    if (mLoaded)
+        AssetManager::GiveBack(mHandle->Path);
+}
+
 bool Script::SetSource(Asset::Handle handle)
 {
     mVirtualMachine = wrenpp::VM(); // Reset VM
@@ -17,6 +23,9 @@ bool Script::SetSource(Asset::Handle handle)
 
     auto result = mVirtualMachine.executeString(handle->Script.Source);
     if (result == wrenpp::Result::Success) {
+        if (mHandle) {
+            AssetManager::GiveBack(mHandle->Path);
+        }
         mHandle = handle;
         mAwake = mVirtualMachine.method("main", "awake", "call()");
         mQuit = mVirtualMachine.method("main", "quit", "call()");
