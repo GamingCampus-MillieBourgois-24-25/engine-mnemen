@@ -10,6 +10,8 @@
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_dx12.h>
 
+#include <FontAwesome/FontAwesome.hpp>
+
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
 #include <Core/Statistics.hpp>
@@ -48,7 +50,22 @@ RHI::RHI(::Ref<Window> window)
     IO.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-    IO.FontDefault = IO.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf", 15);
+    ImFontConfig mergeConfig = {};
+    mergeConfig.MergeMode = true;
+
+    static const ImWchar rangesFixed[] = {
+    	0x0020, 0x00FF, // Basic Latin + Latin Supplement
+    	0x2026, 0x2026, // ellipsis
+    	0
+    };
+    static const ImWchar rangesIcons[] = {
+    	ICON_MIN_FA, ICON_MAX_FA,
+    	0
+    };
+
+    IO.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf", 16, NULL, rangesFixed);
+    IO.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 14, &mergeConfig, rangesIcons);
+    IO.Fonts->Build();
 
     ImGui_ImplSDL3_InitForD3D(window->GetSDLHandle());
     ImGui_ImplDX12_InitInfo initInfo = {};

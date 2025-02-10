@@ -18,12 +18,13 @@
 /// This enumeration defines various types of assets that can be handled by the system.
 enum class AssetType
 {
-    None,            ///< No asset type specified.
-    Mesh,            ///< A mesh asset.
-    Texture,         ///< A texture asset.
-    Shader,          ///< A shader asset.
-    EnvironmentMap,  ///< An environment map asset.
-    Script           ///< A game script.
+    None,             ///< No asset type specified.
+    Mesh,             ///< A mesh asset.
+    Texture,          ///< A texture asset.
+    Shader,           ///< A shader asset.
+    EnvironmentMap,   ///< An environment map asset.
+    Script,           ///< A game script.
+    MAX               ///< Max enum.
 };
 
 /// @struct Asset
@@ -75,7 +76,6 @@ public:
     /// @param handle The handle to the asset to be freed.
     static void Free(Asset::Handle handle);
 
-private:
     /// @struct Data
     /// @brief Internal data structure for asset management.
     static struct Data

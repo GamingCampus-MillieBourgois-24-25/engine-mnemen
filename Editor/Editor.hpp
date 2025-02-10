@@ -20,10 +20,16 @@ public:
     virtual void OnPhysicsTick() override;
     virtual void OnImGui(const Frame& frame) override;
 private:
+    void BeginDockSpace();
+    void HierarchyPanel();
+    void SetColors();
+    void AssetPanel();
+    void EntityEditor();
+
     Camera mCamera;
 
     Entity* mCameraEntity;
-    Entity* mSponza;
+    Entity* mSelectedEntity;
 
     ImVec2 mViewportSize;
     bool mViewportFocused = false;

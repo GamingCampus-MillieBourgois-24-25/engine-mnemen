@@ -17,6 +17,7 @@
 #include <Core/Profiler.hpp>
 
 #include <imgui.h>
+#include <FontAwesome/FontAwesome.hpp>
 
 Renderer::Renderer(RHI::Ref rhi)
 {
@@ -48,7 +49,7 @@ void Renderer::Render(const Frame& frame, ::Ref<Scene> scene)
 
 void Renderer::UI(const Frame& frame)
 {
-    ImGui::Begin("Renderer");
+    ImGui::Begin(ICON_FA_PAINT_BRUSH " Renderer");
     for (auto& pass : mPasses) {
         pass->UI(frame);
     }

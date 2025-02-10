@@ -31,7 +31,7 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
     }
 
     Asset::Handle asset = MakeRef<Asset>();
-    asset->RefCount++;
+    asset->RefCount = 1;
     asset->Type = type;
     asset->Path = path;
 
