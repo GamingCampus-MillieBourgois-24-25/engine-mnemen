@@ -7,6 +7,17 @@
 
 #include "World/Scene.hpp"
 
+#include <iostream>
+
+#include <Jolt/Jolt.h>
+
+#include <Jolt/Core/TempAllocator.h>
+#include <Jolt/Core/Factory.h>
+#include <Jolt/Physics/PhysicsSettings.h>
+#include <Jolt/Physics/PhysicsSystem.h>
+#include <Jolt/Physics/Body/BodyInterface.h>
+#include <Jolt/Math/Vec3.h>
+
 /// @brief A system for handling physics simulation in the application.
 /// 
 /// The `PhysicsSystem` class provides static methods for initializing, updating, and exiting 
@@ -35,4 +46,8 @@ public:
     /// @param scene The scene object that provides the current state of entities for physics processing.
     /// @param minStepDuration The minimum duration (in seconds) of a physics simulation step.
     static void Update(Ref<Scene> scene, float minStepDuration);
+private:
+
+    
+    
 };
