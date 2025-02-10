@@ -25,4 +25,6 @@ private:
     ComputePipeline::Ref mPipeline;
     float mBrightness = 1.0f;
     float mExposure = 1.0f;
+    float mSaturation = 1.0f;
+    float mContrast = 1.0f;
 };
