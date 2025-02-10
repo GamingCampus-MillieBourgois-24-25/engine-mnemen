@@ -28,9 +28,11 @@ private:
     void EntityEditor();
     void AssetBrowser();
     void LogWindow();
+    void UpdateShortcuts();
     void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
 
     Camera mCamera;
+    String mCurrentScenePath;
 
     Entity* mCameraEntity;
     Entity* mSelectedEntity = nullptr;

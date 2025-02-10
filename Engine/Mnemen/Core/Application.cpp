@@ -130,7 +130,6 @@ void Application::Run()
         }
         Input::PostUpdate();
     }
-    ScriptSystem::Quit(mScene);
     mRHI->Wait();
 }
 

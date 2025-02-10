@@ -5,8 +5,8 @@
 
 #include "SceneSerializer.hpp"
 
-#include <nlohmann/json.hpp>
 #include <Core/File.hpp>
+#include <Core/Logger.hpp>
 
 void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
 {
@@ -65,6 +65,7 @@ void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
     }
 
     File::WriteJSON(root, path);
+    LOG_INFO("Saved scene at {0}", path);
 }
 
 Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
@@ -118,5 +119,6 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
         }
     }
 
+    LOG_INFO("Loaded scene at {0}", path);
     return scene;
 }

@@ -13,6 +13,7 @@
 Editor::Editor(ApplicationSpecs specs)
     : Application(specs)
 {
+    mCurrentScenePath = specs.StartScene;
     mScenePlaying = false;
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity->Private = true;
@@ -39,6 +40,8 @@ void Editor::OnUpdate(float dt)
     mCamera.UpdateMatrices(std::max(mViewportSize.x, 1.0f), std::max(mViewportSize.y, 1.0f));
     if (mViewportFocused && !mScenePlaying)
         mCamera.Input(dt);
+    if (!mScenePlaying)
+        UpdateShortcuts();
 
     auto& cam = mCameraEntity->GetComponent<CameraComponent>();
     cam.Primary = !mScenePlaying;
@@ -53,6 +56,8 @@ void Editor::OnPhysicsTick()
 
 void Editor::OnImGui(const Frame& frame)
 {
+    PROFILE_FUNCTION();
+
     BeginDockSpace();
 
     Profiler::OnUI();
@@ -140,8 +145,12 @@ void Editor::BeginDockSpace()
     if (ImGui::BeginMenuBar())
     {
         if (ImGui::BeginMenu(ICON_FA_FILE " File")) {
-            if (ImGui::MenuItem("Exit")) {
+            if (ImGui::MenuItem("Exit", "Ctrl+Q")) {
+                SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
                 mWindow->Close();
+            }
+            if (ImGui::MenuItem("Save", "Ctrl+S")) {
+                SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
             }
             ImGui::EndMenu();
         }
@@ -381,6 +390,19 @@ void Editor::LogWindow()
     }
     ImGui::EndChild();
     ImGui::End();
+}
+
+void Editor::UpdateShortcuts()
+{
+    if (Input::IsKeyDown(SDLK_LCTRL)) {
+        if (Input::IsKeyPressed(SDLK_Q)) {
+            SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
+            mWindow->Close();
+        }
+        if (Input::IsKeyPressed(SDLK_S)) {
+            SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
+        }
+    }
 }
 
 void Editor::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth)
