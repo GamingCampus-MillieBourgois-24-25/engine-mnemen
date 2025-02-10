@@ -51,14 +51,10 @@ void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
         }
 
         // Script Component
-        entityRoot["hasScript"] = entity->HasComponent<ScriptComponent>();
-        if (entity->HasComponent<ScriptComponent>()) {
-            ScriptComponent scripts = entity->GetComponent<ScriptComponent>();
-
-            entityRoot["scripts"] = nlohmann::json::array();
-            for (auto& instance : scripts.Instances) {
-                entityRoot["scripts"].push_back(instance->Path);
-            }
+        ScriptComponent scripts = entity->GetComponent<ScriptComponent>();
+        entityRoot["scripts"] = nlohmann::json::array();
+        for (auto& instance : scripts.Instances) {
+            entityRoot["scripts"].push_back(instance->Path);
         }
 
         root["entities"].push_back(entityRoot);
@@ -112,7 +108,7 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
         // Has script?
         bool hasScript = jsonEntity["hasScript"].get<bool>();
         if (hasScript) {
-            auto& script = entity->AddComponent<ScriptComponent>();
+            auto& script = entity->GetComponent<ScriptComponent>();
             for (auto& scriptPath : jsonEntity["scripts"]) {
                 script.PushScript(scriptPath);
             }

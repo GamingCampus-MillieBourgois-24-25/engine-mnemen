@@ -285,6 +285,7 @@ void Editor::EntityEditor()
             ImGui::TreePop();
         }
         
+        // CAMERA
         if (mSelectedEntity->HasComponent<CameraComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 CameraComponent& camera = mSelectedEntity->GetComponent<CameraComponent>();
@@ -295,7 +296,8 @@ void Editor::EntityEditor()
                 ImGui::TreePop();
             }
         }
-        // TODO(amelie): upgrade that shyte
+
+        // MESH
         if (mSelectedEntity->HasComponent<MeshComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CUBE " Mesh Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 auto& mesh = mSelectedEntity->GetComponent<MeshComponent>();
@@ -325,39 +327,77 @@ void Editor::EntityEditor()
                 ImGui::TreePop();
             }
         }
-        if (mSelectedEntity->HasComponent<ScriptComponent>()) {
-            ScriptComponent& scripts = mSelectedEntity->GetComponent<ScriptComponent>();
-            for (Ref<ScriptComponent::Instance> script : scripts.Instances) {
-                ImGui::PushID((UInt64)script->Path.c_str());
-                if (ImGui::TreeNodeEx(ICON_FA_CODE " Script Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-                    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
-                    if (script->Handle.IsLoaded()) {
-                        char temp[512];
-                        sprintf(temp, "%s %s", ICON_FA_FILE, script->Path.c_str());
-                        ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0));
-                    } else {
-                        ImGui::Button(ICON_FA_FILE " Drag something...", ImVec2(ImGui::GetContentRegionAvail().x, 0));
-                    }
-                    ImGui::PopStyleVar();
-                    if (ImGui::BeginDragDropTarget()) {
-                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-                            const wchar_t* path = (const wchar_t*)payload->Data;
-					        std::filesystem::path scriptPath(path);
-                            std::string scriptString = scriptPath.string();
-                            if (scriptString.find(".wren") != std::string::npos) {
-                                for (int i = 0; i < scriptString.size(); i++) {
-                                    scriptString[i] = scriptString[i] == '\\' ? '/' : scriptString[i];
-                                }
-                                if (script->Handle.SetSource(AssetManager::Get(scriptString, AssetType::Script)))
-                                    script->Path = scriptString;
-                            }
-                        }
-                        ImGui::EndDragDropTarget();
-                    }
-                    ImGui::TreePop();
+
+        // SCRIPT
+        ScriptComponent& scripts = mSelectedEntity->GetComponent<ScriptComponent>();
+        for (int i = 0; i < scripts.Instances.size(); i++) {
+            Ref<ScriptComponent::Instance> script = scripts.Instances[i];
+            ImGui::PushID((UInt64)script->ID);
+            if (ImGui::TreeNodeEx(ICON_FA_CODE " Script Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
                 }
-                ImGui::PopID();
+                ImGui::PopStyleColor(3);
+                
+                if (script->Handle.IsLoaded()) {
+                    char temp[512];
+                    sprintf(temp, "%s %s", ICON_FA_FILE, script->Path.c_str());
+                    ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                } else {
+                    ImGui::Button(ICON_FA_FILE " Drag something...", ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                }
+                ImGui::PopStyleVar();
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+				        std::filesystem::path scriptPath(path);
+                        std::string scriptString = scriptPath.string();
+                        if (scriptString.find(".wren") != std::string::npos) {
+                            for (int i = 0; i < scriptString.size(); i++) {
+                                scriptString[i] = scriptString[i] == '\\' ? '/' : scriptString[i];
+                            }
+                            if (script->Handle.SetSource(AssetManager::Get(scriptString, AssetType::Script)))
+                                script->Path = scriptString;
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                if (shouldDelete) {
+                    scripts.Instances.erase(scripts.Instances.begin() + i);
+                }
+                ImGui::TreePop();
             }
+            ImGui::PopID();
+        }
+
+        // Add component
+        ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+        if (ImGui::Button(ICON_FA_PLUS " Add Component", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+            ImGui::OpenPopup("AddComponent");
+        }
+        ImGui::PopStyleVar();
+
+        if (ImGui::BeginPopup("AddComponent")) {
+            if (!mSelectedEntity->HasComponent<MeshComponent>()) {
+                if (ImGui::MenuItem(ICON_FA_CUBE " Mesh Component")) {
+                    mSelectedEntity->AddComponent<MeshComponent>();
+                }
+            }
+            if (!mSelectedEntity->HasComponent<CameraComponent>()) {
+                if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera Component")) {
+                    mSelectedEntity->AddComponent<CameraComponent>();
+                }
+            }
+            if (ImGui::MenuItem(ICON_FA_CODE " Script Component")) {
+                mSelectedEntity->GetComponent<ScriptComponent>().AddEmptyScript();
+            }
+            ImGui::EndPopup();
         }
     }
     ImGui::End();

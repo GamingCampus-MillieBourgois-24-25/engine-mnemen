@@ -57,6 +57,7 @@ Entity* Scene::AddEntity(const String& name)
     newEntity->Name = name;
     
     newEntity->AddComponent<TransformComponent>();
+    newEntity->AddComponent<ScriptComponent>();
 
     mEntities.push_back(newEntity);
     return newEntity;
