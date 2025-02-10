@@ -61,7 +61,6 @@ void Editor::PostPresent()
     if (!mModelChange.empty()) {
         if (mSelectedEntity) {
             MeshComponent& mesh = mSelectedEntity->GetComponent<MeshComponent>();
-            AssetManager::GiveBack(mesh.MeshAsset->Path);
             mesh.Init(mModelChange);
         }
         mModelChange = "";
@@ -192,6 +191,12 @@ void Editor::BeginDockSpace()
 void Editor::HierarchyPanel()
 {
     ImGui::Begin(ICON_FA_GLOBE " Scene Hierarchy");
+    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+    if (ImGui::Button(ICON_FA_PLUS " Add Entity", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+        mSelectedEntity = mScene->AddEntity("New Entity");
+    }
+    ImGui::PopStyleVar();
+    ImGui::Separator();
     for (auto& entity : mScene->GetEntityArray()) {
         if (entity->Private)
             continue;
@@ -267,14 +272,6 @@ void Editor::EntityEditor()
         strcpy(mInputField, mSelectedEntity->Name.c_str());
         ImGui::InputText("##", mInputField, 512);
         mSelectedEntity->Name = String(mInputField);
-        ImGui::SameLine();
-        ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
-        if (ImGui::Button(ICON_FA_TRASH)) {
-            mMarkForDeletion = true;
-        }
-        ImGui::PopStyleColor(3);
 
         // Transform
         if (ImGui::TreeNodeEx(ICON_FA_HOME " Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -381,8 +378,6 @@ void Editor::EntityEditor()
         if (ImGui::Button(ICON_FA_PLUS " Add Component", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
             ImGui::OpenPopup("AddComponent");
         }
-        ImGui::PopStyleVar();
-
         if (ImGui::BeginPopup("AddComponent")) {
             if (!mSelectedEntity->HasComponent<MeshComponent>()) {
                 if (ImGui::MenuItem(ICON_FA_CUBE " Mesh Component")) {
@@ -399,6 +394,11 @@ void Editor::EntityEditor()
             }
             ImGui::EndPopup();
         }
+        if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+            mScene->RemoveEntity(mSelectedEntity);
+            mSelectedEntity = nullptr;
+        }
+        ImGui::PopStyleVar();
     }
     ImGui::End();
 }

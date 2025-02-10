@@ -77,7 +77,7 @@ public:
 
     /// @brief Removes every asset that has a the given ref count. Used for purging unused assets when loading a new scene
     /// @param refCount The refCount of the assets to delete.
-    static void Purge(int refCount = 0);
+    static void Purge(int refCount = 1);
 
     /// @struct Data
     /// @brief Internal data structure for asset management.

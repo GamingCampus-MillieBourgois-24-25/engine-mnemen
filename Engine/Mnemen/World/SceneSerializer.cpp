@@ -90,6 +90,7 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
         bool hasMesh = jsonEntity["hasMesh"].get<bool>();
         if (hasMesh) {
             auto& mesh = entity->AddComponent<MeshComponent>();
+            mesh.ParentEntity = entity;
             mesh.Init(jsonEntity["meshPath"]);
         }
 
@@ -106,12 +107,9 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
         }
 
         // Has script?
-        bool hasScript = jsonEntity["hasScript"].get<bool>();
-        if (hasScript) {
-            auto& script = entity->GetComponent<ScriptComponent>();
-            for (auto& scriptPath : jsonEntity["scripts"]) {
-                script.PushScript(scriptPath);
-            }
+        auto& script = entity->GetComponent<ScriptComponent>();
+        for (auto& scriptPath : jsonEntity["scripts"]) {
+            script.PushScript(scriptPath);
         }
     }
 

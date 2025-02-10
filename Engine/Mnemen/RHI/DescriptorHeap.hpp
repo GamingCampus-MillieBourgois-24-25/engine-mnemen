@@ -30,8 +30,8 @@ public:
         int Index = -1; ///< The index of the descriptor in the heap.
         DescriptorHeap* Parent = nullptr; ///< The parent descriptor heap.
 
-        D3D12_CPU_DESCRIPTOR_HANDLE CPU; ///< CPU handle to the descriptor.
-        D3D12_GPU_DESCRIPTOR_HANDLE GPU; ///< GPU handle to the descriptor (only if shader visible).
+        D3D12_CPU_DESCRIPTOR_HANDLE CPU = {}; ///< CPU handle to the descriptor.
+        D3D12_GPU_DESCRIPTOR_HANDLE GPU = {}; ///< GPU handle to the descriptor (only if shader visible).
 
         /// @brief Default constructor.
         Descriptor() = default;

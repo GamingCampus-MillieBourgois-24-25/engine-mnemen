@@ -7,12 +7,15 @@
 
 Scene::Scene()
 {
-    
+    mEntities.reserve(64);
 }
 
 Scene::~Scene()
 {
     for (auto& entity : mEntities) {
+        if (entity->HasComponent<MeshComponent>()) {
+            entity->GetComponent<MeshComponent>().Free();
+        }
         mRegistry.destroy(entity->ID);
         delete entity;
     }
@@ -65,11 +68,12 @@ Entity* Scene::AddEntity(const String& name)
 
 void Scene::RemoveEntity(Entity* e)
 {
-    for (UInt64 i = 0; i < mEntities.size(); i++) {
-        if (e->ID == mEntities[i]->ID) {
+    if (e->HasComponent<MeshComponent>()) {
+        e->GetComponent<MeshComponent>().Free();
+    }
+    mRegistry.destroy(e->ID);
+    for (int i = 0; i < mEntities.size(); i++) {
+        if (mEntities[i]->ID == e->ID)
             mEntities.erase(mEntities.begin() + i);
-            mRegistry.destroy(e->ID);
-            delete e;
-        }
     }
 }

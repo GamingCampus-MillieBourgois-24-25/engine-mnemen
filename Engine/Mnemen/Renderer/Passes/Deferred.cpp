@@ -194,7 +194,9 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         auto registry = scene->GetRegistry();
         auto view = registry->view<TransformComponent, MeshComponent>();
         for (auto [entity, transform, mesh]: view.each()) {
-            drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, transform.Matrix);
+            if (mesh.Loaded) {
+                drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, transform.Matrix);
+            }
         }
         frame.CommandBuffer->Barrier(albedoBuffer->Texture, ResourceLayout::Shader);
         frame.CommandBuffer->Barrier(normalBuffer->Texture, ResourceLayout::Shader);

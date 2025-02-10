@@ -7,6 +7,7 @@
 
 #include <entt/entt.hpp>
 #include <Core/Common.hpp>
+#include <Core/Logger.hpp>
 
 class Scene;
 
@@ -14,9 +15,9 @@ class Scene;
 struct Entity
 {
     /// @brief The internal entt ID
-    entt::entity ID;
+    entt::entity ID = {};
     /// @brief The name of the entity
-    String Name;
+    String Name = "";
     /// @brief The parent entt registry
     entt::registry* ParentRegistry;
     /// @brief If this is set to true, it will not be serialized or shown in the editor
@@ -36,6 +37,9 @@ struct Entity
     template<typename T, typename... Arguments>
     T& AddComponent(Arguments&&... args)
     {
+        if (HasComponent<T>()) {
+            LOG_WARN("da fuck");
+        }
         return ParentRegistry->emplace<T>(ID, std::forward<Arguments>(args)...);
     }
 

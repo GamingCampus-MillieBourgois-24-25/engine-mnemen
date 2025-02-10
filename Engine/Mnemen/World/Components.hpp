@@ -13,6 +13,8 @@
 #include <Script/Script.hpp>
 #include <Utility/UUID.hpp>
 
+struct Entity;
+
 /// @brief A component representing a transform -- the spatial representation of the object.
 struct TransformComponent
 {
@@ -32,14 +34,21 @@ struct TransformComponent
 /// @brief A component holding a mesh
 struct MeshComponent
 {
+    /// @brief Used for debugging
+    Entity* ParentEntity;
+
     /// @brief The asset handle pointing to the mesh
     Asset::Handle MeshAsset;
+
+    /// @brief Whether or not the model is loaded
+    bool Loaded = false;
 
     /// @brief Initializes the component and loads the mesh at the given string
     /// @param string The path of the component
     void Init(const String& string);
 
-    ~MeshComponent();
+    /// @brief Manually free the mesh asset
+    void Free();
 };
 
 /// @brief A component holding camera information
