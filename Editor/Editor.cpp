@@ -7,6 +7,9 @@
 
 #include <FontAwesome/FontAwesome.hpp>
 
+#include <imgui.h>
+#include <imgui_internal.h>
+
 Editor::Editor(ApplicationSpecs specs)
     : Application(specs)
 {
@@ -214,7 +217,99 @@ void Editor::AssetPanel()
 void Editor::EntityEditor()
 {
     ImGui::Begin(ICON_FA_WRENCH " Entity Editor");
+    if (mSelectedEntity) {
+        // Transform
+        if (ImGui::TreeNodeEx(ICON_FA_HOME " Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+            TransformComponent& transform = mSelectedEntity->GetComponent<TransformComponent>();
+            DrawVec3Control("Position", transform.Position);
+            DrawVec3Control("Scale", transform.Scale);
+            DrawVec3Control("Rotation", transform.Rotation);
+            ImGui::TreePop();
+        }
+        
+        if (mSelectedEntity->HasComponent<CameraComponent>()) {
+            if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                CameraComponent& camera = mSelectedEntity->GetComponent<CameraComponent>();
+                ImGui::Checkbox("Primary", &camera.Primary);
+                ImGui::SliderFloat("FOV", &camera.FOV, 0.0f, 360.0f);
+                ImGui::SliderFloat("Near", &camera.Near, 0.0f, camera.Far);
+                ImGui::SliderFloat("Far", &camera.Far, camera.Near, 1000.0f);
+                ImGui::TreePop();
+            }
+        }
+        // TODO(amelie): upgrade that shyte
+        if (mSelectedEntity->HasComponent<MeshComponent>()) {
+            if (ImGui::TreeNodeEx(ICON_FA_CUBE " Mesh Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                ImGui::Text("Mesh Path : %s", mSelectedEntity->GetComponent<MeshComponent>().MeshAsset->Path.c_str());
+                ImGui::TreePop();
+            }
+        }
+        if (mSelectedEntity->HasComponent<ScriptComponent>()) {
+            ScriptComponent& scripts = mSelectedEntity->GetComponent<ScriptComponent>();
+            for (auto& script : scripts.Instances) {
+                ImGui::PushID((UInt64)script->Path.c_str());
+                if (ImGui::TreeNodeEx(ICON_FA_CODE " Script Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::Text("Script Path : %s", script->Path.c_str());
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
+            }
+        }
+    }
     ImGui::End();
+}
+
+void Editor::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth)
+{
+    ImGuiIO& io = ImGui::GetIO();
+	auto boldFont = io.Fonts->Fonts[0];
+	ImGui::PushID(label.c_str());
+	ImGui::Columns(2);
+	ImGui::SetColumnWidth(0, columnWidth);
+	ImGui::Text(label.c_str());
+	ImGui::NextColumn();
+	ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+	float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+	ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+	ImGui::PushFont(boldFont);
+	if (ImGui::Button("X", buttonSize))
+		values.x = resetValue;
+	ImGui::PopFont();
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine();
+	ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+	ImGui::PushFont(boldFont);
+	if (ImGui::Button("Y", buttonSize))
+		values.y = resetValue;
+	ImGui::PopFont();
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine();
+	ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+	ImGui::PushFont(boldFont);
+	if (ImGui::Button("Z", buttonSize))
+		values.z = resetValue;
+	ImGui::PopFont();
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine();
+	ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
+	ImGui::PopItemWidth();
+	ImGui::PopStyleVar();
+	ImGui::Columns(1);
+	ImGui::PopID();
 }
 
 void Editor::SetColors()

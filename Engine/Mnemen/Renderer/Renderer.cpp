@@ -7,7 +7,6 @@
 #include "RendererTools.hpp"
 
 #include "Passes/Deferred.hpp"
-#include "Passes/Forward.hpp"
 #include "Passes/Composite.hpp"
 #include "Passes/DOF.hpp"
 #include "Passes/SSAO.hpp"

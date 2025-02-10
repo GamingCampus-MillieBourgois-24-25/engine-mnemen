@@ -51,6 +51,12 @@ void Mesh::FreeNodes(MeshNode* node)
 
 void Mesh::ProcessNode(MeshNode* node, aiNode *assimpNode, const aiScene *scene)
 {
+    // Create node resources
+    for (int i = 0; i < FRAMES_IN_FLIGHT; i++) {
+        node->ModelBuffer[i] = mRHI->CreateBuffer(512, 0, BufferType::Constant, node->Name + " Model Buffer " + std::to_string(i));
+        node->ModelBuffer[i]->BuildCBV();
+    }
+
     for (int i = 0; i < assimpNode->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[assimpNode->mMeshes[i]];
         glm::mat4 transform(1.0f);

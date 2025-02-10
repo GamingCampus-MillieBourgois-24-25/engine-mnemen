@@ -25,11 +25,12 @@ private:
     void SetColors();
     void AssetPanel();
     void EntityEditor();
+    void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
 
     Camera mCamera;
 
     Entity* mCameraEntity;
-    Entity* mSelectedEntity;
+    Entity* mSelectedEntity = nullptr;
 
     ImVec2 mViewportSize;
     bool mViewportFocused = false;
