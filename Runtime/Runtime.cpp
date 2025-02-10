@@ -28,7 +28,7 @@ void Runtime::OnPhysicsTick()
 
 }
 
-void Runtime::OnImGui()
+void Runtime::OnImGui(const Frame& frame)
 {
    
 }

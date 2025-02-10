@@ -12,6 +12,7 @@ Editor::Editor(ApplicationSpecs specs)
 {
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity->Private = true;
+    
     auto& cam = mCameraEntity->AddComponent<CameraComponent>();
     cam.Primary = true;
 }
@@ -26,7 +27,8 @@ void Editor::OnUpdate(float dt)
     int width, height;
     mWindow->PollSize(width, height);
 
-    mCamera.Update(dt, width, height);
+    if (!mUIFocused)
+        mCamera.Update(dt, width, height);
 
     auto& cam = mCameraEntity->GetComponent<CameraComponent>();
     cam.Primary = true;
@@ -39,8 +41,11 @@ void Editor::OnPhysicsTick()
 
 }
 
-void Editor::OnImGui()
+void Editor::OnImGui(const Frame& frame)
 {
+    Profiler::OnUI();
+    mRenderer->UI(frame);
+
     ImGui::Begin("Debug Window");
     if (ImGui::Button("Save Test Scene")) {
         SceneSerializer::SerializeScene(mScene, "Assets/Scenes/Test.json");

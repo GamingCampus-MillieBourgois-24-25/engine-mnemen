@@ -21,6 +21,8 @@
 #include <AI/AISystem.hpp>
 #include <Script/ScriptSystem.hpp>
 
+#include <imgui.h>
+
 Application* Application::sInstance;
 
 Application::Application(ApplicationSpecs specs)
@@ -94,6 +96,7 @@ void Application::Run()
         // Engine Update
         {
             PROFILE_SCOPE("Systems Update");
+            
             mWindow->Update();
             AISystem::Update(mScene);
             AudioSystem::Update(mScene);
@@ -123,7 +126,7 @@ void Application::OnPrivateRender()
     Frame frame = mRHI->Begin();
     frame.CommandBuffer->Begin();
 
-    // -PROFILE_SCOPE_GPU("Main Frame", frame.CommandBuffer);
+    // PROFILE_SCOPE_GPU("Main Frame", frame.CommandBuffer);
 
     // Scene render
     {
@@ -137,8 +140,12 @@ void Application::OnPrivateRender()
         frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
         frame.CommandBuffer->SetRenderTargets({ frame.BackbufferView }, nullptr);
         frame.CommandBuffer->BeginGUI(frame.Width, frame.Height);
-        OnImGui();
-        Profiler::OnUI();
+        
+        OnImGui(frame);
+
+        ImGuiIO& io = ImGui::GetIO();
+        mUIFocused = io.WantCaptureMouse || io.WantCaptureKeyboard;
+
         frame.CommandBuffer->EndGUI();
         frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::Present);
         frame.CommandBuffer->EndMarker();

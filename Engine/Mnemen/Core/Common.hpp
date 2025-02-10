@@ -16,6 +16,7 @@
 #include <array>
 #include <string>
 #include <queue>
+#include <set>
 
 /// @brief Bitwise shift macro for setting the bit at position b.
 /// 
@@ -105,6 +106,12 @@ constexpr Unique<T> MakeUnique(Arguments&&... arguments)
 /// A weak pointer to the type `T`, which does not affect the reference count.
 template<typename T>
 using Weak = std::weak_ptr<T>;
+
+/// @brief Set type alias.
+/// 
+/// A set of type `T`.
+template<typename T>
+using Set = std::set<T>;
 
 /// @brief Vector type alias.
 /// 

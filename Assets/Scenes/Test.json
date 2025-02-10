@@ -1,11 +1,11 @@
 {
     "entities": [
         {
-            "name": "Sponza",
             "hasCamera": false,
             "hasMesh": true,
             "hasScript": true,
             "meshPath": "Assets/Models/Sponza/Sponza.gltf",
+            "name": "Sponza",
             "position": [
                 0.0,
                 0.0,
@@ -21,7 +21,10 @@
                 1.0,
                 1.0
             ],
-            "scriptPath": "Assets/Scripts/Hello.wren"
+            "scripts": [
+                "Assets/Scripts/Hello.wren",
+                "Assets/Scripts/Bye.wren"
+            ]
         }
     ]
 }

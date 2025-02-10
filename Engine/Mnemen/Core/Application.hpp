@@ -49,7 +49,7 @@ public:
     virtual void OnPhysicsTick() = 0;
 
     /// @brief Called during the UI rendering phase to handle ImGui drawing.
-    virtual void OnImGui() = 0;
+    virtual void OnImGui(const Frame& frame) = 0;
 
     /// @brief Starts the application loop.
     void Run();
@@ -79,5 +79,7 @@ protected:
     Renderer::Ref mRenderer; ///< Renderer instance.
     
     Ref<Scene> mScene; ///< Currently active scene.
+
+    bool mUIFocused; ///< Whether or not UI elements are focused.
 };
 

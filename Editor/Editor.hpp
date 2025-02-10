@@ -17,7 +17,7 @@ public:
 
     virtual void OnUpdate(float dt) override;
     virtual void OnPhysicsTick() override;
-    virtual void OnImGui() override;
+    virtual void OnImGui(const Frame& frame) override;
 private:
     Camera mCamera;
 
