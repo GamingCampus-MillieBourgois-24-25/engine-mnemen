@@ -20,6 +20,9 @@ Editor::Editor(ApplicationSpecs specs)
     cam.Primary = true;
 
     SetColors();
+
+    mBaseDirectory = "Assets";
+    mCurrentDirectory = "Assets";
 }
 
 Editor::~Editor()
@@ -207,6 +210,7 @@ void Editor::AssetPanel()
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem(ICON_FA_FOLDER_O " Asset Directory")) {
+            AssetBrowser();
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
@@ -257,6 +261,79 @@ void Editor::EntityEditor()
         }
     }
     ImGui::End();
+}
+
+void Editor::AssetBrowser()
+{
+    if (mCurrentDirectory != std::filesystem::path(mBaseDirectory)) {
+        if (ImGui::Button("<-")) {
+            mCurrentDirectory = mCurrentDirectory.parent_path();
+        }
+    }
+    
+    static float padding = 16.0f;
+	static float thumbnailSize = 92.0f;
+	float cellSize = thumbnailSize + padding;
+
+	float panelWidth = ImGui::GetContentRegionAvail().x;
+	int columnCount = (int)(panelWidth / cellSize);
+	if (columnCount < 1)
+		columnCount = 1;
+    
+    ImGui::Columns(columnCount, 0, false);
+
+    for (auto& directoryEntry : std::filesystem::directory_iterator(mCurrentDirectory))
+	{
+		const auto& path = directoryEntry.path();
+		std::string filenameString = path.filename().string();
+		
+		ImGui::PushID(filenameString.c_str());
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        
+        const char* icon = ICON_FA_FILE;
+        if (directoryEntry.is_directory()) {
+            icon = ICON_FA_FOLDER;
+        }
+        auto& extension = directoryEntry.path().extension().string();
+        if (extension.find("hlsl") != std::string::npos) {
+            icon = ICON_FA_PAINT_BRUSH;
+        } else if (extension.find("wren") != std::string::npos) {
+            icon = ICON_FA_CODE;
+        } else if (extension.find("png") != std::string::npos || extension.find("jpg") != std::string::npos || extension.find("jpeg") != std::string::npos) {
+            icon = ICON_FA_FILE_IMAGE_O;
+        } else if (extension.find("gltf") != std::string::npos || extension.find("obj") != std::string::npos || extension.find("fbx") != std::string::npos) {
+            icon = ICON_FA_CUBE;
+        }
+
+        ImGui::PushFont(mRHI->GetLargeIconFont());
+        ImVec2 buttonPos = ImGui::GetCursorPos();
+        ImGui::Button(icon, ImVec2(thumbnailSize, thumbnailSize));
+        ImGui::PopFont();
+		
+        if (ImGui::BeginDragDropSource())
+		{
+			std::filesystem::path relativePath(path);
+			const wchar_t* itemPath = relativePath.c_str();
+			ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
+			ImGui::EndDragDropSource();
+		}
+		ImGui::PopStyleColor();
+		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		{
+			if (directoryEntry.is_directory())
+				mCurrentDirectory /= path.filename();
+		}
+
+        float buttonWidth = ImGui::GetItemRectSize().x;
+        float contentWidth = ImGui::GetContentRegionAvail().x;
+		float offset = (contentWidth - buttonWidth) / 2.0f;
+        ImGui::SetCursorPos(ImVec2(buttonPos.x + offset, buttonPos.y + ImGui::GetItemRectSize().y + 10));
+        ImGui::Text(filenameString.c_str());
+        
+        ImGui::NextColumn();
+		ImGui::PopID();
+	}
+	ImGui::Columns(1);
 }
 
 void Editor::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth)

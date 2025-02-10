@@ -6,7 +6,6 @@
 #include <RHI/RHI.hpp>
 #include <RHI/Uploader.hpp>
 
-#include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_dx12.h>
 
@@ -66,6 +65,8 @@ RHI::RHI(::Ref<Window> window)
     IO.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf", 16, NULL, rangesFixed);
     IO.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 14, &mergeConfig, rangesIcons);
     IO.Fonts->Build();
+
+    mLargeFont = IO.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 56, nullptr, rangesIcons);
 
     ImGui_ImplSDL3_InitForD3D(window->GetSDLHandle());
     ImGui_ImplDX12_InitInfo initInfo = {};

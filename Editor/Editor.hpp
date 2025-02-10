@@ -7,6 +7,7 @@
 
 #include <Mnemen.hpp>
 #include <imgui.h>
+#include <filesystem>
 
 #include "EditorCamera.hpp"
 
@@ -25,6 +26,7 @@ private:
     void SetColors();
     void AssetPanel();
     void EntityEditor();
+    void AssetBrowser();
     void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
 
     Camera mCamera;
@@ -34,4 +36,7 @@ private:
 
     ImVec2 mViewportSize;
     bool mViewportFocused = false;
+
+    std::filesystem::path mBaseDirectory;
+    std::filesystem::path mCurrentDirectory;
 };
