@@ -100,7 +100,7 @@ Deferred::Deferred(RHI::Ref rhi)
         specs.DepthEnabled = true;
         specs.DepthFormat = TextureFormat::Depth32;
         specs.CCW = false;
-        specs.Signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 12);
+        specs.Signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 8 + sizeof(glm::mat4));
 
         mPipeline = mRHI->CreateMeshPipeline(specs);
     }
@@ -151,15 +151,12 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
             }
 
             glm::mat4 globalTransform = transform * node->Transform;
-            node->ModelBuffer[frame.FrameIndex]->CopyMapped(glm::value_ptr(globalTransform), sizeof(glm::mat4));
-
             for (MeshPrimitive primitive : node->Primitives) {
                 Statistics::Get().InstanceCount++;
                 MeshMaterial material = model->Materials[primitive.MaterialIndex];
 
                 struct PushConstants {
                     int Matrices;
-                    int ModelBuffer;
                     int VertexBuffer;
                     int IndexBuffer;
                     int MeshletBuffer;
@@ -167,10 +164,9 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
                     int MeshletTriangleBuffer;
                     int Albedo;
                     int Sampler;
-                    glm::ivec3 Pad;
+                    glm::mat4 Transform;
                 } data = {
                     cameraBuffer->Descriptor(ViewType::None, frame.FrameIndex),
-                    node->ModelBuffer[frame.FrameIndex]->CBV(),
                     primitive.VertexBuffer->SRV(),
                     primitive.IndexBuffer->SRV(),
                     primitive.MeshletBuffer->SRV(),
@@ -178,7 +174,7 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
                     primitive.MeshletTriangles->SRV(),
                     material.AlbedoView->GetDescriptor().Index,
                     sampler->Descriptor(),
-                    glm::ivec3(0)
+                    transform
                 };
                 frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
                 frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);

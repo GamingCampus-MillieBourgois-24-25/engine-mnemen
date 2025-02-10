@@ -24,50 +24,6 @@
                 "Assets/Scripts/Bye.wren",
                 "Assets/Scripts/Bye.wren"
             ]
-        },
-        {
-            "hasCamera": false,
-            "hasMesh": true,
-            "meshPath": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf",
-            "name": "New Entity",
-            "position": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "rotation": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "scale": [
-                1.0,
-                1.0,
-                1.0
-            ],
-            "scripts": []
-        },
-        {
-            "hasCamera": false,
-            "hasMesh": true,
-            "meshPath": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf",
-            "name": "New Entity",
-            "position": [
-                -5.599999904632568,
-                0.0,
-                0.0
-            ],
-            "rotation": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "scale": [
-                1.0,
-                1.0,
-                1.0
-            ],
-            "scripts": []
         }
     ]
 }
