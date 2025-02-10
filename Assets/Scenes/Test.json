@@ -21,7 +21,10 @@
                 1.0,
                 1.0
             ],
-            "scriptPath": "Assets/Scripts/Hello.wren"
+            "scripts": [
+                "Assets/Scripts/Hello.wren",
+                "Assets/Scripts/Bye.wren"
+            ]
         }
     ]
 }

@@ -5,7 +5,9 @@
 
 #include <RHI/CommandBuffer.hpp>
 #include <RHI/Utilities.hpp>
+
 #include <Core/Assert.hpp>
+#include <Core/Statistics.hpp>
 
 #include <imgui.h>
 #include <imgui_impl_dx12.h>
@@ -169,21 +171,28 @@ void CommandBuffer::ClearRenderTarget(View::Ref view, float r, float g, float b)
 void CommandBuffer::Draw(int vertexCount)
 {
     mList->DrawInstanced(vertexCount, 1, 0, 0);
+    Statistics::Get().DrawCallCount++;
 }
 
-void CommandBuffer::DispatchMesh(int meshletCount)
+void CommandBuffer::DispatchMesh(int meshletCount, int triangleCount)
 {
     mList->DispatchMesh(meshletCount, 1, 1);
+    Statistics::Get().MeshletCount += meshletCount;
+    Statistics::Get().TriangleCount += triangleCount;
+    Statistics::Get().DrawCallCount++;
 }
 
 void CommandBuffer::DrawIndexed(int indexCount)
 {
     mList->DrawIndexedInstanced(indexCount, 1, 0, 0, 0);
+    Statistics::Get().TriangleCount += indexCount / 3;
+    Statistics::Get().DrawCallCount++;
 }
 
 void CommandBuffer::Dispatch(int x, int y, int z)
 {
     mList->Dispatch(x, y, z);
+    Statistics::Get().DispatchCount += 1;
 }
 
 void CommandBuffer::CopyBufferToBuffer(::Ref<Resource> dst, ::Ref<Resource> src)

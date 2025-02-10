@@ -12,6 +12,7 @@
 
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
+#include <Core/Statistics.hpp>
 
 RHI::RHI(::Ref<Window> window)
     : mWindow(window)
@@ -87,6 +88,8 @@ void RHI::Submit(const Vector<CommandBuffer::Ref> buffers)
 
 Frame RHI::Begin()
 {
+    Statistics::Reset();
+
     Frame frame = {};
     frame.FrameIndex = mSurface->GetBackbufferIndex();
     frame.Backbuffer = mSurface->GetBackbuffer(frame.FrameIndex);

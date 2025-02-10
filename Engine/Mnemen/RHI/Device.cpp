@@ -9,6 +9,7 @@
 #include <Core/Assert.hpp>
 #include <Core/Logger.hpp>
 #include <Core/UTF.hpp>
+#include <Core/Statistics.hpp>
 
 #include <unordered_map>
 
@@ -98,6 +99,9 @@ Device::Device()
         infoQueue->PushStorageFilter(&filter);
         infoQueue->Release();
     }
+
+    // Set max vram stat
+    Statistics::Get().MaxVRAM = desc.DedicatedVideoMemory;
 }
 
 Device::~Device()

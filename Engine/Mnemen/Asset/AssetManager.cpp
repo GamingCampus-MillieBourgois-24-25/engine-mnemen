@@ -56,6 +56,7 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
                 desc.Format = TextureFormat::BC7;
                 desc.Usage = TextureUsage::ShaderResource;
                 asset->Texture = sData.mRHI->CreateTexture(desc);
+                asset->Texture->Tag(ResourceTag::ModelTexture);
         
                 Uploader::EnqueueTextureUpload(file.Bytes, asset->Texture);
             } else {
@@ -71,6 +72,7 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
                 desc.Format = TextureFormat::RGBA8;
                 desc.Usage = TextureUsage::ShaderResource;
                 asset->Texture = sData.mRHI->CreateTexture(desc);
+                asset->Texture->Tag(ResourceTag::ModelTexture);
             
                 Uploader::EnqueueTextureUpload(image, asset->Texture);
             }

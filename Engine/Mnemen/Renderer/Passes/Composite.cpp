@@ -32,6 +32,7 @@ Composite::Composite(RHI::Ref rhi)
     
     auto ldr = RendererTools::CreateSharedTexture("LDRColorBuffer", desc);
     ldr->AddView(ViewType::Storage);
+    ldr->Texture->Tag(ResourceTag::RenderPassIO);
 }
 
 void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
