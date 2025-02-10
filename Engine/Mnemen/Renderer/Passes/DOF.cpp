@@ -5,13 +5,12 @@
 
 #include "DOF.hpp"
 
-
 DOF::DOF(RHI::Ref rhi)
     : RenderPass(rhi)
 {
     Asset::Handle computeShader  = AssetManager::Get("Assets/Shaders/DOF/Compute.hlsl", AssetType::Shader);
 
-    auto signature = mRHI->CreateRootSignature({ RootType::PushConstant}, sizeof(int) * 4);
+    auto signature = mRHI->CreateRootSignature({ RootType::PushConstant}, sizeof(int) * 6);
     mPipeline = mRHI->CreateComputePipeline(computeShader->Shader, signature);
 }
 
@@ -21,10 +20,13 @@ void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
     auto depth = RendererTools::Get("GBufferDepth");
 
     struct {
-        int Output;
         int DepthIndex;
+        int InputIndex;
+
         float Far;
-        float Pad;
+        float Golden_Angle;
+        float Max_Blur_Size;
+        float Rad_Scale;
     } PushConstants = {
         color->Descriptor(ViewType::Storage),
         depth->Descriptor(ViewType::ShaderResource),
