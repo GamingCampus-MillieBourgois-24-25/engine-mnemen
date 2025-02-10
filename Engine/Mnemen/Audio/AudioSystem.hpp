@@ -27,8 +27,11 @@ public:
     /// playback and cleaning up.
     static void Exit();
 
-    static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+    static void SetListenerPosition(float x, float y, float z);
+
     static void SetVolume(float newVolume);
+
+    static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 
     /// @brief Updates the audio system based on the current scene.
     /// 
@@ -40,8 +43,7 @@ public:
 
 private:
     static ma_result result;
-    static ma_decoder decoder;
-    static ma_device_config deviceConfig;
-    static ma_device device;
+    static ma_sound sound;
+    static ma_engine engine;
     static float volume;
 };

@@ -10,40 +10,55 @@
 #include <Core/Profiler.hpp>
 
 ma_result AudioSystem::result;
-ma_decoder AudioSystem::decoder;
-ma_device_config AudioSystem::deviceConfig;
-ma_device AudioSystem::device;
+ma_sound AudioSystem::sound;
+ma_engine AudioSystem::engine;
 float AudioSystem::volume = 1.0f;
 
 void AudioSystem::Init(const char *pathAudio)
 {
     LOG_INFO("Initialized Audio system");
-    result = ma_decoder_init_file(pathAudio, NULL, &decoder);
+
+    // Initialisation du moteur audio
+    result = ma_engine_init(NULL, &engine);
+    if (result != MA_SUCCESS) {
+        LOG_ERROR("Failed to initialize audio engine");
+        return;
+    }
+
+    // Initialisation du son
+    result = ma_sound_init_from_file(&engine, pathAudio, 0, NULL, NULL, &sound);
     if (result != MA_SUCCESS) {
         LOG_ERROR("Failed to load audio file");
+        return;
     }
 
-    deviceConfig = ma_device_config_init(ma_device_type_playback);
-    deviceConfig.playback.format = decoder.outputFormat;
-    deviceConfig.playback.channels = decoder.outputChannels;
-    deviceConfig.dataCallback = data_callback;
-    deviceConfig.pUserData = &decoder;
-
-    result = ma_device_init(NULL, &deviceConfig, &device);
-    if (result != MA_SUCCESS) {
-        LOG_ERROR("Failed to initialize device audio");
-    }
+    // --- Configuration du Listener (le moteur en gère un par défaut) ---
+    ma_engine_listener_set_position(&engine, 0, 0.0f, 0.0f, 0.0f);
+    ma_engine_listener_set_direction(&engine, 0, 0.0f, 0.0f, -1.0f);
+    
+    // --- Configuration du Son ---
+    ma_sound_set_spatialization_enabled(&sound, true);
+    ma_sound_set_pinned_listener_index(&sound, 0); // Attache le son au premier listener
+    ma_sound_set_position(&sound, 50.0f, 50.0f, 0.0f); // Place le son à droite
 }
+
 
 void AudioSystem::Exit()
 {
-    ma_device_uninit(&device);
-    ma_decoder_uninit(&decoder);
+    ma_sound_uninit(&sound);
+    ma_engine_uninit(&engine);
 }
+
+void AudioSystem::SetListenerPosition(float x, float y, float z)
+{
+    ma_engine_listener_set_position(&engine, 0, x, y, z);
+}
+
 
 void AudioSystem::SetVolume(float newVolume)
 {
     volume = newVolume;
+    ma_sound_set_volume(&sound, volume);
 }
 
 void AudioSystem::data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
@@ -68,5 +83,5 @@ void AudioSystem::data_callback(ma_device* pDevice, void* pOutput, const void* p
 void AudioSystem::Update(Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
-    ma_device_start(&device);
+    ma_sound_start(&sound);
 }

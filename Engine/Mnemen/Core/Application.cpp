@@ -34,7 +34,7 @@ Application::Application(ApplicationSpecs specs)
     Input::Init();
     PhysicsSystem::Init();
     AudioSystem::Init("Assets/Audio/Back_music.mp3");
-    AudioSystem::SetVolume(-20.0f);
+    AudioSystem::SetVolume(5.0f);
     AISystem::Init();
     ScriptSystem::Init();
 
