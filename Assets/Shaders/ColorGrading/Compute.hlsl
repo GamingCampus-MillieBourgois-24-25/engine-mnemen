@@ -27,6 +27,8 @@ struct PushConstants {
 
     // float4
     float4 Shadows;
+
+    // float4
     float4 ColorFilter;
 
     // float4
