@@ -1,4 +1,0 @@
-- Create/Delete entity
-- Add/Remove component
-- Handle no textures
-- Material component
