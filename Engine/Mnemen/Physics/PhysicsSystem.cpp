@@ -9,15 +9,22 @@ JPH::PhysicsSystem* sPhysicsSystem;
 JPH::BodyInterface* sPhysicsWorld;
 JPH::Vec3 sGravity;
 JPH::TempAllocatorImpl* sAllocator;
+JPH::BroadPhaseLayer sNonMoving(0) ;
+JPH::BroadPhaseLayer sMoving(1);
+int mLayers(2);
 
 #include <Core/Logger.hpp>
 
 void PhysicsSystem::Init()
 {
-    int cMaxBodies = 65536;
-    int cNumBodyMutexes = 0;
-    int cMaxBodyPairs = 65536;
-    int cMaxContactConstraints = 10240;
+    JPH::RegisterDefaultAllocator();
+
+    JPH::Factory::sInstance = new JPH::Factory();
+
+    int MaxBodies = 65536;
+    int NumBodyMutexes = 0;
+    int MaxBodyPairs = 65536;
+    int MaxContactConstraints = 10240;
 
     /*JPH::BPLayerInterfaceImpl broad_phase_layer_interface;
     ObjectVsBroadPhaseLayerFilterImpl object_vs_broadphase_layer_filter;
@@ -28,9 +35,8 @@ void PhysicsSystem::Init()
 
     //Initialize the Jolt Physics system
     sPhysicsSystem = new JPH::PhysicsSystem();
-    //sPhysicsSystem->Init(65536, 0, 65536, 10240,broad_phase_layer_interface, object_vs_broadphase_layer_filter, object_vs_object_layer_filter );
-
-    //Set up gravity (for example, standard gravity)
+    //sPhysicsSystem->Init(MaxBodies, NumBodyMutexes, MaxBodyPairs, MaxContactConstraints, broad_phase_layer_interface, 
+    //object_vs_broadphase_layer_filter, object_vs_object_layer_filter );
     sGravity = JPH::Vec3(0.0f, -9.81f, 0.0f);
     sPhysicsSystem->SetGravity(sGravity);
 
@@ -43,6 +49,8 @@ void PhysicsSystem::Init()
 void PhysicsSystem::Exit()
 {
     // Clean up allocated resources
+    delete JPH::Factory::sInstance;
+    JPH::Factory::sInstance = nullptr;
     delete sPhysicsSystem;
     delete sAllocator;
 }
