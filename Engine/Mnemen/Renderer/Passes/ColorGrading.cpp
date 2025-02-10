@@ -14,7 +14,7 @@ ColorGrading::ColorGrading(RHI::Ref rhi)
     Asset::Handle computerShader = AssetManager::Get("Assets/Shaders/ColorGrading/Compute.hlsl", AssetType::Shader); 
 
     //Create a root signature for the shader (push constants for small data)
-    auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int)* 8);
+    auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 20);
 
     //Create the compute pipeline with the shader and root signature 
     mPipeline = mRHI->CreateComputePipeline(computerShader->Shader, signature);
@@ -37,7 +37,14 @@ void ColorGrading::Render(const Frame& frame, ::Ref<Scene> scene)
         float Contrast;
         float Saturation;
         glm::vec2 Pad1;
-    }PushConstants = {
+
+        float HueShift;
+        float Balance;
+        glm::vec2 Pad2;
+
+        glm::vec4 Shadows;
+        glm::vec4 HightLights;
+    } PushConstants = {
         //descriptor of the HDR texture to write to (storage view type)
         color->Descriptor(ViewType::Storage),
         mBrightness,
@@ -46,7 +53,14 @@ void ColorGrading::Render(const Frame& frame, ::Ref<Scene> scene)
 
         mContrast,
         mSaturation,
-        glm::vec2(0.0f)
+        glm::vec2(0.0f),
+       
+        mHueShift,
+        mBalance,
+        glm::vec2(0.0f),
+        
+        mShadows, 
+        mHightLigths,
     };
 
     // -> command marker for esaier GPU debugging
@@ -78,6 +92,13 @@ void ColorGrading::UI(const Frame& frame)
         ImGui::SliderFloat("Exposure", &mExposure, 0.0f, 10.0f, "%.2f");
         ImGui::SliderFloat("Saturation", &mSaturation, -10.0f, 10.0f, "%.2f");
         ImGui::SliderFloat("Contrast", &mContrast, -10.0f, 10.0f, "%.2f");
+        ImGui::SliderFloat("Hue Shift", &mHueShift, -180.0f, 180.0f, "%.1f");
+        if(ImGui::TreeNodeEx("Split Toning", ImGuiTreeNodeFlags_Framed)){
+            ImGui::ColorPicker3("Shadows", glm::value_ptr(mShadows), ImGuiColorEditFlags_PickerHueBar);
+            ImGui::ColorPicker3("Hightlights", glm::value_ptr(mHightLigths), ImGuiColorEditFlags_PickerHueBar);
+            ImGui::SliderFloat("Balance", &mBalance, -100.0f, 100.0f, "%.1f");
+            ImGui::TreePop();
+        }
         ImGui::TreePop();
-    }
+    }  
 }
