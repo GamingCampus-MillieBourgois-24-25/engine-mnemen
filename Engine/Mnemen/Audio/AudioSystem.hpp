@@ -21,6 +21,8 @@ public:
     /// This method sets up the necessary resources for the audio system, like configuring the audio playback system.
     static void Init(const char *pathAudio);
 
+    static void InitDelayNode();
+
     /// @brief Shuts down the audio system.
     /// 
     /// This method releases any resources used by the audio system, stopping any ongoing audio
@@ -45,5 +47,6 @@ private:
     static ma_result result;
     static ma_sound sound;
     static ma_engine engine;
+    static ma_delay_node delayNode;
     static float volume;
 };
