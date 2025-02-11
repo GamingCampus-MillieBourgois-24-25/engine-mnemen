@@ -49,5 +49,6 @@ public:
 private:
     MeshPipeline::Ref mPipeline; ///< A reference to the mesh pipeline used for rendering.
     ComputePipeline::Ref mLightPipeline; ///< A reference to the light pipeline used for calculating screen space lighting.
+    bool mShowMeshlets = false; ///< Whether or not to draw the meshlets by their group color.
 };
 

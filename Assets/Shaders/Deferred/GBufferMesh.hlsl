@@ -48,6 +48,8 @@ struct PushConstants
     int MeshletTriangleBuffer;
     int AlbedoTexture;
     int LinearSampler;
+    int ShowMeshlets;
+    int3 Padding;
 
     column_major float4x4 Transform;
 };
