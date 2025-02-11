@@ -101,6 +101,18 @@ struct Entity
 
     /// @brief Returns a list of child entities
     Vector<Entity> GetChildren();
+
+    /// @brief Returns the world transform of the entity
+    /// @return The world transform of the entity
+    glm::mat4 GetWorldTransform();
+
+    /// @brief Returns the local transform of the entity
+    /// @return The local transform of the entity
+    glm::mat4 GetLocalTransform();
+
+    /// @brief Sets the local transform of the entity
+    /// @param The local transform of the entity
+    void SetLocalTransform(glm::mat4 localTransform);
 };
 
 /// COMPONENTS

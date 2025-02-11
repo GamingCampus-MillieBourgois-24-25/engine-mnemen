@@ -120,6 +120,7 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
         transform.Position = {t["position"][0], t["position"][1], t["position"][2]};
         transform.Rotation = glm::quat(t["rotation"][3], t["rotation"][0], t["rotation"][1], t["rotation"][2]);
         transform.Scale = {t["scale"][0], t["scale"][1], t["scale"][2]};
+        transform.Update();
     }
     if (entityJson.contains("mesh")) {
         auto& mesh = entity.AddComponent<MeshComponent>();

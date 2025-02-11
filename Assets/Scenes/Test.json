@@ -2,7 +2,7 @@
     "entities": [
         {
             "children": [],
-            "id": 3,
+            "id": 4,
             "mesh": {
                 "path": "Assets/Models/Sponza/Sponza.gltf"
             },
@@ -11,9 +11,9 @@
             "scripts": [],
             "transform": {
                 "position": [
-                    0.0,
-                    0.0,
-                    0.0
+                    -0.18564097583293915,
+                    -0.06639069318771362,
+                    0.14079564809799194
                 ],
                 "rotation": [
                     0.0,
@@ -24,24 +24,24 @@
                 "scale": [
                     1.0,
                     1.0,
-                    1.0
+                    1.0000001192092896
                 ]
             }
         },
         {
             "children": [],
-            "id": 2,
+            "id": 3,
             "mesh": {
                 "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
             },
             "name": "SciFi",
-            "parent": null,
+            "parent": 0,
             "scripts": [],
             "transform": {
                 "position": [
-                    -0.24321076273918152,
+                    -0.10413098335266113,
                     0.6047958135604858,
-                    -1.0522379875183105
+                    -1.47869873046875
                 ],
                 "rotation": [
                     0.0,
@@ -58,18 +58,18 @@
         },
         {
             "children": [],
-            "id": 1,
+            "id": 2,
             "mesh": {
                 "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
             },
             "name": "DamagedHelmet",
-            "parent": null,
+            "parent": 0,
             "scripts": [],
             "transform": {
                 "position": [
                     0.9863057732582092,
                     0.5144365429878235,
-                    -1.0756374597549438
+                    -1.4283816814422607
                 ],
                 "rotation": [
                     0.0,
@@ -93,7 +93,7 @@
                 "primary": true
             },
             "children": [],
-            "id": 0,
+            "id": 1,
             "name": "Camera",
             "parent": null,
             "scripts": [],
@@ -113,6 +113,88 @@
                     0.9999744296073914,
                     0.9999725818634033,
                     0.9999637007713318
+                ]
+            }
+        },
+        {
+            "children": [
+                {
+                    "children": [],
+                    "id": 2,
+                    "mesh": {
+                        "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
+                    },
+                    "name": "DamagedHelmet",
+                    "parent": 0,
+                    "scripts": [],
+                    "transform": {
+                        "position": [
+                            0.9863057732582092,
+                            0.5144365429878235,
+                            -1.4283816814422607
+                        ],
+                        "rotation": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ],
+                        "scale": [
+                            0.48000001907348633,
+                            0.48000001907348633,
+                            0.48000001907348633
+                        ]
+                    }
+                },
+                {
+                    "children": [],
+                    "id": 3,
+                    "mesh": {
+                        "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
+                    },
+                    "name": "SciFi",
+                    "parent": 0,
+                    "scripts": [],
+                    "transform": {
+                        "position": [
+                            -0.10413098335266113,
+                            0.6047958135604858,
+                            -1.47869873046875
+                        ],
+                        "rotation": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ],
+                        "scale": [
+                            0.4620000422000885,
+                            0.4620000422000885,
+                            0.4620000422000885
+                        ]
+                    }
+                }
+            ],
+            "id": 0,
+            "name": "Meshes",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -0.06151802837848663,
+                    0.0,
+                    0.563423752784729
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    0.9999962449073792,
+                    0.9999962449073792,
+                    1.0
                 ]
             }
         }

@@ -106,6 +106,12 @@ Entity Scene::AddEntity(const String& name)
 
 void Scene::RemoveEntity(Entity e)
 {
+    if (e.HasComponent<ChildrenComponent>()) {
+        auto& children = e.GetComponent<ChildrenComponent>().Children;
+        for (Entity& child : children) {
+            RemoveEntity(child);
+        }
+    }
     if (e.HasComponent<MeshComponent>()) {
         e.GetComponent<MeshComponent>().Free();
     }
