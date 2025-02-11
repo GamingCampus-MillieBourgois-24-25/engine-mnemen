@@ -53,6 +53,9 @@ public:
     /// @brief Called during the UI rendering phase to handle ImGui drawing.
     virtual void OnImGui(const Frame& frame) = 0;
 
+    /// @brief Called after present
+    virtual void PostPresent() {};
+
     /// @brief Called when the scene is awaken
     void OnAwake();
 

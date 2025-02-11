@@ -5,8 +5,8 @@
 
 #include "SceneSerializer.hpp"
 
-#include <nlohmann/json.hpp>
 #include <Core/File.hpp>
+#include <Core/Logger.hpp>
 
 void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
 {
@@ -51,20 +51,17 @@ void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
         }
 
         // Script Component
-        entityRoot["hasScript"] = entity->HasComponent<ScriptComponent>();
-        if (entity->HasComponent<ScriptComponent>()) {
-            ScriptComponent scripts = entity->GetComponent<ScriptComponent>();
-
-            entityRoot["scripts"] = nlohmann::json::array();
-            for (auto& instance : scripts.Instances) {
-                entityRoot["scripts"].push_back(instance->Path);
-            }
+        ScriptComponent scripts = entity->GetComponent<ScriptComponent>();
+        entityRoot["scripts"] = nlohmann::json::array();
+        for (auto& instance : scripts.Instances) {
+            entityRoot["scripts"].push_back(instance->Path);
         }
 
         root["entities"].push_back(entityRoot);
     }
 
     File::WriteJSON(root, path);
+    LOG_INFO("Saved scene at {0}", path);
 }
 
 Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
@@ -93,6 +90,7 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
         bool hasMesh = jsonEntity["hasMesh"].get<bool>();
         if (hasMesh) {
             auto& mesh = entity->AddComponent<MeshComponent>();
+            mesh.ParentEntity = entity;
             mesh.Init(jsonEntity["meshPath"]);
         }
 
@@ -109,14 +107,12 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
         }
 
         // Has script?
-        bool hasScript = jsonEntity["hasScript"].get<bool>();
-        if (hasScript) {
-            auto& script = entity->AddComponent<ScriptComponent>();
-            for (auto& scriptPath : jsonEntity["scripts"]) {
-                script.PushScript(scriptPath);
-            }
+        auto& script = entity->GetComponent<ScriptComponent>();
+        for (auto& scriptPath : jsonEntity["scripts"]) {
+            script.PushScript(scriptPath);
         }
     }
 
+    LOG_INFO("Loaded scene at {0}", path);
     return scene;
 }

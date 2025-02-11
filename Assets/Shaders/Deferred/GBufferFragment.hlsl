@@ -25,17 +25,17 @@ uint hash(uint a)
 struct PushConstants
 {
     int Matrices;
-    int ModelBuffer;
     int VertexBuffer;
     int IndexBuffer;
-
     int MeshletBuffer;
     int MeshletVertices;
     int MeshletTriangleBuffer;
     int AlbedoTexture;
-
     int LinearSampler;
-    int3 Pad;
+    int ShowMeshlets;
+    int3 Padding;
+
+    column_major float4x4 Transform;
 };
 
 ConstantBuffer<PushConstants> Constants : register(b0);
@@ -51,13 +51,16 @@ GBufferOutput PSMain(MeshInput input)
     Texture2D<float4> albedoTexture = ResourceDescriptorHeap[Constants.AlbedoTexture];
     SamplerState linearSampler = SamplerDescriptorHeap[Constants.LinearSampler];
 
+    uint meshletHash = hash(input.MeshletIndex);
+    float3 meshletColor = float3(float(meshletHash & 255), float((meshletHash >> 8) & 255), float((meshletHash >> 16) & 255)) / 255.0;
+
     float4 textureColor = albedoTexture.Sample(linearSampler, input.UV);
     if (textureColor.a < 0.25)
         discard;
     textureColor.rgb = pow(textureColor.rgb, 2.2);
 
     GBufferOutput output;
-    output.Albedo = textureColor;
+    output.Albedo = Constants.ShowMeshlets ? float4(meshletColor, 1.0) : textureColor;
     output.Normal = input.Normal;
     return output;
 }

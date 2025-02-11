@@ -5,7 +5,20 @@
 
 #include "Components.hpp"
 
+void MeshComponent::Free()
+{
+    if (MeshAsset && Loaded) {
+        AssetManager::GiveBack(MeshAsset->Path);
+        Loaded = false;
+    }
+}
+
 void MeshComponent::Init(const String& string)
 {
+    if (Loaded) {
+        AssetManager::GiveBack(MeshAsset->Path);
+    }
+    MeshAsset.reset();
     MeshAsset = AssetManager::Get(string, AssetType::Mesh);
+    Loaded = true;
 }
