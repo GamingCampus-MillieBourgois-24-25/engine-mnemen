@@ -9,6 +9,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <Script/Script.hpp>
 #include <Utility/UUID.hpp>
@@ -23,7 +24,7 @@ struct TransformComponent
     /// @brief The scale of the object
     glm::vec3 Scale = glm::vec3(1.0f);
     /// @brief The rotation of the object
-    glm::vec3 Rotation = glm::vec3(0.0f);
+    glm::quat Rotation = glm::quat();
     /// @brief The matrix that compiles all the information
     glm::mat4 Matrix;
 
@@ -54,8 +55,8 @@ struct MeshComponent
 /// @brief A component holding camera information
 struct CameraComponent
 {
-    /// @brief If primary, it will be the the camera used by the scne
-    bool Primary = true;
+    /// @brief This is a number so that editor camera can have a priority of 2!
+    int Primary = 1;
     /// @brief The field of view of the camera, in degrees
     float FOV = 90.0f;
     /// @brief The near plane of the camera
@@ -73,7 +74,7 @@ struct CameraComponent
     /// @brief Updates the camera matrices using the transform's position and rotation
     /// @param Position The position pulled from the transform
     /// @param Rotation The rotation pulled from the transform
-    void Update(glm::vec3 Position, glm::vec3 Rotation);
+    void Update(glm::vec3 Position, glm::quat Rotation);
 };
 
 /// @brief A component holding a game script

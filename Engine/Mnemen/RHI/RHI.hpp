@@ -18,6 +18,7 @@
 #include <RHI/MeshPipeline.hpp>
 #include <RHI/Buffer.hpp>
 #include <RHI/Texture.hpp>
+#include <RHI/View.hpp>
 #include <RHI/Sampler.hpp>
 #include <RHI/BLAS.hpp>
 #include <RHI/TLAS.hpp>

@@ -13,6 +13,7 @@ target("Mnemen")
     set_encodings("utf-8")
     add_deps("spdlog",
              "ImGui",
+             "ImGuizmo",
              "STB",
              "meshopt",
              "miniaudio",
@@ -120,6 +121,7 @@ target("Editor")
                     "ThirdParty/Wren/src/include",
                     "ThirdParty/JSON/single_include")
     add_deps("Mnemen")
+    add_defines("GLM_ENABLE_EXPERIMENTAL")
 
     if is_mode("debug") then
         set_symbols("debug")
@@ -165,6 +167,7 @@ target("Runtime")
                     "ThirdParty/Wren/src/include",
                     "ThirdParty/JSON/single_include")
     add_deps("Mnemen")
+    add_defines("GLM_ENABLE_EXPERIMENTAL")
 
     if is_mode("debug") then
         set_symbols("debug")

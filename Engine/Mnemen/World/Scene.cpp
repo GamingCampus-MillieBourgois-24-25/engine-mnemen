@@ -42,15 +42,24 @@ void Scene::Update()
 
 SceneCamera Scene::GetMainCamera()
 {
-    for (auto& entity : mEntities) {
-        if (entity->HasComponent<CameraComponent>()) {
-            CameraComponent& camera = entity->GetComponent<CameraComponent>();
-            if (camera.Primary) {
-                return { camera.View, camera.Projection };
-            }
-        }
+    // NOTE(amelie): This is professional grade spaghetti bullshit but lowkey iterating through entities is fast as hell. Love EnTT x
+
+    Vector<CameraComponent> cameras;
+    auto view = mRegistry.view<CameraComponent>();
+    for (auto [entity, camera] : view.each()) {
+        cameras.push_back(camera);
     }
-    return { glm::mat4(1.0f), glm::mat4(1.0f) };
+
+    std::sort(cameras.begin(), cameras.end(), [](const CameraComponent& a, const CameraComponent& b) {
+        return a.Primary > b.Primary;
+    });
+
+    if (!cameras.empty()) {
+        const auto& bestCamera = cameras.front();
+        if (bestCamera.Primary > 0)
+            return { bestCamera.View, bestCamera.Projection };
+    }
+    return { glm::mat4(0.0f), glm::mat4(0.0f) };
 }
 
 Entity* Scene::AddEntity(const String& name)

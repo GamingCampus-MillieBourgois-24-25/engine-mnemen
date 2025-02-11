@@ -11,6 +11,7 @@
 #include "Passes/DOF.hpp"
 #include "Passes/SSAO.hpp"
 #include "Passes/ColorGrading.hpp"
+#include "Passes/Debug.hpp"
 
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
@@ -27,7 +28,8 @@ Renderer::Renderer(RHI::Ref rhi)
         MakeRef<SSAO>(rhi),
         MakeRef<DOF>(rhi),
         MakeRef<ColorGrading>(rhi),
-        MakeRef<Composite>(rhi)
+        MakeRef<Composite>(rhi),
+        MakeRef<Debug>(rhi)
     };
 
     LOG_INFO("Initialized Render System");

@@ -20,7 +20,7 @@ Editor::Editor(ApplicationSpecs specs)
     mCameraEntity->Private = true;
     
     auto& cam = mCameraEntity->AddComponent<CameraComponent>();
-    cam.Primary = true;
+    cam.Primary = 2;
 
     SetColors();
 
@@ -40,13 +40,13 @@ void Editor::OnUpdate(float dt)
     mWindow->PollSize(width, height);
 
     mCamera.UpdateMatrices(std::max(mViewportSize.x, 1.0f), std::max(mViewportSize.y, 1.0f));
-    if (mViewportFocused && !mScenePlaying)
+    if (mViewportFocused && !mScenePlaying && !mGizmoFocused)
         mCamera.Input(dt);
     if (!mScenePlaying)
         UpdateShortcuts();
 
     auto& cam = mCameraEntity->GetComponent<CameraComponent>();
-    cam.Primary = !mScenePlaying;
+    cam.Primary = !mScenePlaying ? 2 : 0;
     cam.Projection = mCamera.Projection();
     cam.View = mCamera.View();
 }
@@ -85,31 +85,7 @@ void Editor::OnImGui(const Frame& frame)
     mRenderer->UI(frame);
 
     // Viewport
-    {
-        ImGui::Begin(ICON_FA_GAMEPAD " Viewport");
-
-        ImGui::SetCursorPosX(10.0f);
-        if (ImGui::Button(ICON_FA_PLAY)) {
-            OnAwake();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button(ICON_FA_STOP)) {
-            if (mScenePlaying)
-                OnStop();
-        }
-
-        auto ldr = RendererTools::Get("LDRColorBuffer");
-        mViewportFocused = ImGui::IsWindowFocused();
-
-        ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-	    mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-
-        frame.CommandBuffer->ClearRenderTarget(frame.BackbufferView, 0.0f, 0.0f, 0.0f);
-        frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::Shader);
-        ImGui::Image((ImTextureID)ldr->GetView(ViewType::ShaderResource)->GetDescriptor().GPU.ptr, mViewportSize);
-
-        ImGui::End();
-    }
+    Viewport(frame);
 
     // Entity Tree
     HierarchyPanel();
@@ -122,6 +98,90 @@ void Editor::OnImGui(const Frame& frame)
 
     // Log Window
     LogWindow();
+
+    ImGui::End();
+}
+
+void Editor::Viewport(const Frame& frame)
+{
+    ImGui::Begin(ICON_FA_GAMEPAD " Viewport");
+    auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+	auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+	auto viewportOffset = ImGui::GetWindowPos();
+    mViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+	mViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
+    // Play/Stop
+    ImGui::SetCursorPosX(10.0f);
+    if (ImGui::Button(ICON_FA_PLAY)) {
+        OnAwake();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button(ICON_FA_STOP)) {
+        if (mScenePlaying)
+            OnStop();
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Translate", mOperation == ImGuizmo::OPERATION::TRANSLATE)) mOperation = ImGuizmo::OPERATION::TRANSLATE;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Rotate", mOperation == ImGuizmo::OPERATION::ROTATE)) mOperation = ImGuizmo::OPERATION::ROTATE;
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Scale", mOperation == ImGuizmo::OPERATION::SCALE)) mOperation = ImGuizmo::OPERATION::SCALE;
+
+    auto ldr = RendererTools::Get("LDRColorBuffer");
+    mViewportFocused = ImGui::IsWindowFocused();
+
+    ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+	mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+    
+    frame.CommandBuffer->ClearRenderTarget(frame.BackbufferView, 0.0f, 0.0f, 0.0f);
+    frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::Shader);
+    ImGui::Image((ImTextureID)ldr->GetView(ViewType::ShaderResource)->GetDescriptor().GPU.ptr, mViewportSize);
+
+    // Gizmos
+    if (mSelectedEntity && !mScenePlaying) {
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetRect(mViewportBounds[0].x, mViewportBounds[0].y, mViewportBounds[1].x - mViewportBounds[0].x, mViewportBounds[1].y - mViewportBounds[0].y);
+    
+        glm::mat4 view = mCamera.View();
+        glm::mat4 projection = mCamera.Projection();
+    
+        auto& transform = mSelectedEntity->GetComponent<TransformComponent>();
+        ImGuizmo::Manipulate(glm::value_ptr(view),
+                             glm::value_ptr(projection),
+                             mOperation,
+                             mMode,
+                             glm::value_ptr(transform.Matrix));
+        
+        if (ImGuizmo::IsUsingAny()) {
+            // Rebake matrix and also disable camera XD
+            mGizmoFocused = true;
+    
+            glm::vec3 t = glm::vec3(0.0f), r = glm::vec3(0.0f), s = glm::vec3(1.0f);
+            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform.Matrix), glm::value_ptr(t), glm::value_ptr(r), glm::value_ptr(s));
+    
+            // Convert Euler angles (r) to a quaternion
+            glm::quat rotationQuat = Math::EulerToQuat(r);
+    
+            transform.Position = t;
+            transform.Rotation = rotationQuat;
+            transform.Scale = s;
+            transform.Matrix = glm::translate(glm::mat4(1.0f), transform.Position) *
+                               glm::mat4_cast(transform.Rotation) *
+                               glm::scale(glm::mat4(1.0f), transform.Scale);
+        } else {
+            mGizmoFocused = false;
+        }
+    }
+
+    // Debug draw some stuff
+    if (mSelectedEntity) {
+        if (mSelectedEntity->HasComponent<CameraComponent>()) {
+            auto cam = mSelectedEntity->GetComponent<CameraComponent>();
+            Debug::DrawFrustum(cam.View, cam.Projection, glm::vec3(1.0f));
+        }
+    }
 
     ImGui::End();
 }
@@ -276,21 +336,40 @@ void Editor::EntityEditor()
         // Transform
         if (ImGui::TreeNodeEx(ICON_FA_HOME " Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
             TransformComponent& transform = mSelectedEntity->GetComponent<TransformComponent>();
-            DrawVec3Control("Position", transform.Position);
-            DrawVec3Control("Scale", transform.Scale);
-            DrawVec3Control("Rotation", transform.Rotation);
+            DrawVec3Control("Position", transform.Position, 0.0f);
+            DrawVec3Control("Scale", transform.Scale, 1.0f);
+            
+            glm::vec3 euler = Math::QuatToEuler(transform.Rotation);
+            DrawVec3Control("Rotation", euler, 0.0f);
+            transform.Rotation = Math::EulerToQuat(euler);
+
             ImGui::TreePop();
         }
         
         // CAMERA
         if (mSelectedEntity->HasComponent<CameraComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleColor(3);
+                ImGui::PopStyleVar();
+
                 CameraComponent& camera = mSelectedEntity->GetComponent<CameraComponent>();
-                ImGui::Checkbox("Primary", &camera.Primary);
+                ImGui::Checkbox("Primary", (bool*)&camera.Primary);
                 ImGui::SliderFloat("FOV", &camera.FOV, 0.0f, 360.0f);
                 ImGui::SliderFloat("Near", &camera.Near, 0.0f, camera.Far);
                 ImGui::SliderFloat("Far", &camera.Far, camera.Near, 1000.0f);
                 ImGui::TreePop();
+
+                if (shouldDelete) {
+                    mSelectedEntity->RemoveComponent<CameraComponent>();
+                }
             }
         }
 
@@ -298,7 +377,17 @@ void Editor::EntityEditor()
         if (mSelectedEntity->HasComponent<MeshComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CUBE " Mesh Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 auto& mesh = mSelectedEntity->GetComponent<MeshComponent>();
+
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
                 ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleColor(3);
+                
                 if (mesh.MeshAsset) {
                     char temp[512];
                     sprintf(temp, "%s %s", ICON_FA_FILE, mesh.MeshAsset->Path.c_str());
@@ -322,6 +411,11 @@ void Editor::EntityEditor()
                     ImGui::EndDragDropTarget();
                 }
                 ImGui::TreePop();
+
+                if (shouldDelete) {
+                    mesh.Free();
+                    mSelectedEntity->RemoveComponent<MeshComponent>();
+                }
             }
         }
 
@@ -372,6 +466,8 @@ void Editor::EntityEditor()
             }
             ImGui::PopID();
         }
+
+        ImGui::Separator();
 
         // Add component
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
@@ -504,6 +600,21 @@ void Editor::UpdateShortcuts()
         if (Input::IsKeyPressed(SDLK_S)) {
             SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
         }
+    }
+    if (Input::IsKeyPressed(SDLK_T)) {
+        mMode = ImGuizmo::MODE::WORLD;
+        mOperation = ImGuizmo::OPERATION::TRANSLATE;
+    }
+    if (Input::IsKeyPressed(SDLK_R)) {
+        mMode = ImGuizmo::MODE::LOCAL;
+        mOperation = ImGuizmo::OPERATION::ROTATE_SCREEN;
+    }
+    if (Input::IsKeyPressed(SDLK_B)) {
+        mMode = ImGuizmo::MODE::WORLD;
+        mOperation = ImGuizmo::OPERATION::SCALE;
+    }
+    if (Input::IsKeyPressed(SDLK_ESCAPE)) {
+        mSelectedEntity = nullptr;
     }
 }
 
