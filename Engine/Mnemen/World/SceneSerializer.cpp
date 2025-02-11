@@ -73,7 +73,7 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
 
     auto entityArray = root["entities"];
     for (auto& jsonEntity : entityArray) {
-        Entity* entity = scene->AddEntity(jsonEntity["name"]);
+        Entity entity = scene->AddEntity(jsonEntity["name"]);
 
         TransformComponent& component = entity->GetComponent<TransformComponent>();
         component.Position.x = jsonEntity["position"][0];

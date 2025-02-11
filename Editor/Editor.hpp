@@ -38,7 +38,7 @@ private:
     String mCurrentScenePath;
 
     // Entity stuff
-    Entity* mCameraEntity;
+    Entity mCameraEntity;
     Entity* mSelectedEntity = nullptr;
     bool mMarkForDeletion = false;
     String mModelChange = "";

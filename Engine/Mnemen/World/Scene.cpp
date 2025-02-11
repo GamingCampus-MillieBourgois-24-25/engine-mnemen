@@ -13,21 +13,43 @@ Scene::Scene()
 Scene::~Scene()
 {
     for (auto& entity : mEntities) {
-        if (entity->HasComponent<MeshComponent>()) {
-            entity->GetComponent<MeshComponent>().Free();
+        if (entity.HasComponent<MeshComponent>()) {
+            entity.GetComponent<MeshComponent>().Free();
         }
-        mRegistry.destroy(entity->ID);
-        delete entity;
+        mRegistry.destroy(entity.ID);
     }
     mEntities.clear();
+}
+
+void Scene::UpdateTransforms(Entity entity, glm::mat4 parentTransform)
+{
+    if (!entity.HasComponent<TransformComponent>()) {
+        return;
+    }
+
+    auto& tc = entity.GetComponent<TransformComponent>();
+    tc.Update();
+
+    glm::mat4 localTransform = tc.Matrix;
+    glm::mat4 worldTransform = parentTransform * localTransform;
+    for (auto& child : entity.GetChildren()) {
+        UpdateTransforms(child, worldTransform);
+    }
 }
 
 void Scene::Update()
 {
     // Transform update
     {
-        for (auto [entity, transform] : mRegistry.view<TransformComponent>().each()) {
-            transform.Update();
+        auto view = mRegistry.view<TransformComponent>();
+        for (auto entity : view) {
+            Entity e(&mRegistry);
+            e.ID = entity;
+    
+            // Update only root entities
+            if (!e.HasComponent<ParentComponent>()) {
+                UpdateTransforms(e);
+            }
         }
     }
 
@@ -62,27 +84,27 @@ SceneCamera Scene::GetMainCamera()
     return { glm::mat4(0.0f), glm::mat4(0.0f) };
 }
 
-Entity* Scene::AddEntity(const String& name)
+Entity Scene::AddEntity(const String& name)
 {
-    Entity* newEntity = new Entity(&mRegistry);
-    newEntity->ID = mRegistry.create();
-    newEntity->Name = name;
+    Entity newEntity(&mRegistry);
+    newEntity.ID = mRegistry.create();
+    newEntity.Name = name;
     
-    newEntity->AddComponent<TransformComponent>();
-    newEntity->AddComponent<ScriptComponent>();
+    newEntity.AddComponent<TransformComponent>();
+    newEntity.AddComponent<ScriptComponent>();
 
     mEntities.push_back(newEntity);
     return newEntity;
 }
 
-void Scene::RemoveEntity(Entity* e)
+void Scene::RemoveEntity(Entity e)
 {
-    if (e->HasComponent<MeshComponent>()) {
-        e->GetComponent<MeshComponent>().Free();
+    if (e.HasComponent<MeshComponent>()) {
+        e.GetComponent<MeshComponent>().Free();
     }
-    mRegistry.destroy(e->ID);
+    mRegistry.destroy(e.ID);
     for (int i = 0; i < mEntities.size(); i++) {
-        if (mEntities[i]->ID == e->ID)
+        if (mEntities[i].ID == e.ID)
             mEntities.erase(mEntities.begin() + i);
     }
 }

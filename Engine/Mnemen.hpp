@@ -44,7 +44,6 @@
 #include "Mnemen/Utility/PointCloud.hpp"
 #include "Mnemen/Utility/UUID.hpp"
 
-#include "Mnemen/World/Components.hpp"
 #include "Mnemen/World/Entity.hpp"
 #include "Mnemen/World/Scene.hpp"
 #include "Mnemen/World/SceneSerializer.hpp"

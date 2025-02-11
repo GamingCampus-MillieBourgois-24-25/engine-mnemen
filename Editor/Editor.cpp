@@ -16,10 +16,11 @@ Editor::Editor(ApplicationSpecs specs)
 {
     mCurrentScenePath = specs.StartScene;
     mScenePlaying = false;
+
     mCameraEntity = mScene->AddEntity("Editor Camera");
-    mCameraEntity->Private = true;
+    mCameraEntity.Private = true;
     
-    auto& cam = mCameraEntity->AddComponent<CameraComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
     cam.Primary = 2;
 
     SetColors();
@@ -45,7 +46,7 @@ void Editor::OnUpdate(float dt)
     if (!mScenePlaying)
         UpdateShortcuts();
 
-    auto& cam = mCameraEntity->GetComponent<CameraComponent>();
+    auto& cam = mCameraEntity.GetComponent<CameraComponent>();
     cam.Primary = !mScenePlaying ? 2 : 0;
     cam.Projection = mCamera.Projection();
     cam.View = mCamera.View();
@@ -54,7 +55,7 @@ void Editor::OnUpdate(float dt)
 void Editor::PostPresent()
 {
     if (mMarkForDeletion) {
-        mScene->RemoveEntity(mSelectedEntity);
+        mScene->RemoveEntity(*mSelectedEntity);
         mSelectedEntity = nullptr;
         mMarkForDeletion = false;
     }
@@ -253,19 +254,19 @@ void Editor::HierarchyPanel()
     ImGui::Begin(ICON_FA_GLOBE " Scene Hierarchy");
     ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
     if (ImGui::Button(ICON_FA_PLUS " Add Entity", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-        mSelectedEntity = mScene->AddEntity("New Entity");
+        mSelectedEntity = &mScene->AddEntity("New Entity");
     }
     ImGui::PopStyleVar();
     ImGui::Separator();
     for (auto& entity : mScene->GetEntityArray()) {
-        if (entity->Private)
+        if (entity.Private)
             continue;
 
         char temp[256];
-        sprintf(temp, "%s %s", ICON_FA_CUBE, entity->Name.c_str());
-        ImGui::PushID((UInt64)entity->ID);
+        sprintf(temp, "%s %s", ICON_FA_CUBE, entity.Name.c_str());
+        ImGui::PushID((UInt64)entity.ID);
         if (ImGui::Selectable(temp)) {
-            mSelectedEntity = entity;
+            mSelectedEntity = &entity;
         }
         ImGui::PopID();
     }
@@ -491,7 +492,7 @@ void Editor::EntityEditor()
             ImGui::EndPopup();
         }
         if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-            mScene->RemoveEntity(mSelectedEntity);
+            mScene->RemoveEntity(*mSelectedEntity);
             mSelectedEntity = nullptr;
         }
         ImGui::PopStyleVar();

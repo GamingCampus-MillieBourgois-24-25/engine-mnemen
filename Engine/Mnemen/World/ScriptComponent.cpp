@@ -3,7 +3,7 @@
 // > Create Time: 2025-02-04 23:58:43
 //
 
-#include "Components.hpp"
+#include "Entity.hpp"
 
 void ScriptComponent::AddEmptyScript()
 {
