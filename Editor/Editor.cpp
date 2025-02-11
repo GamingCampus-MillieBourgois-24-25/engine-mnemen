@@ -285,12 +285,27 @@ void Editor::EntityEditor()
         // CAMERA
         if (mSelectedEntity->HasComponent<CameraComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleColor(3);
+                ImGui::PopStyleVar();
+
                 CameraComponent& camera = mSelectedEntity->GetComponent<CameraComponent>();
                 ImGui::Checkbox("Primary", &camera.Primary);
                 ImGui::SliderFloat("FOV", &camera.FOV, 0.0f, 360.0f);
                 ImGui::SliderFloat("Near", &camera.Near, 0.0f, camera.Far);
                 ImGui::SliderFloat("Far", &camera.Far, camera.Near, 1000.0f);
                 ImGui::TreePop();
+
+                if (shouldDelete) {
+                    mSelectedEntity->RemoveComponent<CameraComponent>();
+                }
             }
         }
 
@@ -298,7 +313,17 @@ void Editor::EntityEditor()
         if (mSelectedEntity->HasComponent<MeshComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CUBE " Mesh Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 auto& mesh = mSelectedEntity->GetComponent<MeshComponent>();
+
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
                 ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleColor(3);
+                
                 if (mesh.MeshAsset) {
                     char temp[512];
                     sprintf(temp, "%s %s", ICON_FA_FILE, mesh.MeshAsset->Path.c_str());
@@ -322,6 +347,11 @@ void Editor::EntityEditor()
                     ImGui::EndDragDropTarget();
                 }
                 ImGui::TreePop();
+
+                if (shouldDelete) {
+                    mesh.Free();
+                    mSelectedEntity->RemoveComponent<MeshComponent>();
+                }
             }
         }
 
@@ -372,6 +402,8 @@ void Editor::EntityEditor()
             }
             ImGui::PopID();
         }
+
+        ImGui::Separator();
 
         // Add component
         ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
