@@ -54,8 +54,8 @@ struct MeshComponent
 /// @brief A component holding camera information
 struct CameraComponent
 {
-    /// @brief If primary, it will be the the camera used by the scne
-    bool Primary = true;
+    /// @brief This is a number so that editor camera can have a priority of 2!
+    int Primary = 1;
     /// @brief The field of view of the camera, in degrees
     float FOV = 90.0f;
     /// @brief The near plane of the camera

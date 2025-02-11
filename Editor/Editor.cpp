@@ -20,7 +20,7 @@ Editor::Editor(ApplicationSpecs specs)
     mCameraEntity->Private = true;
     
     auto& cam = mCameraEntity->AddComponent<CameraComponent>();
-    cam.Primary = true;
+    cam.Primary = 2;
 
     SetColors();
 
@@ -46,7 +46,7 @@ void Editor::OnUpdate(float dt)
         UpdateShortcuts();
 
     auto& cam = mCameraEntity->GetComponent<CameraComponent>();
-    cam.Primary = !mScenePlaying;
+    cam.Primary = !mScenePlaying ? 2 : 0;
     cam.Projection = mCamera.Projection();
     cam.View = mCamera.View();
 }
@@ -342,7 +342,7 @@ void Editor::EntityEditor()
                 ImGui::PopStyleVar();
 
                 CameraComponent& camera = mSelectedEntity->GetComponent<CameraComponent>();
-                ImGui::Checkbox("Primary", &camera.Primary);
+                ImGui::Checkbox("Primary", (bool*)&camera.Primary);
                 ImGui::SliderFloat("FOV", &camera.FOV, 0.0f, 360.0f);
                 ImGui::SliderFloat("Near", &camera.Near, 0.0f, camera.Far);
                 ImGui::SliderFloat("Far", &camera.Far, camera.Near, 1000.0f);
@@ -590,6 +590,9 @@ void Editor::UpdateShortcuts()
     }
     if (Input::IsKeyPressed(SDLK_B)) {
         mOperation = ImGuizmo::OPERATION::SCALE;
+    }
+    if (Input::IsKeyPressed(SDLK_ESCAPE)) {
+        mSelectedEntity = nullptr;
     }
 }
 

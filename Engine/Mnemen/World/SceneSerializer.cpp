@@ -43,7 +43,7 @@ void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
         entityRoot["hasCamera"] = entity->HasComponent<CameraComponent>();
         if (entity->HasComponent<CameraComponent>()) {
             CameraComponent camera = entity->GetComponent<CameraComponent>();
-            entityRoot["cameraPrimary"] = camera.Primary;
+            entityRoot["cameraPrimary"] = (bool)camera.Primary;
             entityRoot["cameraFOV"] = camera.FOV;
             entityRoot["cameraNear"] = camera.Near;
             entityRoot["cameraFar"] = camera.Far;
