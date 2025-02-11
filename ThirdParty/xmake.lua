@@ -25,6 +25,13 @@ target("ImGui")
     add_headerfiles("ImGui/*.h")
     add_includedirs("imgui/")
 
+target("ImGuizmo")
+    set_kind("static")
+    add_includedirs("ImGuizmo/", "imgui/")
+    add_deps("ImGui")
+    add_files("ImGuizmo/*.cpp")
+    add_headerfiles("ImGuizmo/*.h")
+
 target("STB")
     set_kind("static")
     add_files("stb.c")

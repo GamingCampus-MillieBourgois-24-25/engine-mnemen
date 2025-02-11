@@ -131,8 +131,8 @@ void Application::Run()
         }
         Input::PostUpdate();
     }
-    ScriptSystem::Quit(mScene);
     mRHI->Wait();
+    AssetManager::Clean();
 }
 
 void Application::OnPrivateRender()
@@ -172,4 +172,5 @@ void Application::OnPrivateRender()
     // Profiler::ReadbackGPUResults();
 
     mRHI->Present(false);
+    PostPresent();
 }

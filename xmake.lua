@@ -13,6 +13,7 @@ target("Mnemen")
     set_encodings("utf-8")
     add_deps("spdlog",
              "ImGui",
+             "ImGuizmo",
              "STB",
              "meshopt",
              "miniaudio",

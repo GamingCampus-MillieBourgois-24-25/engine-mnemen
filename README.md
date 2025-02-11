@@ -58,6 +58,7 @@ A wide variety of documents regarding the engine, resources, and some other thin
 - entt - Entity Component System
 - GLM - Mathematics
 - ImGui - Immediate mode GUI
+- ImGuizmo - ImGui plugin to add Gizmos
 - Jolt - Physics API
 - JSON - Writing/parsing of JSON files (used for scene files)
 - MeshOptimizer - Mesh optimizing and meshlet generation
