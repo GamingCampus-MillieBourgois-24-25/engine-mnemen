@@ -51,6 +51,7 @@ private:
     Entity mCameraEntity;
     Entity mSelectedEntity = {};
     bool mMarkForDeletion = false;
+    bool mMarkForClose = false;
     String mModelChange = "";
     UnorderedMap<entt::entity, String> mEntityNameBuffer;
 

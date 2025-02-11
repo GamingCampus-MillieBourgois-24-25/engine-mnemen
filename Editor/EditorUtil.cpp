@@ -97,7 +97,7 @@ bool Editor::SaveSceneAs()
 
 void Editor::NewScene()
 {
-    if (mScene)
+    if (mScene != nullptr)
         CloseScene();
     mScene = MakeRef<Scene>();
 

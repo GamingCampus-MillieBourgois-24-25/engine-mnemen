@@ -73,67 +73,71 @@ void Editor::Viewport(const Frame& frame)
     if (mSelectedEntity && !mScenePlaying) {
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
-        ImGuizmo::SetRect(mViewportBounds[0].x, mViewportBounds[0].y, 
-                          mViewportBounds[1].x - mViewportBounds[0].x, 
-                          mViewportBounds[1].y - mViewportBounds[0].y);
-    
+        ImGuizmo::SetRect(mViewportBounds[0].x, mViewportBounds[0].y,
+            mViewportBounds[1].x - mViewportBounds[0].x,
+            mViewportBounds[1].y - mViewportBounds[0].y);
+
         glm::mat4 view = mCamera.View();
         glm::mat4 projection = mCamera.Projection();
-    
+
         auto& transform = mSelectedEntity.GetComponent<TransformComponent>();
-    
+
         // Get the entity's world transform
         glm::mat4 worldMatrix = mSelectedEntity.GetWorldTransform();
-    
+
         // Let ImGuizmo manipulate the world matrix
         ImGuizmo::Manipulate(glm::value_ptr(view),
-                             glm::value_ptr(projection),
-                             mOperation,
-                             ImGuizmo::MODE::LOCAL,
-                             glm::value_ptr(worldMatrix));
-    
+            glm::value_ptr(projection),
+            mOperation,
+            ImGuizmo::MODE::LOCAL,
+            glm::value_ptr(worldMatrix));
+
         if (ImGuizmo::IsUsingAny()) {
             // Disable camera movement while using gizmo
             mGizmoFocused = true;
-    
+
             // Decompose the new world matrix into position, rotation, and scale
-            glm::vec3 newPosition, newRotationEuler, newScale;
-            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(worldMatrix), 
-                                                  glm::value_ptr(newPosition), 
-                                                  glm::value_ptr(newRotationEuler), 
-                                                  glm::value_ptr(newScale));
-    
+            glm::vec3 newPosition = glm::vec3(0.0f), newRotationEuler = glm::vec3(0.0f), newScale = glm::vec3(1.0f);
+            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(worldMatrix),
+                glm::value_ptr(newPosition),
+                glm::value_ptr(newRotationEuler),
+                glm::value_ptr(newScale));
+
             // Convert Euler angles to quaternion for rotation
             glm::quat newRotationQuat = Math::EulerToQuat(newRotationEuler);
-    
+
             if (mSelectedEntity.HasParent()) {
                 // If entity has a parent, compute new local transform
                 Entity parent = mSelectedEntity.GetParent();
                 glm::mat4 parentWorld = parent.GetWorldTransform();
-    
+
                 // Calculate new local transform: Local = Inverse(ParentWorld) * NewWorld
                 glm::mat4 newLocalTransform = glm::inverse(parentWorld) * worldMatrix;
-    
-                // Update the transform component
-                transform.Position = glm::vec3(newLocalTransform[3]); // Extract translation from matrix
-                transform.Scale = glm::vec3(glm::length(glm::vec3(newLocalTransform[0])), 
-                                            glm::length(glm::vec3(newLocalTransform[1])), 
-                                            glm::length(glm::vec3(newLocalTransform[2])));
-                
-                transform.Rotation = glm::quat_cast(newLocalTransform); // Extract rotation
-            } else {
+
+                // Update position and scale as before
+                ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(newLocalTransform),
+                    glm::value_ptr(newPosition),
+                    glm::value_ptr(newRotationEuler),
+                    glm::value_ptr(newScale));
+                newRotationQuat = Math::EulerToQuat(newRotationEuler);
+
+                transform.Position = newPosition;
+                transform.Rotation = newRotationQuat;
+                transform.Scale = newScale;
+                transform.Update();
+            }
+            else {
                 // No parent, world matrix is directly applied
                 transform.Position = newPosition;
                 transform.Rotation = newRotationQuat;
                 transform.Scale = newScale;
+                transform.Update();
             }
-    
-            // Update local matrix
-            transform.Update();
-        } else {
+        }
+        else {
             mGizmoFocused = false;
         }
-    }    
+    }
 
     // Debug draw some stuff
     if (mSelectedEntity && !mScenePlaying) {
@@ -185,13 +189,9 @@ void Editor::BeginDockSpace()
 
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu(ICON_FA_FILE " File")) {
-            if (ImGui::MenuItem(ICON_FA_WINDOW_CLOSE " Exit", "Ctrl+Q")) {
-                SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
-                mWindow->Close();
-            }
             if (ImGui::BeginMenu(ICON_FA_FILE_ARCHIVE_O " Save")) {
                 if (ImGui::MenuItem(ICON_FA_CHECK " Save Current", "Ctrl+S")) {
-                    SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
+                    SaveScene();
                 }
                 if (ImGui::MenuItem(ICON_FA_QUESTION " Save As...", "Ctrl+S")) {
                     SaveSceneAs();
@@ -205,10 +205,14 @@ void Editor::BeginDockSpace()
                 }
             }
             if (ImGui::MenuItem(ICON_FA_CHECK " New", "Ctrl+N")) {
-                NewScene();
+                mMarkForClose = true;
             }
             if (ImGui::MenuItem(ICON_FA_PENCIL " Close")) {
-                NewScene();
+                mMarkForClose = true;
+            }
+            if (ImGui::MenuItem(ICON_FA_WINDOW_CLOSE " Exit", "Ctrl+Q")) {
+                SaveScene();
+                mWindow->Close();
             }
             ImGui::EndMenu();
         }
@@ -440,6 +444,7 @@ void Editor::EntityEditor()
             glm::vec3 euler = Math::QuatToEuler(transform.Rotation);
             DrawVec3Control("Rotation", euler, 0.0f);
             transform.Rotation = Math::EulerToQuat(euler);
+            transform.Update();
 
             ImGui::TreePop();
         }

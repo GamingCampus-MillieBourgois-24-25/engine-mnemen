@@ -45,12 +45,12 @@ Application::Application(ApplicationSpecs specs)
     AssetCacher::Init("Assets");
 
     mRenderer = MakeRef<Renderer>(mRHI);
-    if (specs.StartScene.empty()) {
-        mScene = MakeRef<Scene>();
-    } else {
+    if (!specs.StartScene.empty()) {
         mScene = SceneSerializer::DeserializeScene(specs.StartScene);
     }
 
+    Uploader::Flush();
+       
     LOG_INFO("Initialized Mnemen! Ready to rock 8)");
 }
 
@@ -78,10 +78,6 @@ void Application::OnStop()
 
 void Application::Run()
 {
-    // Flush any uploads before running
-    Uploader::Flush();
-    mRHI->Wait();
-
     while (mWindow->IsOpen()) {
         Profiler::BeginFrame();
 

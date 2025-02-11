@@ -19,12 +19,6 @@ Editor::Editor(ApplicationSpecs specs)
         NewScene();
     mScenePlaying = false;
 
-    mCameraEntity = mScene->AddEntity("Editor Camera");
-    mCameraEntity.AddComponent<PrivateComponent>();
-    
-    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
-    cam.Primary = 2;
-
     SetColors();
 
     mBaseDirectory = "Assets";
@@ -58,11 +52,7 @@ void Editor::OnUpdate(float dt)
 
 void Editor::PostPresent()
 {
-    if (mMarkForDeletion) {
-        mScene->RemoveEntity(mSelectedEntity);
-        mSelectedEntity = nullptr;
-        mMarkForDeletion = false;
-    }
+    // Change the model if needed
     if (!mModelChange.empty()) {
         if (mSelectedEntity) {
             MeshComponent& mesh = mSelectedEntity.GetComponent<MeshComponent>();
@@ -70,8 +60,22 @@ void Editor::PostPresent()
         }
         mModelChange = "";
     }
-    Uploader::Flush();
+    // Delete the entity if needed
+    if (mMarkForDeletion) {
+        mScene->RemoveEntity(mSelectedEntity);
+        mSelectedEntity = nullptr;
+        mMarkForDeletion = false;
+    }
+    // Purge unused assets every frame
     AssetManager::Purge();
+
+    // New scene if needed
+    if (mMarkForClose) {
+        NewScene();
+        mMarkForClose = false;
+    }
+    // Upload after new scene
+    Uploader::Flush();
 }
 
 void Editor::OnPhysicsTick()
