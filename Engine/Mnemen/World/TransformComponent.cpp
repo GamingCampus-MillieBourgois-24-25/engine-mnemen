@@ -7,9 +7,9 @@
 
 void TransformComponent::Update()
 {
-    Matrix = glm::translate(glm::mat4(1.0f), Position)
-           * glm::scale(glm::mat4(1.0f), Scale)
-           * glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f))
+    Matrix = glm::translate(glm::mat4(1.0f), Position) 
+           * glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f))
            * glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f))
-           * glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+           * glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f))
+           * glm::scale(glm::mat4(1.0f), Scale);
 }

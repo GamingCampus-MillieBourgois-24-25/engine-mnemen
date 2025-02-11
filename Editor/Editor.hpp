@@ -8,6 +8,7 @@
 #include <Mnemen.hpp>
 #include <imgui.h>
 #include <filesystem>
+#include <ImGuizmo/ImGuizmo.h>
 
 #include "EditorCamera.hpp"
 
@@ -22,6 +23,7 @@ public:
     virtual void OnImGui(const Frame& frame) override;
     virtual void PostPresent() override;
 private:
+    void Viewport(const Frame& frame);
     void BeginDockSpace();
     void HierarchyPanel();
     void SetColors();
@@ -35,16 +37,24 @@ private:
     Camera mCamera;
     String mCurrentScenePath;
 
+    // Entity stuff
     Entity* mCameraEntity;
     Entity* mSelectedEntity = nullptr;
     bool mMarkForDeletion = false;
     String mModelChange = "";
     char mInputField[512];
 
+    // Viewport shenanigans
     ImVec2 mViewportSize;
+    ImVec2 mViewportBounds[2];
     bool mViewportFocused = false;
+    bool mGizmoFocused = false;
+    ImGuizmo::OPERATION mOperation = ImGuizmo::OPERATION::TRANSLATE;
+
+    // Log Filtering
     ImGuiTextFilter mLogFilter;
 
+    // Asset browing
     std::filesystem::path mBaseDirectory;
     std::filesystem::path mCurrentDirectory;
 };
