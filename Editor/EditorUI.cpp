@@ -303,8 +303,11 @@ void Editor::DrawEntityNode(Entity entity)
 
     // **Right-click menu for detaching entity**
     if (ImGui::BeginPopupContextItem()) {
+        if (ImGui::MenuItem(ICON_FA_TRASH " Delete")) {
+            mMarkForDeletion = true;
+        }
         if (entity.HasParent()) {
-            if (ImGui::MenuItem("Detach from Parent")) {
+            if (ImGui::MenuItem(ICON_FA_CHILD " Detach from Parent")) {
                 entity.RemoveParent();
             }
         }
@@ -486,9 +489,19 @@ void Editor::EntityEditor()
                 if (mesh.MeshAsset) {
                     char temp[512];
                     sprintf(temp, "%s %s", ICON_FA_FILE, mesh.MeshAsset->Path.c_str());
-                    ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                    if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".gltf", ".obj", ".fbx" });
+                        if (!path.empty()) {
+                            mModelChange = path;
+                        }
+                    }
                 } else {
-                    ImGui::Button(ICON_FA_FILE " Drag something...", ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                    if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".gltf", ".obj", ".fbx" });
+                        if (!path.empty()) {
+                            mModelChange = path;
+                        }
+                    }
                 }
                 ImGui::PopStyleVar();
                 if (ImGui::BeginDragDropTarget()) {
@@ -496,7 +509,7 @@ void Editor::EntityEditor()
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path modelPath(path);
                         std::string modelString = modelPath.string();
-                        if (modelString.find(".gltf") != std::string::npos) {
+                        if (modelString.find(".gltf") != std::string::npos || modelString.find(".obj") != std::string::npos || modelString.find(".fbx") != std::string::npos) {
                             for (int i = 0; i < modelString.size(); i++) {
                                 modelString[i] = modelString[i] == '\\' ? '/' : modelString[i];
                             }
@@ -533,9 +546,21 @@ void Editor::EntityEditor()
                 if (script->Handle.IsLoaded()) {
                     char temp[512];
                     sprintf(temp, "%s %s", ICON_FA_FILE, script->Path.c_str());
-                    ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                    if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".wren" });
+                        if (!path.empty()) {
+                            if (script->Handle.SetSource(AssetManager::Get(path, AssetType::Script)))
+                                script->Path = path;
+                        }
+                    }
                 } else {
-                    ImGui::Button(ICON_FA_FILE " Drag something...", ImVec2(ImGui::GetContentRegionAvail().x, 0));
+                    if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".wren" });
+                        if (!path.empty()) {
+                            if (script->Handle.SetSource(AssetManager::Get(path, AssetType::Script)))
+                                script->Path = path;
+                        }
+                    }
                 }
                 ImGui::PopStyleVar();
                 if (ImGui::BeginDragDropTarget()) {
