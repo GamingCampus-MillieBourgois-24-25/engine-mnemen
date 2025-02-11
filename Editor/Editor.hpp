@@ -49,6 +49,7 @@ private:
     ImVec2 mViewportBounds[2];
     bool mViewportFocused = false;
     bool mGizmoFocused = false;
+    ImGuizmo::MODE mMode = ImGuizmo::MODE::WORLD;
     ImGuizmo::OPERATION mOperation = ImGuizmo::OPERATION::TRANSLATE;
 
     // Log Filtering

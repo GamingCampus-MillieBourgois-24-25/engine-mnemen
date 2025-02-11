@@ -146,23 +146,30 @@ void Editor::Viewport(const Frame& frame)
     
         glm::mat4 view = mCamera.View();
         glm::mat4 projection = mCamera.Projection();
-
+    
         auto& transform = mSelectedEntity->GetComponent<TransformComponent>();
         ImGuizmo::Manipulate(glm::value_ptr(view),
                              glm::value_ptr(projection),
                              mOperation,
-                             ImGuizmo::MODE::WORLD,
+                             mMode,
                              glm::value_ptr(transform.Matrix));
+        
         if (ImGuizmo::IsUsingAny()) {
             // Rebake matrix and also disable camera XD
             mGizmoFocused = true;
-
-            glm::vec3 t, r, s;
+    
+            glm::vec3 t = glm::vec3(0.0f), r = glm::vec3(0.0f), s = glm::vec3(1.0f);
             ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform.Matrix), glm::value_ptr(t), glm::value_ptr(r), glm::value_ptr(s));
-
+    
+            // Convert Euler angles (r) to a quaternion
+            glm::quat rotationQuat = Math::EulerToQuat(r);
+    
             transform.Position = t;
-            transform.Rotation = r;
+            transform.Rotation = rotationQuat;
             transform.Scale = s;
+            transform.Matrix = glm::translate(glm::mat4(1.0f), transform.Position) *
+                               glm::mat4_cast(transform.Rotation) *
+                               glm::scale(glm::mat4(1.0f), transform.Scale);
         } else {
             mGizmoFocused = false;
         }
@@ -331,7 +338,11 @@ void Editor::EntityEditor()
             TransformComponent& transform = mSelectedEntity->GetComponent<TransformComponent>();
             DrawVec3Control("Position", transform.Position, 0.0f);
             DrawVec3Control("Scale", transform.Scale, 1.0f);
-            DrawVec3Control("Rotation", transform.Rotation, 0.0f);
+            
+            glm::vec3 euler = Math::QuatToEuler(transform.Rotation);
+            DrawVec3Control("Rotation", euler, 0.0f);
+            transform.Rotation = Math::EulerToQuat(euler);
+
             ImGui::TreePop();
         }
         
@@ -591,12 +602,15 @@ void Editor::UpdateShortcuts()
         }
     }
     if (Input::IsKeyPressed(SDLK_T)) {
+        mMode = ImGuizmo::MODE::WORLD;
         mOperation = ImGuizmo::OPERATION::TRANSLATE;
     }
     if (Input::IsKeyPressed(SDLK_R)) {
-        mOperation = ImGuizmo::OPERATION::ROTATE;
+        mMode = ImGuizmo::MODE::LOCAL;
+        mOperation = ImGuizmo::OPERATION::ROTATE_SCREEN;
     }
     if (Input::IsKeyPressed(SDLK_B)) {
+        mMode = ImGuizmo::MODE::WORLD;
         mOperation = ImGuizmo::OPERATION::SCALE;
     }
     if (Input::IsKeyPressed(SDLK_ESCAPE)) {

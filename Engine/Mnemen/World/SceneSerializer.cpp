@@ -32,6 +32,7 @@ void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
         entityRoot["rotation"][0] = transform.Rotation.x;
         entityRoot["rotation"][1] = transform.Rotation.y;
         entityRoot["rotation"][2] = transform.Rotation.z;
+        entityRoot["rotation"][3] = transform.Rotation.w;
 
         // Mesh Component
         entityRoot["hasMesh"] = entity->HasComponent<MeshComponent>();
@@ -81,6 +82,7 @@ Ref<Scene> SceneSerializer::DeserializeScene(const String& path)
         component.Rotation.x = jsonEntity["rotation"][0];
         component.Rotation.y = jsonEntity["rotation"][1];
         component.Rotation.z = jsonEntity["rotation"][2];
+        component.Rotation.w = jsonEntity["rotation"][3];
         component.Scale.x = jsonEntity["scale"][0];
         component.Scale.y = jsonEntity["scale"][1];
         component.Scale.z = jsonEntity["scale"][2];
