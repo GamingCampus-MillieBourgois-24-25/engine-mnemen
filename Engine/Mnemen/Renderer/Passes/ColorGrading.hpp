@@ -25,4 +25,13 @@ private:
     ComputePipeline::Ref mPipeline;
     float mBrightness = 1.0f;
     float mExposure = 1.0f;
+    float mSaturation = 1.0f;
+    float mContrast = 1.0f;
+    float mHueShift = 1.0f;
+    glm::vec4 mShadows = glm::vec4(0.5f);
+    glm::vec4 mHightLigths = glm::vec4(0.5f);
+    float mBalance = 1.0f;
+    float mTemperature = 0.0f; 
+    float mTint = 0.0f; 
+    glm::vec4 mColorFilter = glm::vec4(1.0f);
 };

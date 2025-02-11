@@ -33,6 +33,14 @@ void Mesh::Load(RHI::Ref rhi, const String& path)
 Mesh::~Mesh()
 {
     FreeNodes(Root);
+    for (auto& material : Materials) {
+        if (material.Albedo) {
+            AssetManager::GiveBack(material.Albedo->Path);
+        }
+        if (material.Normal) {
+            AssetManager::GiveBack(material.Normal->Path);
+        }
+    }
     Materials.clear();
 }
 
@@ -51,6 +59,7 @@ void Mesh::FreeNodes(MeshNode* node)
 
 void Mesh::ProcessNode(MeshNode* node, aiNode *assimpNode, const aiScene *scene)
 {
+    // Create node resources
     for (int i = 0; i < assimpNode->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[assimpNode->mMeshes[i]];
         glm::mat4 transform(1.0f);

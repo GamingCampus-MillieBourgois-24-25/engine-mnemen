@@ -7,7 +7,6 @@
 #include "RendererTools.hpp"
 
 #include "Passes/Deferred.hpp"
-#include "Passes/Forward.hpp"
 #include "Passes/Composite.hpp"
 #include "Passes/DOF.hpp"
 #include "Passes/SSAO.hpp"
@@ -17,6 +16,7 @@
 #include <Core/Profiler.hpp>
 
 #include <imgui.h>
+#include <FontAwesome/FontAwesome.hpp>
 
 Renderer::Renderer(RHI::Ref rhi)
 {
@@ -48,7 +48,7 @@ void Renderer::Render(const Frame& frame, ::Ref<Scene> scene)
 
 void Renderer::UI(const Frame& frame)
 {
-    ImGui::Begin("Renderer");
+    ImGui::Begin(ICON_FA_PAINT_BRUSH " Renderer");
     for (auto& pass : mPasses) {
         pass->UI(frame);
     }

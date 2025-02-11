@@ -11,6 +11,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <Script/Script.hpp>
+#include <Utility/UUID.hpp>
+
+struct Entity;
 
 /// @brief A component representing a transform -- the spatial representation of the object.
 struct TransformComponent
@@ -31,12 +34,21 @@ struct TransformComponent
 /// @brief A component holding a mesh
 struct MeshComponent
 {
+    /// @brief Used for debugging
+    Entity* ParentEntity;
+
     /// @brief The asset handle pointing to the mesh
     Asset::Handle MeshAsset;
+
+    /// @brief Whether or not the model is loaded
+    bool Loaded = false;
 
     /// @brief Initializes the component and loads the mesh at the given string
     /// @param string The path of the component
     void Init(const String& string);
+
+    /// @brief Manually free the mesh asset
+    void Free();
 };
 
 /// @brief A component holding camera information
@@ -70,6 +82,8 @@ struct ScriptComponent
     /// @brief An instance of a script
     struct Instance
     {
+        /// @brief Script instance ID util whatever
+        Util::UUID ID;
         /// @brief The path of the script
         String Path;
         /// @brief The handle of the script
@@ -83,6 +97,9 @@ struct ScriptComponent
 
     /// @brief All attached instances of the script
     Vector<Ref<Instance>> Instances;
+
+    /// @brief Pushes an empty script
+    void AddEmptyScript();
 
     /// @brief Pushes a script from the given path
     /// @param path The path of the script

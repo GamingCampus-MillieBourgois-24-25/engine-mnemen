@@ -12,6 +12,7 @@
 #include <imgui.h>
 #include <imgui_impl_dx12.h>
 #include <imgui_impl_sdl3.h>
+#include <ImGuizmo/ImGuizmo.h>
 
 #include <PIX/pix3.h>
 
@@ -275,6 +276,7 @@ void CommandBuffer::BeginGUI(int width, int height)
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 }
 
 void CommandBuffer::EndGUI()

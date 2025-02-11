@@ -64,14 +64,23 @@ Application::~Application()
     Input::Exit();
 }
 
+void Application::OnAwake()
+{
+    mScenePlaying = true;
+    ScriptSystem::Awake(mScene);
+}
+
+void Application::OnStop()
+{
+    ScriptSystem::Quit(mScene);
+    mScenePlaying = false;
+}
+
 void Application::Run()
 {
     // Flush any uploads before running
     Uploader::Flush();
     mRHI->Wait();
-
-    // Awake script system
-    ScriptSystem::Awake(mScene);
 
     while (mWindow->IsOpen()) {
         Profiler::BeginFrame();
@@ -88,7 +97,9 @@ void Application::Run()
             float minStepDuration = 1.0f / mApplicationSpecs.PhysicsRefreshRate;
             if (TO_SECONDS(mPhysicsTimer.GetElapsed()) > minStepDuration) {
                 OnPhysicsTick();
-                PhysicsSystem::Update(mScene, minStepDuration);
+                if (mScenePlaying) {
+                    PhysicsSystem::Update(mScene, minStepDuration);
+                }
                 mPhysicsTimer.Restart();
             }
         }
@@ -98,9 +109,11 @@ void Application::Run()
             PROFILE_SCOPE("Systems Update");
             
             mWindow->Update();
-            AISystem::Update(mScene);
-            AudioSystem::Update(mScene);
-            ScriptSystem::Update(mScene, dt);
+            if (mScenePlaying) {
+                AISystem::Update(mScene);
+                AudioSystem::Update(mScene);
+                ScriptSystem::Update(mScene, dt);
+            }
             mScene->Update();
         }
 
@@ -117,8 +130,8 @@ void Application::Run()
         }
         Input::PostUpdate();
     }
-    ScriptSystem::Quit(mScene);
     mRHI->Wait();
+    AssetManager::Clean();
 }
 
 void Application::OnPrivateRender()
@@ -158,4 +171,5 @@ void Application::OnPrivateRender()
     // Profiler::ReadbackGPUResults();
 
     mRHI->Present(false);
+    PostPresent();
 }

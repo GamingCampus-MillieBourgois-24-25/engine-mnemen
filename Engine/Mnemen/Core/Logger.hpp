@@ -6,6 +6,7 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+#include <imgui.h>
 
 #include "Common.hpp"
 
@@ -17,6 +18,15 @@
 class Logger
 {
 public:
+    /// @brief An entry in the logger
+    struct LogEntry
+    {
+        /// @brief The contents of the entry
+        String Message;
+        /// @brief The color of the entry
+        ImVec4 Color;
+    };
+
     /// @brief Initializes the logger.
     /// 
     /// This method sets up the logger instance and prepares it for use.
@@ -28,6 +38,8 @@ public:
     /// @return A shared pointer to the logger instance.
     static Ref<spdlog::logger> GetLogger() { return sLogger; }
 
+    /// @brief The vector containing the log data. Make sure to clear it every once in a while! ;)
+    static Vector<LogEntry> sEntries;
 private:
     /// @brief The shared pointer to the logger instance.
     static Ref<spdlog::logger> sLogger;

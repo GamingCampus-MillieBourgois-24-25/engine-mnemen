@@ -10,6 +10,8 @@
 Runtime::Runtime(ApplicationSpecs specs)
     : Application(specs)
 {
+    mScenePlaying = true;
+
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity->Private = true;
     
