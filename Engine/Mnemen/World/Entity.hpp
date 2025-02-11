@@ -25,12 +25,8 @@ struct Entity
 {
     /// @brief The internal entt ID
     entt::entity ID = entt::null;
-    /// @brief The name of the entity
-    String Name = "";
     /// @brief The parent entt registry
     entt::registry* ParentRegistry;
-    /// @brief If this is set to true, it will not be serialized or shown in the editor
-    bool Private = false;
 
     /// @brief Checks if the entity is valid (not null)
     operator bool() const {
@@ -40,16 +36,6 @@ struct Entity
     /// @brief Implicit conversion to `entt::entity`
     operator entt::entity() const {
         return ID;
-    }
-
-    /// @brief Equality operator to compare two entities
-    friend bool operator==(const Entity& lhs, const Entity& rhs) {
-        return lhs.ID == rhs.ID && lhs.ParentRegistry == rhs.ParentRegistry;
-    }
-
-    /// @brief Inequality operator
-    friend bool operator!=(const Entity& lhs, const Entity& rhs) {
-        return !(lhs == rhs);
     }
 
     /// @brief Constructor -- sets the parent registry as well
@@ -109,11 +95,29 @@ struct Entity
     /// @return The current parent of the entity
     Entity GetParent();
 
+    /// @brief Returns whether or not the entity has a parent
+    /// @return True if it has one, otherwise false
+    bool HasParent();
+
     /// @brief Returns a list of child entities
     Vector<Entity> GetChildren();
 };
 
 /// COMPONENTS
+
+/// @brief A component giving a name to an entity
+struct TagComponent
+{
+    /// @brief The name of the entity
+    String Tag = "";
+};
+
+/// @brief A component making the entity private
+struct PrivateComponent
+{
+    /// @brief Placeholder. If the entity has this component, it's private anyway.
+    int Placeholder;
+};
 
 /// @brief A component representing the children state of an entity
 struct ParentComponent
@@ -138,8 +142,10 @@ struct TransformComponent
     glm::vec3 Scale = glm::vec3(1.0f);
     /// @brief The rotation of the object
     glm::quat Rotation = glm::quat();
-    /// @brief The matrix that compiles all the information
-    glm::mat4 Matrix;
+    /// @brief Local Matrix
+    glm::mat4 Matrix = glm::mat4(1.0f);
+    /// @brief World Matrix
+    glm::mat4 WorldMatrix = glm::mat4(1.0f);
 
     /// @brief Updates the transform matrix
     void Update();

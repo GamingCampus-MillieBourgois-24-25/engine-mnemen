@@ -7,18 +7,21 @@
 
 Scene::Scene()
 {
-    mEntities.reserve(64);
+    
 }
 
 Scene::~Scene()
 {
-    for (auto& entity : mEntities) {
+    auto view = mRegistry.view<TagComponent>();
+    for (auto [id, tag] : view.each()) {
+        Entity entity(&mRegistry);
+        entity.ID = id;
+
         if (entity.HasComponent<MeshComponent>()) {
             entity.GetComponent<MeshComponent>().Free();
         }
-        mRegistry.destroy(entity.ID);
+        mRegistry.destroy(id);
     }
-    mEntities.clear();
 }
 
 void Scene::UpdateTransforms(Entity entity, glm::mat4 parentTransform)
@@ -32,6 +35,11 @@ void Scene::UpdateTransforms(Entity entity, glm::mat4 parentTransform)
 
     glm::mat4 localTransform = tc.Matrix;
     glm::mat4 worldTransform = parentTransform * localTransform;
+
+    // Update world transform in TransformComponent
+    tc.WorldMatrix = worldTransform;
+
+    // Recursively update children
     for (auto& child : entity.GetChildren()) {
         UpdateTransforms(child, worldTransform);
     }
@@ -39,21 +47,21 @@ void Scene::UpdateTransforms(Entity entity, glm::mat4 parentTransform)
 
 void Scene::Update()
 {
-    // Transform update
+    // Transform update for root entities
     {
         auto view = mRegistry.view<TransformComponent>();
         for (auto entity : view) {
             Entity e(&mRegistry);
             e.ID = entity;
     
-            // Update only root entities
+            // Update only root entities (entities without a parent)
             if (!e.HasComponent<ParentComponent>()) {
-                UpdateTransforms(e);
+                UpdateTransforms(e, glm::mat4(1.0f));
             }
         }
     }
 
-    // Camera Update
+    // Camera Update (to sync camera with transformations)
     {
         auto view = mRegistry.view<TransformComponent, CameraComponent>();
         for (auto [entity, transform, camera] : view.each()) {
@@ -87,13 +95,12 @@ SceneCamera Scene::GetMainCamera()
 Entity Scene::AddEntity(const String& name)
 {
     Entity newEntity(&mRegistry);
+
     newEntity.ID = mRegistry.create();
-    newEntity.Name = name;
-    
     newEntity.AddComponent<TransformComponent>();
     newEntity.AddComponent<ScriptComponent>();
+    newEntity.AddComponent<TagComponent>().Tag = name;
 
-    mEntities.push_back(newEntity);
     return newEntity;
 }
 
@@ -103,8 +110,4 @@ void Scene::RemoveEntity(Entity e)
         e.GetComponent<MeshComponent>().Free();
     }
     mRegistry.destroy(e.ID);
-    for (int i = 0; i < mEntities.size(); i++) {
-        if (mEntities[i].ID == e.ID)
-            mEntities.erase(mEntities.begin() + i);
-    }
 }

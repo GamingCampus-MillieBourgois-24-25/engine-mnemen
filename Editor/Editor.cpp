@@ -18,7 +18,7 @@ Editor::Editor(ApplicationSpecs specs)
     mScenePlaying = false;
 
     mCameraEntity = mScene->AddEntity("Editor Camera");
-    mCameraEntity.Private = true;
+    mCameraEntity.AddComponent<PrivateComponent>();
     
     auto& cam = mCameraEntity.AddComponent<CameraComponent>();
     cam.Primary = 2;
@@ -55,13 +55,13 @@ void Editor::OnUpdate(float dt)
 void Editor::PostPresent()
 {
     if (mMarkForDeletion) {
-        mScene->RemoveEntity(*mSelectedEntity);
+        mScene->RemoveEntity(mSelectedEntity);
         mSelectedEntity = nullptr;
         mMarkForDeletion = false;
     }
     if (!mModelChange.empty()) {
         if (mSelectedEntity) {
-            MeshComponent& mesh = mSelectedEntity->GetComponent<MeshComponent>();
+            MeshComponent& mesh = mSelectedEntity.GetComponent<MeshComponent>();
             mesh.Init(mModelChange);
         }
         mModelChange = "";
@@ -148,7 +148,7 @@ void Editor::Viewport(const Frame& frame)
         glm::mat4 view = mCamera.View();
         glm::mat4 projection = mCamera.Projection();
     
-        auto& transform = mSelectedEntity->GetComponent<TransformComponent>();
+        auto& transform = mSelectedEntity.GetComponent<TransformComponent>();
         ImGuizmo::Manipulate(glm::value_ptr(view),
                              glm::value_ptr(projection),
                              mOperation,
@@ -178,8 +178,8 @@ void Editor::Viewport(const Frame& frame)
 
     // Debug draw some stuff
     if (mSelectedEntity) {
-        if (mSelectedEntity->HasComponent<CameraComponent>()) {
-            auto cam = mSelectedEntity->GetComponent<CameraComponent>();
+        if (mSelectedEntity.HasComponent<CameraComponent>()) {
+            auto cam = mSelectedEntity.GetComponent<CameraComponent>();
             Debug::DrawFrustum(cam.View, cam.Projection, glm::vec3(1.0f));
         }
     }
@@ -253,24 +253,112 @@ void Editor::HierarchyPanel()
 {
     ImGui::Begin(ICON_FA_GLOBE " Scene Hierarchy");
     ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+
+    // Add entity button
     if (ImGui::Button(ICON_FA_PLUS " Add Entity", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-        mSelectedEntity = &mScene->AddEntity("New Entity");
+        mSelectedEntity = mScene->AddEntity("New Entity");
+    }
+    ImGui::Button("Drag me here to detach!", ImVec2(ImGui::GetContentRegionAvail().x, 0));
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_MOVE")) {
+            if (payload) {
+                entt::entity droppedID = *(const entt::entity*)payload->Data;
+                Entity droppedEntity(mScene->GetRegistry());
+                droppedEntity.ID = droppedID;
+                droppedEntity.RemoveParent();
+            }
+        }
+        ImGui::EndDragDropTarget();
     }
     ImGui::PopStyleVar();
     ImGui::Separator();
-    for (auto& entity : mScene->GetEntityArray()) {
-        if (entity.Private)
+
+    // Draw root entities only
+    ImGui::BeginChild("EntityNodes");
+    auto view = mScene->GetRegistry()->view<TagComponent>();
+    for (auto id : view) {
+        Entity entity(mScene->GetRegistry());
+        entity.ID = id;
+
+        if (entity.HasComponent<PrivateComponent>())
             continue;
 
-        char temp[256];
-        sprintf(temp, "%s %s", ICON_FA_CUBE, entity.Name.c_str());
-        ImGui::PushID((UInt64)entity.ID);
-        if (ImGui::Selectable(temp)) {
-            mSelectedEntity = &entity;
+        if (!entity.HasParent()) {
+            DrawEntityNode(entity);
         }
-        ImGui::PopID();
     }
+    ImGui::EndChild();
+
     ImGui::End();
+}
+
+void Editor::DrawEntityNode(Entity entity)
+{
+    auto& tag = entity.GetComponent<TagComponent>();
+
+    // Prepare label with icon and name
+    char temp[256];
+    sprintf(temp, "%s %s", ICON_FA_CUBE, tag.Tag.c_str());
+
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+
+    // If no children, make it a leaf
+    if (entity.GetChildren().empty())
+        flags |= ImGuiTreeNodeFlags_Leaf;
+
+    // Highlight the selected entity
+    if (mSelectedEntity.ID == entity.ID)
+        flags |= ImGuiTreeNodeFlags_Selected;
+
+    bool nodeOpen = ImGui::TreeNodeEx((void*)(UInt64)entity.ID, flags, temp);
+
+    // Handle selection
+    if (ImGui::IsItemClicked()) {
+        mSelectedEntity = entity;
+    }
+
+    // **Right-click menu for detaching entity**
+    if (ImGui::BeginPopupContextItem()) {
+        if (entity.HasParent()) {
+            if (ImGui::MenuItem("Detach from Parent")) {
+                entity.RemoveParent();
+            }
+        }
+        ImGui::EndPopup();
+    }
+
+    // Drag & Drop Source (Start Dragging)
+    if (ImGui::BeginDragDropSource()) {
+        entt::entity entityID = entity.ID;
+        ImGui::SetDragDropPayload("ENTITY_MOVE", &entityID, sizeof(entt::entity));
+        ImGui::Text("Move %s", tag.Tag.c_str());
+        ImGui::EndDragDropSource();
+    }
+
+    // Drag & Drop Target (Accept Child Entity)
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_MOVE")) {
+            entt::entity droppedID = *(const entt::entity*)payload->Data;
+
+            Entity droppedEntity(mScene->GetRegistry());
+            droppedEntity.ID = droppedID;
+
+            if (droppedEntity.ID != entity.ID) { // Avoid self-parenting
+                droppedEntity.SetParent(entity);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    // Recursively draw children
+    if (nodeOpen) {
+        for (auto childID : entity.GetChildren()) {
+            Entity child(mScene->GetRegistry());
+            child.ID = childID;
+            DrawEntityNode(child);
+        }
+        ImGui::TreePop();
+    }
 }
 
 void Editor::AssetPanel()
@@ -330,13 +418,15 @@ void Editor::EntityEditor()
 {
     ImGui::Begin(ICON_FA_WRENCH " Entity Editor");
     if (mSelectedEntity) {
-        strcpy(mInputField, mSelectedEntity->Name.c_str());
+        auto& tag = mSelectedEntity.GetComponent<TagComponent>();
+
+        strcpy(mInputField, tag.Tag.c_str());
         ImGui::InputText("##", mInputField, 512);
-        mSelectedEntity->Name = String(mInputField);
+        tag.Tag = String(mInputField);
 
         // Transform
         if (ImGui::TreeNodeEx(ICON_FA_HOME " Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-            TransformComponent& transform = mSelectedEntity->GetComponent<TransformComponent>();
+            TransformComponent& transform = mSelectedEntity.GetComponent<TransformComponent>();
             DrawVec3Control("Position", transform.Position, 0.0f);
             DrawVec3Control("Scale", transform.Scale, 1.0f);
             
@@ -348,7 +438,7 @@ void Editor::EntityEditor()
         }
         
         // CAMERA
-        if (mSelectedEntity->HasComponent<CameraComponent>()) {
+        if (mSelectedEntity.HasComponent<CameraComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 bool shouldDelete = false;
                 ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
@@ -361,7 +451,7 @@ void Editor::EntityEditor()
                 ImGui::PopStyleColor(3);
                 ImGui::PopStyleVar();
 
-                CameraComponent& camera = mSelectedEntity->GetComponent<CameraComponent>();
+                CameraComponent& camera = mSelectedEntity.GetComponent<CameraComponent>();
                 ImGui::Checkbox("Primary", (bool*)&camera.Primary);
                 ImGui::SliderFloat("FOV", &camera.FOV, 0.0f, 360.0f);
                 ImGui::SliderFloat("Near", &camera.Near, 0.0f, camera.Far);
@@ -369,15 +459,15 @@ void Editor::EntityEditor()
                 ImGui::TreePop();
 
                 if (shouldDelete) {
-                    mSelectedEntity->RemoveComponent<CameraComponent>();
+                    mSelectedEntity.RemoveComponent<CameraComponent>();
                 }
             }
         }
 
         // MESH
-        if (mSelectedEntity->HasComponent<MeshComponent>()) {
+        if (mSelectedEntity.HasComponent<MeshComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CUBE " Mesh Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-                auto& mesh = mSelectedEntity->GetComponent<MeshComponent>();
+                auto& mesh = mSelectedEntity.GetComponent<MeshComponent>();
 
                 bool shouldDelete = false;
                 ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
@@ -415,13 +505,13 @@ void Editor::EntityEditor()
 
                 if (shouldDelete) {
                     mesh.Free();
-                    mSelectedEntity->RemoveComponent<MeshComponent>();
+                    mSelectedEntity.RemoveComponent<MeshComponent>();
                 }
             }
         }
 
         // SCRIPT
-        ScriptComponent& scripts = mSelectedEntity->GetComponent<ScriptComponent>();
+        ScriptComponent& scripts = mSelectedEntity.GetComponent<ScriptComponent>();
         for (int i = 0; i < scripts.Instances.size(); i++) {
             Ref<ScriptComponent::Instance> script = scripts.Instances[i];
             ImGui::PushID((UInt64)script->ID);
@@ -476,23 +566,23 @@ void Editor::EntityEditor()
             ImGui::OpenPopup("AddComponent");
         }
         if (ImGui::BeginPopup("AddComponent")) {
-            if (!mSelectedEntity->HasComponent<MeshComponent>()) {
+            if (!mSelectedEntity.HasComponent<MeshComponent>()) {
                 if (ImGui::MenuItem(ICON_FA_CUBE " Mesh Component")) {
-                    mSelectedEntity->AddComponent<MeshComponent>();
+                    mSelectedEntity.AddComponent<MeshComponent>();
                 }
             }
-            if (!mSelectedEntity->HasComponent<CameraComponent>()) {
+            if (!mSelectedEntity.HasComponent<CameraComponent>()) {
                 if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera Component")) {
-                    mSelectedEntity->AddComponent<CameraComponent>();
+                    mSelectedEntity.AddComponent<CameraComponent>();
                 }
             }
             if (ImGui::MenuItem(ICON_FA_CODE " Script Component")) {
-                mSelectedEntity->GetComponent<ScriptComponent>().AddEmptyScript();
+                mSelectedEntity.GetComponent<ScriptComponent>().AddEmptyScript();
             }
             ImGui::EndPopup();
         }
         if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-            mScene->RemoveEntity(*mSelectedEntity);
+            mScene->RemoveEntity(mSelectedEntity);
             mSelectedEntity = nullptr;
         }
         ImGui::PopStyleVar();
@@ -615,7 +705,7 @@ void Editor::UpdateShortcuts()
         mOperation = ImGuizmo::OPERATION::SCALE;
     }
     if (Input::IsKeyPressed(SDLK_ESCAPE)) {
-        mSelectedEntity = nullptr;
+        mSelectedEntity = {};
     }
 }
 

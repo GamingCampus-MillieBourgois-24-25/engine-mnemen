@@ -1,100 +1,120 @@
 {
     "entities": [
         {
-            "hasCamera": false,
-            "hasMesh": true,
-            "meshPath": "Assets/Models/Sponza/Sponza.gltf",
+            "children": [],
+            "id": 3,
+            "mesh": {
+                "path": "Assets/Models/Sponza/Sponza.gltf"
+            },
             "name": "Sponza",
-            "position": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "rotation": [
-                0.0,
-                0.0,
-                0.0,
-                1.0
-            ],
-            "scale": [
-                1.0,
-                1.0,
-                1.0
-            ],
-            "scripts": []
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
         },
         {
-            "hasCamera": false,
-            "hasMesh": true,
-            "meshPath": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf",
+            "children": [],
+            "id": 2,
+            "mesh": {
+                "path": "Assets/Models/SciFiHelmet/SciFiHelmet.gltf"
+            },
             "name": "SciFi",
-            "position": [
-                -0.53490149974823,
-                0.5337734222412109,
-                -1.334019422531128
-            ],
-            "rotation": [
-                0.0,
-                0.0,
-                0.0,
-                1.0
-            ],
-            "scale": [
-                0.3899981677532196,
-                0.38999998569488525,
-                0.3899966776371002
-            ],
-            "scripts": []
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -0.24321076273918152,
+                    0.6047958135604858,
+                    -1.0522379875183105
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    0.4620000422000885,
+                    0.4620000422000885,
+                    0.4620000422000885
+                ]
+            }
         },
         {
-            "hasCamera": false,
-            "hasMesh": true,
-            "meshPath": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf",
-            "name": "Damaged",
-            "position": [
-                0.8167272806167603,
-                0.5337249040603638,
-                -1.2316020727157593
-            ],
-            "rotation": [
-                -1.3971841461568602e-09,
-                1.1102230246251565e-16,
-                1.551186008704586e-25,
-                1.0
-            ],
-            "scale": [
-                0.5799938440322876,
-                0.5799944996833801,
-                0.579999566078186
-            ],
-            "scripts": []
+            "children": [],
+            "id": 1,
+            "mesh": {
+                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
+            },
+            "name": "DamagedHelmet",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.9863057732582092,
+                    0.5144365429878235,
+                    -1.0756374597549438
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    0.48000001907348633,
+                    0.48000001907348633,
+                    0.48000001907348633
+                ]
+            }
         },
         {
-            "cameraAspectRatio": 1.7777777910232544,
-            "cameraFOV": 90.0,
-            "cameraFar": 200.0,
-            "cameraNear": 0.10000000149011612,
-            "cameraPrimary": true,
-            "hasCamera": true,
-            "hasMesh": false,
+            "camera": {
+                "aspectRatio": 1.7777777910232544,
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true
+            },
+            "children": [],
+            "id": 0,
             "name": "Camera",
-            "position": [
-                -0.2408662885427475,
-                2.459155559539795,
-                1.2216261625289917
-            ],
-            "rotation": [
-                -0.0026918447110801935,
-                0.9554029107093811,
-                -0.29516732692718506,
-                -0.008617457933723927
-            ],
-            "scale": [
-                0.9998430013656616,
-                1.0,
-                0.9999600648880005
-            ],
-            "scripts": []
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.19669456779956818,
+                    1.159641146659851,
+                    1.0275590419769287
+                ],
+                "rotation": [
+                    9.389819410898781e-07,
+                    -0.9994744658470154,
+                    -9.389819410898781e-07,
+                    -0.032415859401226044
+                ],
+                "scale": [
+                    0.9999744296073914,
+                    0.9999725818634033,
+                    0.9999637007713318
+                ]
+            }
         }
     ]
 }

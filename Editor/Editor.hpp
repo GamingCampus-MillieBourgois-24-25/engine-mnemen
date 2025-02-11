@@ -33,13 +33,14 @@ private:
     void LogWindow();
     void UpdateShortcuts();
     void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
+    void DrawEntityNode(Entity entity);
 
     Camera mCamera;
     String mCurrentScenePath;
 
     // Entity stuff
     Entity mCameraEntity;
-    Entity* mSelectedEntity = nullptr;
+    Entity mSelectedEntity = {};
     bool mMarkForDeletion = false;
     String mModelChange = "";
     char mInputField[512];

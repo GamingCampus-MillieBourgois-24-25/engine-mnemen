@@ -55,11 +55,6 @@ public:
     /// 
     /// @param e A pointer to the entity to be removed.
     void RemoveEntity(Entity e);
-
-    /// @brief Gets the array of entities in the scene
-    ///
-    /// @return The array of entities of the scene
-    Vector<Entity>& GetEntityArray() { return mEntities; }
 private:
     void UpdateTransforms(Entity entity, glm::mat4 transform = glm::mat4(1.0f));
 
@@ -71,5 +66,4 @@ private:
     friend class ScriptSystem; ///< Allows ScriptSystem to access private members of Scene.
 
     entt::registry mRegistry; ///< The registry that manages entities and components.
-    Vector<Entity> mEntities; ///< A collection of entities within the scene.
 };
