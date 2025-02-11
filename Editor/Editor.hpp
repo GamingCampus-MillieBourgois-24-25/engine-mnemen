@@ -23,15 +23,21 @@ public:
     virtual void OnImGui(const Frame& frame) override;
     virtual void PostPresent() override;
 private:
+    // Utility
+    void UpdateShortcuts();
+    void OpenScene(const String& path);
+    void CloseScene(const String& path);
+
+    // UI
     void Viewport(const Frame& frame);
     void BeginDockSpace();
+    void EndDockSpace();
     void HierarchyPanel();
     void SetColors();
     void AssetPanel();
     void EntityEditor();
     void AssetBrowser();
     void LogWindow();
-    void UpdateShortcuts();
     void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
     void DrawEntityNode(Entity entity);
 

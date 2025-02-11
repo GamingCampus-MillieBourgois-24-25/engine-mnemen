@@ -198,9 +198,12 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         // Iterate over every mesh. This is messy as hell but fuck it
         auto registry = scene->GetRegistry();
         auto view = registry->view<TransformComponent, MeshComponent>();
-        for (auto [entity, transform, mesh]: view.each()) {
+        for (auto [id, transform, mesh]: view.each()) {
+            Entity entity(registry);
+            entity.ID = id;
+
             if (mesh.Loaded) {
-                drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, transform.WorldMatrix);
+                drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, entity.GetWorldTransform());
             }
         }
         frame.CommandBuffer->Barrier(albedoBuffer->Texture, ResourceLayout::Shader);

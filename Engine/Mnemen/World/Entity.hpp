@@ -156,8 +156,6 @@ struct TransformComponent
     glm::quat Rotation = glm::quat();
     /// @brief Local Matrix
     glm::mat4 Matrix = glm::mat4(1.0f);
-    /// @brief World Matrix
-    glm::mat4 WorldMatrix = glm::mat4(1.0f);
 
     /// @brief Updates the transform matrix
     void Update();

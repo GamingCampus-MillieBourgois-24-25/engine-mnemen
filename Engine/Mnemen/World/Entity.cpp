@@ -13,7 +13,7 @@ void Entity::SetParent(Entity parent)
         LOG_WARN("Entity cannot be its own parent!");
         return;
     }
-    if (HasComponent<ParentComponent>()) {
+    if (HasParent()) {
         RemoveParent();
     }
 
@@ -23,15 +23,12 @@ void Entity::SetParent(Entity parent)
     SetLocalTransform(newLocalTransform);
 
     AddComponent<ParentComponent>(parent);
-    if (!parent.HasComponent<ChildrenComponent>()) {
-        parent.AddComponent<ChildrenComponent>();
-    }
     parent.GetComponent<ChildrenComponent>().Children.push_back(*this);
 }
 
 bool Entity::HasParent()
 {
-    return HasComponent<ParentComponent>() && GetComponent<ParentComponent>().Parent.ID != entt::null;
+    return HasComponent<ParentComponent>();
 }
 
 void Entity::RemoveParent()
@@ -39,32 +36,29 @@ void Entity::RemoveParent()
     if (!HasParent())
         return;
 
-    Entity parent = GetComponent<ParentComponent>().Parent;
+    Entity parent = GetParent();
     SetLocalTransform(GetWorldTransform());
-    if (parent.HasComponent<ChildrenComponent>()) {
-        auto& children = parent.GetComponent<ChildrenComponent>().Children;
-        auto it = std::find_if(children.begin(), children.end(), [this](const Entity& child) {
-            return child.ID == ID;
-        });
-        
-        if (it != children.end()) {
-            children.erase(it);
-        }
+
+    auto& children = parent.GetComponent<ChildrenComponent>().Children;
+    auto it = std::find_if(children.begin(), children.end(), [this](const Entity& child) {
+        return child.ID == ID;
+    });
+    if (it != children.end()) {
+        children.erase(it);
     }
+
     RemoveComponent<ParentComponent>();
 }
 
 Entity Entity::GetParent()
 {
-    if (!HasComponent<ParentComponent>())
+    if (!HasParent())
         return nullptr;
     return GetComponent<ParentComponent>().Parent;
 }
 
 Vector<Entity> Entity::GetChildren()
 {
-    if (!HasComponent<ChildrenComponent>())
-        return {};
     return GetComponent<ChildrenComponent>().Children;
 }
 

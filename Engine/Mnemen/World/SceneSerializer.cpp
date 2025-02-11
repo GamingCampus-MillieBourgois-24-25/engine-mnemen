@@ -8,6 +8,8 @@
 #include <Core/File.hpp>
 #include <Core/Logger.hpp>
 
+#include <Utility/Math.hpp>
+
 void SceneSerializer::SerializeScene(Ref<Scene> scene, const String& path)
 {
     auto registry = scene->GetRegistry();
@@ -59,18 +61,22 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
     entityJson["id"] = static_cast<UInt32>(entity.ID);
     entityJson["name"] = entity.GetComponent<TagComponent>().Tag;
 
-    if (entity.HasComponent<ParentComponent>()) {
+    if (entity.HasParent()) {
         entityJson["parent"] = static_cast<UInt32>(entity.GetParent().ID);
     } else {
         entityJson["parent"] = nullptr;
     }
 
     if (entity.HasComponent<TransformComponent>()) {
-        auto& transform = entity.GetComponent<TransformComponent>();
+        glm::mat4 local = entity.GetWorldTransform();
+        glm::vec3 p, r, s;
+        Math::DecomposeTransform(local, p, r, s);
+        glm::quat q = Math::EulerToQuat(r);
+
         entityJson["transform"] = {
-            {"position", {transform.Position.x, transform.Position.y, transform.Position.z}},
-            {"rotation", {transform.Rotation.x, transform.Rotation.y, transform.Rotation.z, transform.Rotation.w}},
-            {"scale", {transform.Scale.x, transform.Scale.y, transform.Scale.z}}
+            {"position", {p.x, p.y, p.z}},
+            {"rotation", {q.x, q.y, q.z, q.w}},
+            {"scale", {s.x, s.y, s.z}}
         };
     }
 
@@ -99,12 +105,6 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
     for (auto& instance : scripts.Instances) {
         entityJson["scripts"].push_back(instance->Path);
     }
-
-    nlohmann::json childrenJson = nlohmann::json::array();
-    for (auto& child : entity.GetChildren()) {
-        childrenJson.push_back(SerializeEntity(child));
-    }
-    entityJson["children"] = childrenJson;
 
     return entityJson;
 }

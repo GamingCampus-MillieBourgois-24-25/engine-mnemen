@@ -24,43 +24,8 @@ Scene::~Scene()
     }
 }
 
-void Scene::UpdateTransforms(Entity entity, glm::mat4 parentTransform)
-{
-    if (!entity.HasComponent<TransformComponent>()) {
-        return;
-    }
-
-    auto& tc = entity.GetComponent<TransformComponent>();
-    tc.Update();
-
-    glm::mat4 localTransform = tc.Matrix;
-    glm::mat4 worldTransform = parentTransform * localTransform;
-
-    // Update world transform in TransformComponent
-    tc.WorldMatrix = worldTransform;
-
-    // Recursively update children
-    for (auto& child : entity.GetChildren()) {
-        UpdateTransforms(child, worldTransform);
-    }
-}
-
 void Scene::Update()
 {
-    // Transform update for root entities
-    {
-        auto view = mRegistry.view<TransformComponent>();
-        for (auto entity : view) {
-            Entity e(&mRegistry);
-            e.ID = entity;
-    
-            // Update only root entities (entities without a parent)
-            if (!e.HasComponent<ParentComponent>()) {
-                UpdateTransforms(e, glm::mat4(1.0f));
-            }
-        }
-    }
-
     // Camera Update (to sync camera with transformations)
     {
         auto view = mRegistry.view<TransformComponent, CameraComponent>();
@@ -100,18 +65,24 @@ Entity Scene::AddEntity(const String& name)
     newEntity.AddComponent<TransformComponent>();
     newEntity.AddComponent<ScriptComponent>();
     newEntity.AddComponent<TagComponent>().Tag = name;
+    newEntity.AddComponent<ChildrenComponent>();
 
     return newEntity;
 }
 
 void Scene::RemoveEntity(Entity e)
 {
-    if (e.HasComponent<ChildrenComponent>()) {
-        auto& children = e.GetComponent<ChildrenComponent>().Children;
-        for (Entity& child : children) {
-            RemoveEntity(child);
-        }
+    // Remove parent, if any
+    if (e.HasParent())
+        e.RemoveParent();
+
+    // Remove children, if any
+    auto& children = e.GetComponent<ChildrenComponent>().Children;
+    for (Entity& child : children) {
+        RemoveEntity(child);
     }
+
+    // Cleanup entity data
     if (e.HasComponent<MeshComponent>()) {
         e.GetComponent<MeshComponent>().Free();
     }

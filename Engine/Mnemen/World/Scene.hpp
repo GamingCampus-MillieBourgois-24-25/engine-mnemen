@@ -56,8 +56,6 @@ public:
     /// @param e A pointer to the entity to be removed.
     void RemoveEntity(Entity e);
 private:
-    void UpdateTransforms(Entity entity, glm::mat4 transform = glm::mat4(1.0f));
-
     friend class Entity; ///< Allows Entity to access private members of Scene.
     friend class Renderer; ///< Allows Renderer to access private members of Scene.
     friend class PhysicsSystem; ///< Allows PhysicsSystem to access private members of Scene.
