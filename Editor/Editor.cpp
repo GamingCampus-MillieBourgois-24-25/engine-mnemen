@@ -27,7 +27,6 @@ Editor::Editor(ApplicationSpecs specs)
 
     mBaseDirectory = "Assets";
     mCurrentDirectory = "Assets";
-    memset(mInputField, 0, sizeof(mInputField));
 }
 
 Editor::~Editor()

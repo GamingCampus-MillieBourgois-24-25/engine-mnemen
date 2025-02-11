@@ -49,7 +49,7 @@ private:
     Entity mSelectedEntity = {};
     bool mMarkForDeletion = false;
     String mModelChange = "";
-    char mInputField[512];
+    UnorderedMap<entt::entity, String> mEntityNameBuffer;
 
     // Viewport shenanigans
     ImVec2 mViewportSize;
