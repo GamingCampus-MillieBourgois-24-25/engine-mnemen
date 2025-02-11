@@ -15,6 +15,8 @@ Editor::Editor(ApplicationSpecs specs)
     : Application(specs)
 {
     mCurrentScenePath = specs.StartScene;
+    if (mCurrentScenePath.empty())
+        NewScene();
     mScenePlaying = false;
 
     mCameraEntity = mScene->AddEntity("Editor Camera");
@@ -36,6 +38,9 @@ Editor::~Editor()
 
 void Editor::OnUpdate(float dt)
 {
+    if (!mScene)
+        return;
+
     int width, height;
     mWindow->PollSize(width, height);
 
@@ -76,6 +81,9 @@ void Editor::OnPhysicsTick()
 
 void Editor::OnImGui(const Frame& frame)
 {
+    if (!mScene)
+        return;
+
     PROFILE_FUNCTION();
 
     BeginDockSpace();

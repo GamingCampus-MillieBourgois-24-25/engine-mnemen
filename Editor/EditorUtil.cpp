@@ -7,6 +7,7 @@
 
 #include <FontAwesome/FontAwesome.hpp>
 #include <RHI/Uploader.hpp>
+#include <Utility/Dialog.hpp>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -15,11 +16,21 @@ void Editor::UpdateShortcuts()
 {
     if (Input::IsKeyDown(SDLK_LCTRL)) {
         if (Input::IsKeyPressed(SDLK_Q)) {
-            SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
+            SaveScene();
             mWindow->Close();
         }
         if (Input::IsKeyPressed(SDLK_S)) {
-            SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
+            SaveScene();
+        }
+        if (Input::IsKeyPressed(SDLK_N)) {
+            SaveScene();
+            NewScene();
+        }
+        if (Input::IsKeyPressed(SDLK_O)) {
+            String path = Dialog::Open({ ".msf" });
+            if (!path.empty()) {
+                OpenScene(path);
+            }
         }
     }
     if (Input::IsKeyPressed(SDLK_T)) {
@@ -27,8 +38,8 @@ void Editor::UpdateShortcuts()
         mOperation = ImGuizmo::OPERATION::TRANSLATE;
     }
     if (Input::IsKeyPressed(SDLK_R)) {
-        mMode = ImGuizmo::MODE::LOCAL;
-        mOperation = ImGuizmo::OPERATION::ROTATE_SCREEN;
+        mMode = ImGuizmo::MODE::WORLD;
+        mOperation = ImGuizmo::OPERATION::ROTATE;
     }
     if (Input::IsKeyPressed(SDLK_B)) {
         mMode = ImGuizmo::MODE::WORLD;
@@ -37,4 +48,61 @@ void Editor::UpdateShortcuts()
     if (Input::IsKeyPressed(SDLK_ESCAPE)) {
         mSelectedEntity = {};
     }
+}
+
+void Editor::OpenScene(const String& path)
+{
+    CloseScene();
+
+    mCurrentScenePath = path;
+    mScene = SceneSerializer::DeserializeScene(mCurrentScenePath);
+    
+    mCameraEntity = mScene->AddEntity("Editor Camera");
+    mCameraEntity.AddComponent<PrivateComponent>();
+    
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
+    cam.Primary = 2;
+}
+
+void Editor::CloseScene()
+{
+    SaveScene();
+
+    mCurrentScenePath = {};
+    mSelectedEntity = {};
+    mScene.reset();
+}
+
+bool Editor::SaveScene()
+{
+    if (mCurrentScenePath.empty()) {
+        return SaveSceneAs();
+    }
+    SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
+    return true;
+}
+
+bool Editor::SaveSceneAs()
+{
+    String savePath = Dialog::Save({ ".msf" });
+    if (!savePath.empty()) {
+        if (mCurrentScenePath.empty()) {
+            mCurrentScenePath = savePath;
+        }
+        SceneSerializer::SerializeScene(mScene, savePath);
+        return true;
+    }
+    return false;
+}
+
+void Editor::NewScene()
+{
+    if (mScene)
+        CloseScene();
+    mScene = MakeRef<Scene>();
+
+    mCameraEntity = mScene->AddEntity("Editor Camera");
+    mCameraEntity.AddComponent<PrivateComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
+    cam.Primary = 2;
 }

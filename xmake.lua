@@ -58,6 +58,8 @@ target("Mnemen")
                      "d3d12",
                      "dxgi",
                      "SDL3.lib",
+                     "Comdlg32.lib",
+                     "Shlwapi.lib",
                      "ThirdParty/PIX/lib/WinPixEventRuntime.lib",
                      "ThirdParty/DXC/lib/dxcompiler.lib",
                      "ThirdParty/nvtt/lib64/nvtt30205.lib",

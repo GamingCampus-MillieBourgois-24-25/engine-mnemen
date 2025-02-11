@@ -11,8 +11,13 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
+#include <Utility/Dialog.hpp>
+
 void Editor::Viewport(const Frame& frame)
 {
+    if (!mScene)
+        return;
+
     ImGui::Begin(ICON_FA_GAMEPAD " Viewport");
     auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
 	auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -46,6 +51,23 @@ void Editor::Viewport(const Frame& frame)
     frame.CommandBuffer->ClearRenderTarget(frame.BackbufferView, 0.0f, 0.0f, 0.0f);
     frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::Shader);
     ImGui::Image((ImTextureID)ldr->GetView(ViewType::ShaderResource)->GetDescriptor().GPU.ptr, mViewportSize);
+
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+            if (payload) {
+                const wchar_t* path = (const wchar_t*)payload->Data;
+                std::filesystem::path scenePath(path);
+                std::string sceneString = scenePath.string();
+                if (sceneString.find(".msf") != std::string::npos) {
+                    for (int i = 0; i < sceneString.size(); i++) {
+                        sceneString[i] = sceneString[i] == '\\' ? '/' : sceneString[i];
+                    }
+                    OpenScene(sceneString);
+                }
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
 
     // Gizmos
     if (mSelectedEntity && !mScenePlaying) {
@@ -126,6 +148,9 @@ void Editor::Viewport(const Frame& frame)
 
 void Editor::BeginDockSpace()
 {
+    if (!mScene)
+        return;
+
     static bool dockspaceOpen = true;
 	static bool opt_fullscreen_persistant = true;
 	bool opt_fullscreen = opt_fullscreen_persistant;
@@ -160,21 +185,39 @@ void Editor::BeginDockSpace()
 
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu(ICON_FA_FILE " File")) {
-            if (ImGui::MenuItem("Exit", "Ctrl+Q")) {
+            if (ImGui::MenuItem(ICON_FA_WINDOW_CLOSE " Exit", "Ctrl+Q")) {
                 SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
                 mWindow->Close();
             }
-            if (ImGui::MenuItem("Save", "Ctrl+S")) {
-                SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
+            if (ImGui::BeginMenu(ICON_FA_FILE_ARCHIVE_O " Save")) {
+                if (ImGui::MenuItem(ICON_FA_CHECK " Save Current", "Ctrl+S")) {
+                    SceneSerializer::SerializeScene(mScene, mCurrentScenePath);
+                }
+                if (ImGui::MenuItem(ICON_FA_QUESTION " Save As...", "Ctrl+S")) {
+                    SaveSceneAs();
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open", "Ctrl+O")) {
+                String path = Dialog::Open({ ".msf" });
+                if (!path.empty()) {
+                    OpenScene(path);
+                }
+            }
+            if (ImGui::MenuItem(ICON_FA_CHECK " New", "Ctrl+N")) {
+                NewScene();
+            }
+            if (ImGui::MenuItem(ICON_FA_PENCIL " Close")) {
+                NewScene();
             }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu(ICON_FA_TASKS " Window")) {
             if (ImGui::BeginMenu("Theme")) {
-                if (ImGui::MenuItem("Mnemen")) SetColors();
-                if (ImGui::MenuItem("ImGui Dark")) ImGui::StyleColorsDark();
-                if (ImGui::MenuItem("ImGui Light")) ImGui::StyleColorsLight();
-                if (ImGui::MenuItem("ImGui Classic")) ImGui::StyleColorsClassic();
+                if (ImGui::MenuItem(ICON_FA_GITHUB " Mnemen")) SetColors();
+                if (ImGui::MenuItem(ICON_FA_MOON_O " ImGui Dark")) ImGui::StyleColorsDark();
+                if (ImGui::MenuItem(ICON_FA_SUN_O " ImGui Light")) ImGui::StyleColorsLight();
+                if (ImGui::MenuItem(ICON_FA_SMILE_O " ImGui Classic")) ImGui::StyleColorsClassic();
                 ImGui::EndMenu();
             }
             ImGui::EndMenu();
@@ -185,6 +228,9 @@ void Editor::BeginDockSpace()
 
 void Editor::HierarchyPanel()
 {
+    if (!mScene)
+        return;
+
     ImGui::Begin(ICON_FA_GLOBE " Scene Hierarchy");
     ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
 
@@ -229,6 +275,9 @@ void Editor::HierarchyPanel()
 
 void Editor::DrawEntityNode(Entity entity)
 {
+    if (!mScene)
+        return;
+
     auto& tag = entity.GetComponent<TagComponent>();
 
     // Prepare label with icon and name
@@ -296,6 +345,9 @@ void Editor::DrawEntityNode(Entity entity)
 
 void Editor::AssetPanel()
 {
+    if (!mScene)
+        return;
+
     ImGui::Begin(ICON_FA_ARCHIVE " Assets");
     if (ImGui::BeginTabBar("Basic")) {
         if (ImGui::BeginTabItem(ICON_FA_FOLDER_O " Asset Directory")) {
@@ -349,6 +401,9 @@ void Editor::AssetPanel()
 
 void Editor::EntityEditor()
 {
+    if (!mScene)
+        return;
+
     ImGui::Begin(ICON_FA_WRENCH " Entity Editor");
     if (mSelectedEntity) {
         auto& tag = mSelectedEntity.GetComponent<TagComponent>();
@@ -541,6 +596,9 @@ void Editor::EntityEditor()
 
 void Editor::AssetBrowser()
 {
+    if (!mScene)
+        return;
+
     if (mCurrentDirectory != std::filesystem::path(mBaseDirectory)) {
         if (ImGui::Button("<-")) {
             mCurrentDirectory = mCurrentDirectory.parent_path();
@@ -616,6 +674,9 @@ void Editor::AssetBrowser()
 
 void Editor::LogWindow()
 {
+    if (!mScene)
+        return;
+
     ImGui::Begin("Log");
     if (ImGui::Button(ICON_FA_ERASER " Clear")) {
         Logger::sEntries.clear();
@@ -634,6 +695,9 @@ void Editor::LogWindow()
 
 void Editor::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth)
 {
+    if (!mScene)
+        return;
+
     ImGuiIO& io = ImGui::GetIO();
 	auto boldFont = io.Fonts->Fonts[0];
 	ImGui::PushID(label.c_str());

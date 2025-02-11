@@ -97,7 +97,7 @@ void Application::Run()
             float minStepDuration = 1.0f / mApplicationSpecs.PhysicsRefreshRate;
             if (TO_SECONDS(mPhysicsTimer.GetElapsed()) > minStepDuration) {
                 OnPhysicsTick();
-                if (mScenePlaying) {
+                if (mScenePlaying && mScene) {
                     PhysicsSystem::Update(mScene, minStepDuration);
                 }
                 mPhysicsTimer.Restart();
@@ -109,12 +109,13 @@ void Application::Run()
             PROFILE_SCOPE("Systems Update");
             
             mWindow->Update();
-            if (mScenePlaying) {
+            if (mScenePlaying && mScene) {
                 AISystem::Update(mScene);
                 AudioSystem::Update(mScene);
                 ScriptSystem::Update(mScene, dt);
             }
-            mScene->Update();
+            if (mScene)
+                mScene->Update();
         }
 
         // App Update

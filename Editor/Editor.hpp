@@ -26,7 +26,10 @@ private:
     // Utility
     void UpdateShortcuts();
     void OpenScene(const String& path);
-    void CloseScene(const String& path);
+    void CloseScene();
+    bool SaveScene();
+    bool SaveSceneAs();
+    void NewScene();
 
     // UI
     void Viewport(const Frame& frame);
