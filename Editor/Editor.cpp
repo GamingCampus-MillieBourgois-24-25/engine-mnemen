@@ -168,6 +168,14 @@ void Editor::Viewport(const Frame& frame)
         }
     }
 
+    // Debug draw some stuff
+    if (mSelectedEntity) {
+        if (mSelectedEntity->HasComponent<CameraComponent>()) {
+            auto cam = mSelectedEntity->GetComponent<CameraComponent>();
+            Debug::DrawFrustum(cam.View, cam.Projection, glm::vec3(1.0f));
+        }
+    }
+
     ImGui::End();
 }
 

@@ -5,10 +5,11 @@
 
 #pragma once
 
-#include "../RHI/RHI.hpp"
-#include "RenderPass.hpp"
-
+#include <RHI/RHI.hpp>
 #include <World/Scene.hpp>
+
+#include "RenderPass.hpp"
+#include "Passes/Debug.hpp"
 
 /// @brief A class responsible for managing and executing rendering passes.
 ///
