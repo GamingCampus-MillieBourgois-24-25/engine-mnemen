@@ -38,6 +38,9 @@ public:
     /// @details This is called when the scene is being unloaded or the application is shutting down.
     static void Quit(Ref<Scene> scene);
 private:
+    static void LogCallback(const sol::variadic_args& args);
+    static int PanicCallback(lua_State* L);
+
     static struct Data {
         sol::state State; ///< The Lua virtual machine
     } sData; ///< The static data of the script system

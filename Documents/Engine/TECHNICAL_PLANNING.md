@@ -81,4 +81,4 @@ Jolt provides all the necessary physics features for our project, and its active
 
 ### **Scripting**
 
-- **Language**: Wren (C API, class based, closer to what we want to have for a game engine)
+- **Language**: Lua (C API, constantly updated, on-par speed with C)
