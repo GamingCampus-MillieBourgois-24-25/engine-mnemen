@@ -53,8 +53,10 @@ void Uploader::EnqueueTextureUpload(Vector<UInt8> buffer, Ref<Resource> texture)
     sData.Requests.push_back(request);
 
     sData.UploadBatchSize += totalSize;
-    if (sData.UploadBatchSize >= MAX_UPLOAD_BATCH_SIZE)
+    if (sData.UploadBatchSize >= MAX_UPLOAD_BATCH_SIZE) {
+        LOG_INFO("Upload batch size exceeded. Inserting manual flush.");
         Flush();
+    }
 }
 
 void Uploader::EnqueueTextureUpload(Image image, Ref<Resource> buffer)
@@ -89,8 +91,10 @@ void Uploader::EnqueueTextureUpload(Image image, Ref<Resource> buffer)
     sData.Requests.push_back(request);
 
     sData.UploadBatchSize += totalSize;
-    if (sData.UploadBatchSize >= MAX_UPLOAD_BATCH_SIZE)
+    if (sData.UploadBatchSize >= MAX_UPLOAD_BATCH_SIZE) {
+        LOG_INFO("Upload batch size exceeded. Inserting manual flush.");
         Flush();
+    }
 }
 
 void Uploader::EnqueueBufferUpload(void* data, UInt64 size, Ref<Resource> buffer)
@@ -110,8 +114,10 @@ void Uploader::EnqueueBufferUpload(void* data, UInt64 size, Ref<Resource> buffer
     sData.Requests.push_back(request);
 
     sData.UploadBatchSize += size;
-    if (sData.UploadBatchSize >= MAX_UPLOAD_BATCH_SIZE)
+    if (sData.UploadBatchSize >= MAX_UPLOAD_BATCH_SIZE) {
+        LOG_INFO("Upload batch size exceeded. Inserting manual flush.");
         Flush();
+    }
 }
 
 void Uploader::EnqueueAccelerationStructureBuild(Ref<AccelerationStructure> as)
@@ -141,7 +147,7 @@ bool Uploader::Flush()
                 sData.CmdBuffer->Barrier(request.StagingBuffer, ResourceLayout::CopySource);
                 sData.CmdBuffer->CopyBufferToBuffer(request.Resource, request.StagingBuffer);
                 sData.CmdBuffer->Barrier(request.StagingBuffer, ResourceLayout::Common);
-                sData.CmdBuffer->Barrier(request.Resource, ResourceLayout::NonPixelShader);
+                sData.CmdBuffer->Barrier(request.Resource, ResourceLayout::Common);
                 break;
             }
             case UploadRequestType::TextureToGPU: {
@@ -149,7 +155,7 @@ bool Uploader::Flush()
                 sData.CmdBuffer->Barrier(request.StagingBuffer, ResourceLayout::CopySource);
                 sData.CmdBuffer->CopyBufferToTexture(request.Resource, request.StagingBuffer);
                 sData.CmdBuffer->Barrier(request.StagingBuffer, ResourceLayout::Common);
-                sData.CmdBuffer->Barrier(request.Resource, ResourceLayout::Shader);
+                sData.CmdBuffer->Barrier(request.Resource, ResourceLayout::Common);
                 break;
             }
             case UploadRequestType::BuildAS: {

@@ -3,19 +3,26 @@
 // > Create Time: 2025-02-04 00:06:05
 //
 
-#include "Components.hpp"
+#include "Entity.hpp"
 
-void CameraComponent::Update(glm::vec3 Position, glm::vec3 Rotation)
+void CameraComponent::Update(glm::vec3 Position, glm::quat Rotation)
 {
-    const float pitch = glm::radians(Rotation.x);
-    const float yaw =   glm::radians(Rotation.y);
+    // Convert rotation angles from degrees to radians
+    const float pitch = glm::radians(Rotation.y); // X-axis (Pitch)
+    const float yaw = glm::radians(Rotation.x);   // Y-axis (Yaw)
+    const float roll = glm::radians(Rotation.z);  // Z-axis (Roll)
 
-    glm::vec3 front;
-    front.x = glm::sin(yaw);
-    front.y = -(glm::sin(pitch) * glm::cos(yaw));
-    front.z = -(glm::cos(pitch) * glm::cos(yaw));
-    front = glm::normalize(front);
+    // Combine all rotation matrices (Yaw -> Pitch -> Roll) in DirectX order
+    glm::mat4 rotationMatrix = glm::toMat4(Rotation);
 
+    // Calculate the front, right, and up vectors based on the rotation matrix
+    glm::vec3 front = glm::normalize(glm::vec3(rotationMatrix[2]));  // Front is Z-axis in DirectX
+    glm::vec3 right = glm::normalize(glm::vec3(rotationMatrix[0]));  // Right is X-axis in DirectX
+    glm::vec3 up = glm::normalize(glm::vec3(rotationMatrix[1]));     // Up is Y-axis in DirectX
+
+    // Set the projection matrix for perspective (left-handed)
     Projection = glm::perspective(glm::radians(FOV), AspectRatio, Near, Far);
-    View = glm::lookAt(Position, Position + front, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Set the view matrix using the lookAt function for the left-handed system
+    View = glm::lookAt(Position, Position + front, up);
 }

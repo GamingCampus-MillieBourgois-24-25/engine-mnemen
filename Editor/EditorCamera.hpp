@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-constexpr float CAMERA_NEAR = 0.1f;
+constexpr float CAMERA_NEAR = 0.01f;
 constexpr float CAMERA_FAR = 150.0f;
 
 struct Plane

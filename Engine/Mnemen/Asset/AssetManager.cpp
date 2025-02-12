@@ -127,10 +127,15 @@ void AssetManager::Free(Asset::Handle handle)
 
 void AssetManager::Purge(int refCount)
 {
-    for (auto& asset : sData.mAssets) {
-        if (asset.second->RefCount < refCount) {
-            asset.second.reset();
-            sData.mAssets.erase(asset.first);
+    if (sData.mAssets.empty())
+        return;
+    for (auto it = sData.mAssets.begin(); it != sData.mAssets.end(); ) {
+        if (it->second->RefCount < refCount) {
+            it->second.reset();
+            it = sData.mAssets.erase(it);
+        }
+        else {
+            ++it;
         }
     }
 }

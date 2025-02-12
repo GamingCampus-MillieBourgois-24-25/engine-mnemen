@@ -58,6 +58,8 @@ target("Mnemen")
                      "d3d12",
                      "dxgi",
                      "SDL3.lib",
+                     "Comdlg32.lib",
+                     "Shlwapi.lib",
                      "ThirdParty/PIX/lib/WinPixEventRuntime.lib",
                      "ThirdParty/DXC/lib/dxcompiler.lib",
                      "ThirdParty/nvtt/lib64/nvtt30205.lib",
@@ -121,6 +123,7 @@ target("Editor")
                     "ThirdParty/Wren/src/include",
                     "ThirdParty/JSON/single_include")
     add_deps("Mnemen")
+    add_defines("GLM_ENABLE_EXPERIMENTAL")
 
     if is_mode("debug") then
         set_symbols("debug")
@@ -166,6 +169,7 @@ target("Runtime")
                     "ThirdParty/Wren/src/include",
                     "ThirdParty/JSON/single_include")
     add_deps("Mnemen")
+    add_defines("GLM_ENABLE_EXPERIMENTAL")
 
     if is_mode("debug") then
         set_symbols("debug")

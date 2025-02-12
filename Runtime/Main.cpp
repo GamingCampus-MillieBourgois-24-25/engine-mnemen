@@ -12,7 +12,7 @@ int main()
     specs.Height = 720;
     specs.WindowTitle = "Game Demo";
     specs.GameName = "DEMO";
-    specs.StartScene = "Assets/Scenes/Test.json";
+    specs.StartScene = "Assets/Scenes/Test.msf";
     specs.CopyToBackBuffer = true;
 
     Runtime runtime(specs);

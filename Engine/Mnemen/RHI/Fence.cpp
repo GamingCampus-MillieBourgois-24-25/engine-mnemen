@@ -30,11 +30,9 @@ UInt64 Fence::Signal(::Ref<Queue> queue)
 
 void Fence::Wait(UInt64 value)
 {
-    if (GetCompletedValue() < value) {
-        HANDLE event = ::CreateEventA(nullptr, false, false, "Fence Wait Event");
-        mFence->SetEventOnCompletion(value, event);
-        if (::WaitForSingleObject(event, 10'000'000) == WAIT_TIMEOUT) {
-            ASSERT(false, "!! GPU TIME-OUT !!");
-        }
+    HANDLE event = ::CreateEventA(nullptr, false, false, "Fence Wait Event");
+    mFence->SetEventOnCompletion(value, event);
+    if (::WaitForSingleObject(event, 10'000'000) == WAIT_TIMEOUT) {
+        ASSERT(false, "!! GPU TIME-OUT !!");
     }
 }
