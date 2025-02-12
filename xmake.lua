@@ -46,7 +46,7 @@ target("Mnemen")
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
                     "ThirdParty/JSON/single_include",
-                    "ThirdParty/Lua")
+                    "ThirdParty/Lua/src")
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
 
@@ -120,7 +120,7 @@ target("Editor")
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
                     "ThirdParty/JSON/single_include",
-                    "ThirdParty/Lua")
+                    "ThirdParty/Lua/src")
     add_deps("Mnemen")
     add_defines("GLM_ENABLE_EXPERIMENTAL")
 
@@ -166,7 +166,7 @@ target("Runtime")
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
                     "ThirdParty/JSON/single_include",
-                    "ThirdParty/Lua")
+                    "ThirdParty/Lua/src")
     add_deps("Mnemen")
     add_defines("GLM_ENABLE_EXPERIMENTAL")
 

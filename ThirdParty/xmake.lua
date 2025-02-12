@@ -91,10 +91,6 @@ target("DetourDebugUtils")
 
 target("Lua")
     set_kind("static")
-    set_languages("c99")
-    add_headerfiles("Lua/*.h")
-    add_files("Lua/*.c")
-
-    if is_plat("windows") then
-        add_cflags("/EHsc")
-    end
+    set_languages("c11")
+    add_headerfiles("Lua/src/**.h")
+    add_files("Lua/src/**.c")
