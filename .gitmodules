@@ -29,3 +29,6 @@
 [submodule "ThirdParty/ImGuizmo"]
 	path = ThirdParty/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "ThirdParty/Lua"]
+	path = ThirdParty/Lua
+	url = https://github.com/lua/lua

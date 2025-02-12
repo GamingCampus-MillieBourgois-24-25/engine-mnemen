@@ -61,6 +61,7 @@ A wide variety of documents regarding the engine, resources, and some other thin
 - ImGuizmo - ImGui plugin to add Gizmos
 - Jolt - Physics API
 - JSON - Writing/parsing of JSON files (used for scene files)
+- Lua - Scripting Language
 - MeshOptimizer - Mesh optimizing and meshlet generation
 - MiniAudio - Audio API
 - NVTT - Texture compression
