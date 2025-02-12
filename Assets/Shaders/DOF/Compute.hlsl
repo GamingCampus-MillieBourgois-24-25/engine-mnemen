@@ -2,6 +2,7 @@ struct ToneMapperSettings
 {
     uint InputIndex;
     uint DepthIndex;
+    
     float Far;
     float Golden_Angle;
     float Max_Blur_Size;
@@ -16,40 +17,39 @@ float GetBlurSize(float Depth, float FocusPoint, float FocusScale)
     return abs(Coc) * Settings.Max_Blur_Size;
 }
 
-float3 DepthOfField(float2 TexCoord, float FocusPoint, float FocusScale, uint Width, uint Height)
+float3 DepthOfField(uint2 threadID, float FocusPoint, float FocusScale, uint Width, uint Height)
 {   
     RWTexture2D<float4> Output = ResourceDescriptorHeap[Settings.InputIndex];
     Texture2D<float> Depth = ResourceDescriptorHeap[Settings.DepthIndex];
 
-    float CenterDepth = Depth.Load(uint3(TexCoord * float2(Width, Height), 0)).r * Settings.Far;
+    float CenterDepth = Depth.Load(uint3(threadID, 0)).r * Settings.Far;
     float CenterSize = GetBlurSize(CenterDepth, FocusPoint, FocusScale);
     float2 PixelSize = 1.0 / float2(Width, Height);
 
-    float2 PixelCoord = float2(TexCoord * float2(Width, Height));
-    float3 Color = Output.Load(PixelCoord).rgb;
+    float3 Color = Output.Load(threadID).rgb;
     float Tot = 1.0;
     float Radius = Settings.Rad_Scale;
 
     for (float Ang = 0.0; Radius < Settings.Max_Blur_Size; Ang += Settings.Golden_Angle) 
     {
+        float2 TexCoord = threadID / float2(Width, Height);
         float2 Tc = TexCoord + float2(cos(Ang), sin(Ang)) * PixelSize * Radius;
         float2 SampleCoords = Tc * float2(Width, Height);
         float4 SampleColorFull = Output[uint2(SampleCoords.x, SampleCoords.y)];
         float3 SampleColor = SampleColorFull.rgb;
-        float SampleDepth = Depth.Load(uint3(Tc * float2(Width, Height), 0)).r * Settings.Far;
+        float SampleDepth = Depth.Load(uint3(threadID, 0)).r * Settings.Far;
         float SampleSize = GetBlurSize(SampleDepth, FocusPoint, FocusScale);
 
-        if (SampleDepth > CenterDepth) {
+        if (SampleDepth > CenterDepth) 
+        {
             SampleSize = clamp(SampleSize, 0.0, CenterSize * 2.0);
         }
-
         float M = smoothstep(Radius - 0.5, Radius + 0.5, SampleSize);
-        Color = lerp(Color, SampleColor, M);
-        Tot += 1.0;
-        Radius += Settings.Rad_Scale / Radius;
+        Color += lerp(Color / Tot, SampleColor, M);
+        Tot += 1.0;     Radius += Settings.Rad_Scale / Radius;
     }
 
-    return Color / Tot;
+    return Color /= Tot;
 }
 
 [numthreads(8, 8, 1)]
@@ -62,12 +62,10 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     if (ThreadID.x < Width && ThreadID.y < Height)
     {
-        float2 TexCoord = (float2(ThreadID.xy) + 0.5) / float2(Width, Height);
-        
-        float FocusPoint = 1.0; 
+        float FocusPoint = Settings.Far / 2.0; 
         float FocusScale = 10.0;
 
-        float3 FinalColor = DepthOfField(TexCoord, FocusPoint, FocusScale, Width, Height);
+        float3 FinalColor = DepthOfField(ThreadID.xy, FocusPoint, FocusScale, Width, Height);
         Output[ThreadID.xy] = float4(FinalColor, 1.0);
     }
 }

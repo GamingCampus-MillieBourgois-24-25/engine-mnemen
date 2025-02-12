@@ -30,8 +30,11 @@ void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
     } PushConstants = {
         color->Descriptor(ViewType::Storage),
         depth->Descriptor(ViewType::ShaderResource),
+        
         200.0f,
-        0.0f
+        2.39996323f,
+        20.0f,
+        0.5f,
     };
 
     frame.CommandBuffer->BeginMarker("Box Blur");
