@@ -85,5 +85,5 @@ public:
     {
         RHI::Ref mRHI; ///< Pointer to the rendering hardware interface.
         UnorderedMap<String, Asset::Handle> mAssets; ///< Storage for assets mapped by file path.
-    } sData;
+    } sData; ///< Static instance of the AssetManager's data;
 };

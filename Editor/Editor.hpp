@@ -23,26 +23,37 @@ public:
     virtual void OnImGui(const Frame& frame) override;
     virtual void PostPresent() override;
 private:
+    // Utility
+    void UpdateShortcuts();
+    void OpenScene(const String& path);
+    void CloseScene();
+    bool SaveScene();
+    bool SaveSceneAs();
+    void NewScene();
+
+    // UI
     void Viewport(const Frame& frame);
     void BeginDockSpace();
+    void EndDockSpace();
     void HierarchyPanel();
     void SetColors();
     void AssetPanel();
     void EntityEditor();
     void AssetBrowser();
     void LogWindow();
-    void UpdateShortcuts();
     void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
+    void DrawEntityNode(Entity entity);
 
     Camera mCamera;
     String mCurrentScenePath;
 
     // Entity stuff
-    Entity* mCameraEntity;
-    Entity* mSelectedEntity = nullptr;
+    Entity mCameraEntity;
+    Entity mSelectedEntity = {};
     bool mMarkForDeletion = false;
+    bool mMarkForClose = false;
     String mModelChange = "";
-    char mInputField[512];
+    UnorderedMap<entt::entity, String> mEntityNameBuffer;
 
     // Viewport shenanigans
     ImVec2 mViewportSize;

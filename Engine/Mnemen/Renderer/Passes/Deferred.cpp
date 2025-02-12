@@ -128,7 +128,10 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
     auto whiteTexture = RendererTools::Get("WhiteTexture");
 
-    SceneCamera camera = scene->GetMainCamera();
+    SceneCamera camera = {};
+    if (scene) {
+        camera = scene->GetMainCamera();
+    }
     cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(&camera, sizeof(camera));
 
     frame.CommandBuffer->BeginMarker("Deferred");
@@ -196,11 +199,16 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         };
 
         // Iterate over every mesh. This is messy as hell but fuck it
-        auto registry = scene->GetRegistry();
-        auto view = registry->view<TransformComponent, MeshComponent>();
-        for (auto [entity, transform, mesh]: view.each()) {
-            if (mesh.Loaded) {
-                drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, transform.Matrix);
+        if (scene) {
+            auto registry = scene->GetRegistry();
+            auto view = registry->view<TransformComponent, MeshComponent>();
+            for (auto [id, transform, mesh] : view.each()) {
+                Entity entity(registry);
+                entity.ID = id;
+
+                if (mesh.Loaded) {
+                    drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, entity.GetWorldTransform());
+                }
             }
         }
         frame.CommandBuffer->Barrier(albedoBuffer->Texture, ResourceLayout::Shader);

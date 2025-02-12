@@ -34,9 +34,21 @@ ImVec4 LevelToColor(spdlog::level::level_enum level)
     return ImVec4(1, 1, 1, 1);
 }
 
+/// @class VectorSink
+/// @brief A custom log sink for storing log messages in a vector.
+///
+/// This class is derived from the spdlog::sinks::sink and provides custom logging functionality
+/// that formats log messages with timestamps and log levels, then stores them in a vector.
 class VectorSink : public spdlog::sinks::sink
 {
 public:
+    /// @brief Logs a message to the sink.
+    ///
+    /// This function converts the timestamp of the log message to a formatted string,
+    /// then constructs a log message with the timestamp, log level, and the payload,
+    /// and stores it in the Logger::sEntries vector.
+    ///
+    /// @param msg The log message details including the timestamp, log level, and payload.
     void log(const spdlog::details::log_msg& msg) override {
         // Convert time_point to time_t for easier formatting
         auto time_point = std::chrono::system_clock::to_time_t(msg.time);
@@ -51,13 +63,31 @@ public:
         Logger::sEntries.push_back({ log_message, LevelToColor(msg.level) });
     }
 
+    /// @brief Flushes the log sink.
+    ///
+    /// This function is a placeholder and currently does nothing, but it is required to
+    /// override the virtual flush function from the base class.
     void flush() override {
         
     }
 
+    /// @brief Sets the log pattern.
+    ///
+    /// This function is a placeholder and currently does nothing, but it is required to
+    /// override the virtual set_pattern function from the base class.
+    ///
+    /// @param pattern The pattern to set for the log format.
     void set_pattern(const std::string &pattern) override {}
+
+    /// @brief Sets the log formatter.
+    ///
+    /// This function is a placeholder and currently does nothing, but it is required to
+    /// override the virtual set_formatter function from the base class.
+    ///
+    /// @param sink_formatter A unique pointer to the formatter to set.
     void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override {}
 };
+
 
 void Logger::Init()
 {

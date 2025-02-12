@@ -7,31 +7,26 @@
 
 Scene::Scene()
 {
-    mEntities.reserve(64);
+    
 }
 
 Scene::~Scene()
 {
-    for (auto& entity : mEntities) {
-        if (entity->HasComponent<MeshComponent>()) {
-            entity->GetComponent<MeshComponent>().Free();
+    auto view = mRegistry.view<TagComponent>();
+    for (auto [id, tag] : view.each()) {
+        Entity entity(&mRegistry);
+        entity.ID = id;
+
+        if (entity.HasComponent<MeshComponent>()) {
+            entity.GetComponent<MeshComponent>().Free();
         }
-        mRegistry.destroy(entity->ID);
-        delete entity;
+        mRegistry.destroy(id);
     }
-    mEntities.clear();
 }
 
 void Scene::Update()
 {
-    // Transform update
-    {
-        for (auto [entity, transform] : mRegistry.view<TransformComponent>().each()) {
-            transform.Update();
-        }
-    }
-
-    // Camera Update
+    // Camera Update (to sync camera with transformations)
     {
         auto view = mRegistry.view<TransformComponent, CameraComponent>();
         for (auto [entity, transform, camera] : view.each()) {
@@ -62,27 +57,34 @@ SceneCamera Scene::GetMainCamera()
     return { glm::mat4(0.0f), glm::mat4(0.0f) };
 }
 
-Entity* Scene::AddEntity(const String& name)
+Entity Scene::AddEntity(const String& name)
 {
-    Entity* newEntity = new Entity(&mRegistry);
-    newEntity->ID = mRegistry.create();
-    newEntity->Name = name;
-    
-    newEntity->AddComponent<TransformComponent>();
-    newEntity->AddComponent<ScriptComponent>();
+    Entity newEntity(&mRegistry);
 
-    mEntities.push_back(newEntity);
+    newEntity.ID = mRegistry.create();
+    newEntity.AddComponent<TransformComponent>();
+    newEntity.AddComponent<ScriptComponent>();
+    newEntity.AddComponent<TagComponent>().Tag = name;
+    newEntity.AddComponent<ChildrenComponent>();
+
     return newEntity;
 }
 
-void Scene::RemoveEntity(Entity* e)
+void Scene::RemoveEntity(Entity e)
 {
-    if (e->HasComponent<MeshComponent>()) {
-        e->GetComponent<MeshComponent>().Free();
+    // Remove parent, if any
+    if (e.HasParent())
+        e.RemoveParent();
+
+    // Remove children, if any
+    auto& children = e.GetComponent<ChildrenComponent>().Children;
+    for (Entity& child : children) {
+        RemoveEntity(child);
     }
-    mRegistry.destroy(e->ID);
-    for (int i = 0; i < mEntities.size(); i++) {
-        if (mEntities[i]->ID == e->ID)
-            mEntities.erase(mEntities.begin() + i);
+
+    // Cleanup entity data
+    if (e.HasComponent<MeshComponent>()) {
+        e.GetComponent<MeshComponent>().Free();
     }
+    mRegistry.destroy(e.ID);
 }

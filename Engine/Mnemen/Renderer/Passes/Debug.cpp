@@ -41,7 +41,10 @@ void Debug::Render(const Frame& frame, ::Ref<Scene> scene)
     auto cameraBuffer = RendererTools::Get("CameraRingBuffer");
     auto ldr = RendererTools::Get("LDRColorBuffer");
 
-    SceneCamera camera = scene->GetMainCamera();
+    SceneCamera camera = {};
+    if (scene) {
+        camera = scene->GetMainCamera();
+    }
 
     if (!sData.Lines.empty()) {
         mLineCount = sData.Lines.size();

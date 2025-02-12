@@ -83,19 +83,19 @@ protected:
     static Application* sInstance; ///< Singleton instance of the application.
     
     ApplicationSpecs mApplicationSpecs; ///< Cached application settings.
-    Ref<Window> mWindow; ///< Main application window.
+    Ref<Window> mWindow = nullptr; ///< Main application window.
 
     Timer mTimer; ///< Delta-time tracking timer.
     float mLastFrame = 0.0f; ///< Time of the last frame update.
 
     Timer mPhysicsTimer; ///< Timer for fixed-step physics updates.
 
-    RHI::Ref mRHI; ///< Rendering Hardware Interface.
-    Renderer::Ref mRenderer; ///< Renderer instance.
+    RHI::Ref mRHI = nullptr; ///< Rendering Hardware Interface.
+    Renderer::Ref mRenderer = nullptr; ///< Renderer instance.
     
-    Ref<Scene> mScene; ///< Currently active scene.
+    Ref<Scene> mScene = nullptr; ///< Currently active scene.
 
-    bool mUIFocused; ///< Whether or not UI elements are focused.
-    bool mScenePlaying; ///< Whether the scene is playing or not.
+    bool mUIFocused = true; ///< Whether or not UI elements are focused.
+    bool mScenePlaying = false; ///< Whether the scene is playing or not.
 };
 

@@ -3,7 +3,7 @@
 // > Create Time: 2025-02-04 00:06:05
 //
 
-#include "Components.hpp"
+#include "Entity.hpp"
 
 void CameraComponent::Update(glm::vec3 Position, glm::quat Rotation)
 {

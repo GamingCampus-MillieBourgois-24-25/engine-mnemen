@@ -6,7 +6,6 @@
 #pragma once
 
 #include "Entity.hpp"
-#include "Components.hpp"
 
 /// @brief Simple structure that holds all the camera matrices needed for rendering
 struct SceneCamera
@@ -50,17 +49,12 @@ public:
     /// 
     /// @param name The name of the entity. Defaults to "Sigma Entity".
     /// @return A pointer to the newly created Entity object.
-    Entity* AddEntity(const String& name = "Sigma Entity");
+    Entity AddEntity(const String& name = "Sigma Entity");
 
     /// @brief Removes an entity from the scene.
     /// 
     /// @param e A pointer to the entity to be removed.
-    void RemoveEntity(Entity* e);
-
-    /// @brief Gets the array of entities in the scene
-    ///
-    /// @return The array of entities of the scene
-    Vector<Entity*>& GetEntityArray() { return mEntities; }
+    void RemoveEntity(Entity e);
 private:
     friend class Entity; ///< Allows Entity to access private members of Scene.
     friend class Renderer; ///< Allows Renderer to access private members of Scene.
@@ -70,5 +64,4 @@ private:
     friend class ScriptSystem; ///< Allows ScriptSystem to access private members of Scene.
 
     entt::registry mRegistry; ///< The registry that manages entities and components.
-    Vector<Entity*> mEntities; ///< A collection of entities within the scene.
 };
