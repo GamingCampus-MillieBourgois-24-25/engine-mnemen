@@ -8,14 +8,25 @@
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
 
+ScriptSystem::Data ScriptSystem::sData;
+
 void ScriptSystem::Init()
 {
+    sData.State.open_libraries(sol::lib::base,
+                               sol::lib::math,
+                               sol::lib::os,
+                               sol::lib::string,
+                               sol::lib::table,
+                               sol::lib::utf8,
+                               sol::lib::io,
+                               sol::lib::jit);
+
     LOG_INFO("Initialized Script System");
 }
 
 void ScriptSystem::Exit()
 {
-    // Nothing to do, it auto cleans itself. Yay!!!
+    
 }
 
 void ScriptSystem::Awake(Ref<Scene> scene)

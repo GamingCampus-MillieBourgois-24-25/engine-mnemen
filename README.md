@@ -68,5 +68,6 @@ A wide variety of documents regarding the engine, resources, and some other thin
 - PIX - GPU debugging
 - Recast - Navigation Meshes and Agents
 - SDL3 - Windowing & Input
+- Sol3 - C++ wrapper over Lua
 - spdlog - Logging
 - STB - Image loading

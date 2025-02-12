@@ -45,7 +45,8 @@ target("Mnemen")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua")
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
 
@@ -118,7 +119,8 @@ target("Editor")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua")
     add_deps("Mnemen")
     add_defines("GLM_ENABLE_EXPERIMENTAL")
 
@@ -163,7 +165,8 @@ target("Runtime")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua")
     add_deps("Mnemen")
     add_defines("GLM_ENABLE_EXPERIMENTAL")
 
