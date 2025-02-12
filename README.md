@@ -69,5 +69,3 @@ A wide variety of documents regarding the engine, resources, and some other thin
 - SDL3 - Windowing & Input
 - spdlog - Logging
 - STB - Image loading
-- Wren - Scripting Language
-- Wren++ - Tools for Wren

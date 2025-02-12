@@ -23,9 +23,6 @@
 [submodule "ThirdParty/Recast"]
 	path = ThirdParty/Recast
 	url = https://github.com/recastnavigation/recastnavigation/
-[submodule "ThirdParty/Wren"]
-	path = ThirdParty/Wren
-	url = https://github.com/wren-lang/wren
 [submodule "ThirdParty/JSON"]
 	path = ThirdParty/JSON
 	url = https://github.com/nlohmann/json
