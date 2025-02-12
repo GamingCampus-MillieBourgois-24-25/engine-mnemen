@@ -552,7 +552,7 @@ void Editor::EntityEditor()
                     char temp[512];
                     sprintf(temp, "%s %s", ICON_FA_FILE, script->Path.c_str());
                     if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-                        String path = Dialog::Open({ ".wren" });
+                        String path = Dialog::Open({ ".lua" });
                         if (!path.empty()) {
                             if (script->Handle.SetSource(AssetManager::Get(path, AssetType::Script)))
                                 script->Path = path;
@@ -560,7 +560,7 @@ void Editor::EntityEditor()
                     }
                 } else {
                     if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-                        String path = Dialog::Open({ ".wren" });
+                        String path = Dialog::Open({ ".lua" });
                         if (!path.empty()) {
                             if (script->Handle.SetSource(AssetManager::Get(path, AssetType::Script)))
                                 script->Path = path;
@@ -573,7 +573,7 @@ void Editor::EntityEditor()
                         const wchar_t* path = (const wchar_t*)payload->Data;
 				        std::filesystem::path scriptPath(path);
                         std::string scriptString = scriptPath.string();
-                        if (scriptString.find(".wren") != std::string::npos) {
+                        if (scriptString.find(".lua") != std::string::npos) {
                             for (int i = 0; i < scriptString.size(); i++) {
                                 scriptString[i] = scriptString[i] == '\\' ? '/' : scriptString[i];
                             }
@@ -661,7 +661,7 @@ void Editor::AssetBrowser()
         auto extension = path.extension().string();
         if (extension.find("hlsl") != std::string::npos) {
             icon = ICON_FA_PAINT_BRUSH;
-        } else if (extension.find("wren") != std::string::npos) {
+        } else if (extension.find("lua") != std::string::npos) {
             icon = ICON_FA_CODE;
         } else if (extension.find("png") != std::string::npos || extension.find("jpg") != std::string::npos || extension.find("jpeg") != std::string::npos) {
             icon = ICON_FA_FILE_IMAGE_O;

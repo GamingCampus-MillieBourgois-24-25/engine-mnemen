@@ -7,8 +7,6 @@
 
 #include "World/Scene.hpp"
 
-#include <Wren++/Wren++.h>
-
 /// @brief Manages script execution within a scene.
 /// @details The `ScriptSystem` is responsible for initializing, updating, and shutting down scripts attached to entities in a scene.
 class ScriptSystem

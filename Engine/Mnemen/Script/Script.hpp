@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <Wren++/Wren++.h>
 #include <Asset/AssetManager.hpp>
 
 /// @brief Represents an individual script within the scripting system.
@@ -41,11 +40,6 @@ public:
     /// @return True if loaded, false otherwise.
     bool IsLoaded() { return mLoaded; }
 private:
-    wrenpp::VM mVirtualMachine; ///< The Wren virtual machine instance managing the script execution.
-    wrenpp::Method mAwake;      ///< Reference to the "Awake" method within the script.
-    wrenpp::Method mQuit;       ///< Reference to the "Quit" method within the script.
-    wrenpp::Method mUpdate;     ///< Reference to the "Update" method within the script.
-
     Asset::Handle mHandle;      ///< Handle to the script asset.
     bool mLoaded = false;       ///< Whether or not the script is loaded.
 };

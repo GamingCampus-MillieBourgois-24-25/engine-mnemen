@@ -10,13 +10,6 @@
 
 void ScriptSystem::Init()
 {
-    wrenpp::VM::writeFn = [](const char* text) {
-        LOG_INFO("[SCRIPT_LOG] {0}", text);
-    };
-    wrenpp::VM::errorFn = [](WrenErrorType type, const char* module_name, int line, const char* message) {
-        LOG_ERROR("WREN ERROR: [{0} at {1}] - {2}", module_name, line, message);
-    };
-
     LOG_INFO("Initialized Script System");
 }
 
