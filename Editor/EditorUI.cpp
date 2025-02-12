@@ -548,22 +548,20 @@ void Editor::EntityEditor()
                 }
                 ImGui::PopStyleColor(3);
                 
-                if (script->Handle.IsLoaded()) {
+                if (false) {
                     char temp[512];
                     sprintf(temp, "%s %s", ICON_FA_FILE, script->Path.c_str());
                     if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
                         String path = Dialog::Open({ ".lua" });
                         if (!path.empty()) {
-                            if (script->Handle.SetSource(AssetManager::Get(path, AssetType::Script)))
-                                script->Path = path;
+                            
                         }
                     }
                 } else {
                     if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
                         String path = Dialog::Open({ ".lua" });
                         if (!path.empty()) {
-                            if (script->Handle.SetSource(AssetManager::Get(path, AssetType::Script)))
-                                script->Path = path;
+                            
                         }
                     }
                 }
@@ -577,8 +575,6 @@ void Editor::EntityEditor()
                             for (int i = 0; i < scriptString.size(); i++) {
                                 scriptString[i] = scriptString[i] == '\\' ? '/' : scriptString[i];
                             }
-                            if (script->Handle.SetSource(AssetManager::Get(scriptString, AssetType::Script)))
-                                script->Path = scriptString;
                         }
                     }
                     ImGui::EndDragDropTarget();

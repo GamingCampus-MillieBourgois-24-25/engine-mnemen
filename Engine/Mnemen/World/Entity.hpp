@@ -15,7 +15,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <Script/Script.hpp>
 #include <Utility/UUID.hpp>
 
 class Scene;
@@ -214,8 +213,6 @@ struct ScriptComponent
         Util::UUID ID;
         /// @brief The path of the script
         String Path;
-        /// @brief The handle of the script
-        Script Handle;
 
         /// @brief Default constructor
         Instance() = default;

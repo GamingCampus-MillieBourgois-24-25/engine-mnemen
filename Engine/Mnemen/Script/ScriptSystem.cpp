@@ -62,38 +62,14 @@ void ScriptSystem::Exit()
 
 void ScriptSystem::Awake(Ref<Scene> scene)
 {
-    auto registry = scene->GetRegistry();
-    auto view = registry->view<ScriptComponent>();
-    
-    for (auto [entity, script] : view.each()) {
-        for (auto instance : script.Instances) {
-            instance->Handle.Awake();
-        }
-    }
+
 }
 
 void ScriptSystem::Update(Ref<Scene> scene, float dt)
 {
     PROFILE_FUNCTION();
-
-    auto registry = scene->GetRegistry();
-    auto view = registry->view<ScriptComponent>();
-    
-    for (auto [entity, script] : view.each()) {
-        for (auto instance : script.Instances) {
-            instance->Handle.Update(dt);
-        }
-    }
 }
 
 void ScriptSystem::Quit(Ref<Scene> scene)
 {
-    auto registry = scene->GetRegistry();
-    auto view = registry->view<ScriptComponent>();
-    
-    for (auto [entity, script] : view.each()) {
-        for (auto instance : script.Instances) {
-            instance->Handle.Quit();
-        }
-    }
 }

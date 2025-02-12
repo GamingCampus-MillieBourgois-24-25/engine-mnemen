@@ -37,7 +37,6 @@
 
 // RHI is private
 
-#include "Mnemen/Script/Script.hpp"
 #include "Mnemen/Script/ScriptSystem.hpp"
 
 #include "Mnemen/Utility/Math.hpp"
