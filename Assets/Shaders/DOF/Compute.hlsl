@@ -22,7 +22,7 @@ float3 DepthOfField(uint2 threadID, float FocusPoint, float FocusScale, uint Wid
     RWTexture2D<float4> Output = ResourceDescriptorHeap[Settings.InputIndex];
     Texture2D<float> Depth = ResourceDescriptorHeap[Settings.DepthIndex];
 
-    float CenterDepth = Depth.Load(uint3(threadID, 0)).r * Settings.Far;
+    float CenterDepth = Depth.Load(uint3(threadID, 0)).r;
     float CenterSize = GetBlurSize(CenterDepth, FocusPoint, FocusScale);
     float2 PixelSize = 1.0 / float2(Width, Height);
 
@@ -46,9 +46,9 @@ float3 DepthOfField(uint2 threadID, float FocusPoint, float FocusScale, uint Wid
         }
         float M = smoothstep(Radius - 0.5, Radius + 0.5, SampleSize);
         Color += lerp(Color / Tot, SampleColor, M);
-        Tot += 1.0;     Radius += Settings.Rad_Scale / Radius;
+        Tot += 1.0;     
+        Radius += Settings.Rad_Scale / Radius;
     }
-
     return Color /= Tot;
 }
 
@@ -62,8 +62,8 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     if (ThreadID.x < Width && ThreadID.y < Height)
     {
-        float FocusPoint = Settings.Far / 2.0; 
-        float FocusScale = 10.0;
+        float FocusPoint = 10.0; 
+        float FocusScale = 1.0;
 
         float3 FinalColor = DepthOfField(ThreadID.xy, FocusPoint, FocusScale, Width, Height);
         Output[ThreadID.xy] = float4(FinalColor, 1.0);
