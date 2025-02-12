@@ -111,11 +111,9 @@ struct Entity
     glm::mat4 GetLocalTransform();
 
     /// @brief Sets the local transform of the entity
-    /// @param The local transform of the entity
+    /// @param localTransform local transform of the entity
     void SetLocalTransform(glm::mat4 localTransform);
 };
-
-/// COMPONENTS
 
 /// @brief A component giving a name to an entity
 struct TagComponent
