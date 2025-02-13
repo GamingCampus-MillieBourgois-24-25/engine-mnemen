@@ -33,7 +33,8 @@ Application::Application(ApplicationSpecs specs)
     Logger::Init();
     Input::Init();
     PhysicsSystem::Init();
-    AudioSystem::Init();
+    AudioSystem::Init("Assets/Audio/Back_music.mp3");
+    AudioSystem::SetVolume(0.1f);
     AISystem::Init();
     ScriptSystem::Init();
 
