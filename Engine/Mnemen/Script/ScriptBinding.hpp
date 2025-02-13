@@ -13,5 +13,10 @@ public:
     static void InitBindings(sol::state& state);
 
 private:
+    static void InitKeycode(sol::state& state);
     static void InitEntity(sol::state& state);
+    static void InitVec(sol::state& state);
+    static void InitQuat(sol::state& state);
+    static void InitInput(sol::state& state);
+    static void InitTransform(sol::state& state);
 };

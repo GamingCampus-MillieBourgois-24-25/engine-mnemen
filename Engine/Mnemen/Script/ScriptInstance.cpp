@@ -40,20 +40,32 @@ void ScriptInstance::Reset(int entityID)
 void ScriptInstance::Awake()
 {
     if (mAwake.valid()) {
-        mAwake();
+        sol::protected_function_result result = mAwake();
+        if (!result.valid()) {
+            sol::error err = result;
+            LOG_ERROR("[LUA::ERROR::AWAKE] Error: {0}", err.what());
+        }
     }
 }
 
 void ScriptInstance::Update(float dt)
 {
     if (mUpdate.valid()) {
-        mUpdate(dt);
+        sol::protected_function_result result = mUpdate(dt);
+        if (!result.valid()) {
+            sol::error err = result;
+            LOG_ERROR("[LUA::ERROR::UPDATE] Error: {0}", err.what());
+        }
     }
 }
 
 void ScriptInstance::Quit()
 {
     if (mQuit.valid()) {
-        mQuit();
+        sol::protected_function_result result = mQuit();
+        if (!result.valid()) {
+            sol::error err = result;
+            LOG_ERROR("[LUA::ERROR::UPDATE] Error: {0}", err.what());
+        }
     }
 }

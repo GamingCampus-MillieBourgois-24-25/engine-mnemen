@@ -21,7 +21,7 @@ private:
     sol::load_result* mParent;
 
     sol::table mTable;
-    sol::function mAwake;
-    sol::function mUpdate;
-    sol::function mQuit;
+    sol::protected_function mAwake;
+    sol::protected_function mUpdate;
+    sol::protected_function mQuit;
 };
