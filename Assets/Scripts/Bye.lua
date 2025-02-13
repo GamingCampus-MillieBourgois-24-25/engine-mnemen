@@ -6,15 +6,15 @@
 return function(entityID)
     local self = {}
 
-    function self.awake()
+    function self:awake()
         
     end
 
-    function self.update(dt)
+    function self:update(dt)
         
     end
 
-    function self.quit()
+    function self:quit()
         print("Bye")
     end
 

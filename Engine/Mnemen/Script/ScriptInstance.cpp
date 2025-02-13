@@ -21,8 +21,8 @@ void ScriptInstance::Reset(int entityID)
         return;
     }
 
-    sol::protected_function_result result = scriptConstructor(entityID);
-    mTable = result;
+    sol::protected_function_result result = scriptConstructor();
+    mTable = result.get<sol::function>()(entityID);
     if (!mTable.valid()) {
         LOG_ERROR("mTable is not valid after script call!");
         return;
