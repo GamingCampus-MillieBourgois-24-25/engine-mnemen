@@ -15,13 +15,14 @@ ScriptInstance::ScriptInstance(sol::load_result* script)
 
 void ScriptInstance::Reset(int entityID)
 {
-    sol::function scriptConstructor = mParent->get<sol::function>();
+    sol::protected_function scriptConstructor = mParent->get<sol::protected_function>();
     if (!scriptConstructor.valid()) {
         LOG_ERROR("ScriptConstructor is not valid!");
         return;
     }
 
-    mTable = scriptConstructor(entityID);
+    sol::protected_function_result result = scriptConstructor(entityID);
+    mTable = result;
     if (!mTable.valid()) {
         LOG_ERROR("mTable is not valid after script call!");
         return;

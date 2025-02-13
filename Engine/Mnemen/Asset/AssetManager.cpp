@@ -37,6 +37,9 @@ void AssetManager::GiveBack(const String& path)
 
 Asset::Handle AssetManager::Get(const String& path, AssetType type)
 {
+    if (!File::Exists(path))
+        return nullptr;
+
     if (sData.mAssets.count(path) > 0) {
         sData.mAssets[path]->RefCount++;
         return sData.mAssets[path];
@@ -137,8 +140,7 @@ void AssetManager::Purge(int refCount)
         if (it->second->RefCount < refCount) {
             it->second.reset();
             it = sData.mAssets.erase(it);
-        }
-        else {
+        } else {
             ++it;
         }
     }

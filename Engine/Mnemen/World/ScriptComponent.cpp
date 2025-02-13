@@ -5,6 +5,8 @@
 
 #include "Entity.hpp"
 
+#include <Core/File.hpp>
+
 ScriptComponent::EntityScript::EntityScript()
 {
     ID = Util::NewUUID();
@@ -34,6 +36,9 @@ void ScriptComponent::AddEmptyScript()
 
 void ScriptComponent::PushScript(const String& path)
 {
+    if (!File::Exists(path))
+        return;
+
     Ref<EntityScript> script = MakeRef<EntityScript>();
     script->Load(path);
     Instances.push_back(script);

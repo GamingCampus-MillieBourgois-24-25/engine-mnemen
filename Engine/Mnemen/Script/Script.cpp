@@ -21,3 +21,11 @@ Script::Script(const String& path)
     }
     mValid = true;
 }
+
+Script::~Script()
+{
+    if (mHandle) {
+        mHandle = {};
+        ScriptSystem::GetState()->collect_garbage();
+    }
+}

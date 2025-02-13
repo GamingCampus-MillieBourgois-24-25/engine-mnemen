@@ -14,7 +14,7 @@ public:
     using Ref = Ref<Script>;
 
     Script(const String& path);
-    ~Script() = default;
+    ~Script();
 
     bool IsValid() { return mValid; }
     sol::load_result* GetHandle() { return &mHandle; }
