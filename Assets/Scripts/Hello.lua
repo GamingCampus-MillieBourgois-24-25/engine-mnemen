@@ -7,7 +7,7 @@ return function(entityID)
     local self = {}
 
     function self:awake()
-        print("Hello")
+        
     end
 
     function self:update(dt)

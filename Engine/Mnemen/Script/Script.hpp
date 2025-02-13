@@ -16,9 +16,12 @@ public:
     Script(const String& path);
     ~Script();
 
+    void Reload();
+
     bool IsValid() { return mValid; }
     sol::load_result* GetHandle() { return &mHandle; }
 private:
+    String mPath;
     bool mValid = false;
     sol::load_result mHandle;
 };

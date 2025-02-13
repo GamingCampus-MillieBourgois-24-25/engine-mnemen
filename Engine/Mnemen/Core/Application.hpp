@@ -68,6 +68,10 @@ public:
     /// @brief Retrieves the main application window.
     /// @return A shared pointer to the window instance.
     Ref<Window> GetWindow() { return mWindow; }
+
+    /// @brief Retrieves the current scene
+    /// @return The active scene that the application is manipulating
+    Ref<Scene> GetScene() { return mScene; }
     
     /// @brief Returns the settings of the application.
     /// @return The settings of the application.

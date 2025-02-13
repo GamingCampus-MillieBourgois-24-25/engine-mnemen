@@ -547,7 +547,11 @@ void Editor::EntityEditor()
                     shouldDelete = true;
                 }
                 ImGui::PopStyleColor(3);
-                
+                if (ImGui::Button(ICON_FA_QUESTION " Reload", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    if (script->Handle)
+                        script->Handle->Script->Reload();
+                }
+
                 if (script->Handle) {
                     char temp[512];
                     sprintf(temp, "%s %s", ICON_FA_FILE, script->Handle->Path.c_str());

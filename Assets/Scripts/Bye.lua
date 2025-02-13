@@ -3,7 +3,7 @@
 -- > Create Time: 2025-02-13 15:03:27
 --
 
-return function(entityID)
+return function(entity)
     local self = {}
 
     function self:awake()
@@ -15,7 +15,7 @@ return function(entityID)
     end
 
     function self:quit()
-        print("Bye " .. entityID)
+        print("Bye")
     end
 
     return self

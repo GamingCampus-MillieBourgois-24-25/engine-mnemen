@@ -4,6 +4,8 @@
 //
 
 #include "ScriptSystem.hpp"
+#include "ScriptWrapper.hpp"
+#include "ScriptBinding.hpp"
 
 #include <sstream>
 
@@ -51,6 +53,8 @@ void ScriptSystem::Init()
                                sol::lib::jit);
     sData.State.set_function("print", &ScriptSystem::LogCallback);
     sData.State.set_panic(&ScriptSystem::PanicCallback);
+
+    ScriptBinding::InitBindings(sData.State);
 
     LOG_INFO("Initialized Script System");
 }
