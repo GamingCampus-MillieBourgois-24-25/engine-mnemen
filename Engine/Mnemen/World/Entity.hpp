@@ -224,3 +224,19 @@ struct ScriptComponent
     void AddEmptyScript();
     void PushScript(const String& path);
 };
+
+/// @brief A component holding an audio source
+struct AudioSourceComponent
+{
+    Asset::Handle Handle;
+    ma_sound Sound;
+    bool Looping = false;
+    bool PlayOnAwake = false;
+    float Volume = 1.0f;
+
+    void Init(const String& path);
+    void Free();
+    void Play();
+    void Stop();
+    void Update();
+};

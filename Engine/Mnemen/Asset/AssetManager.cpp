@@ -116,6 +116,15 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
             }
             break;
         }
+        case AssetType::Audio: {
+            LOG_INFO("Loading audio file {0}", path);
+            asset->Audio = MakeRef<AudioFile>(path);
+            if (!asset->Audio->IsValid()) {
+                asset.reset();
+                nullptr;
+            }
+            break;
+        }
     }
 
     sData.mAssets[path] = asset;

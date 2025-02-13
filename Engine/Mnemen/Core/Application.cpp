@@ -33,8 +33,7 @@ Application::Application(ApplicationSpecs specs)
     Logger::Init();
     Input::Init();
     PhysicsSystem::Init();
-    AudioSystem::Init("Assets/Audio/Back_music.mp3");
-    AudioSystem::SetVolume(0.1f);
+    AudioSystem::Init();
     AISystem::Init();
     ScriptSystem::Init();
 
@@ -57,6 +56,7 @@ Application::Application(ApplicationSpecs specs)
 
 Application::~Application()
 {
+    AssetManager::Purge();
     Profiler::Exit();
     ScriptSystem::Exit();
     AISystem::Exit();
@@ -68,12 +68,16 @@ Application::~Application()
 void Application::OnAwake()
 {
     mScenePlaying = true;
+
     ScriptSystem::Awake(mScene);
+    AudioSystem::Awake(mScene);
 }
 
 void Application::OnStop()
 {
+    AudioSystem::Quit(mScene);
     ScriptSystem::Quit(mScene);
+
     mScenePlaying = false;
 }
 

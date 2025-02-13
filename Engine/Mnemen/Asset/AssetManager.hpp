@@ -9,6 +9,7 @@
 #include <Asset/Image.hpp>
 #include <Asset/Mesh.hpp>
 #include <Script/Script.hpp>
+#include <Audio/AudioFile.hpp>
 
 #include <RHI/RHI.hpp>
 
@@ -24,6 +25,7 @@ enum class AssetType
     Shader,           ///< A shader asset.
     EnvironmentMap,   ///< An environment map asset.
     Script,           ///< A game script.
+    Audio,            ///< An audio file.
     MAX               ///< Max enum.
 };
 
@@ -40,7 +42,8 @@ struct Asset
     Mesh Mesh;              ///< Mesh data if the asset is a mesh.
     Texture::Ref Texture;   ///< Pointer to texture data if the asset is a texture.
     Shader Shader;          ///< Shader data if the asset is a shader.
-    Script::Ref Script;    ///< Script data if the asset is a script.
+    Script::Ref Script;     ///< Script data if the asset is a script.
+    AudioFile::Ref Audio;   ///< Audio data if the asset is audio.
 
     Int32 RefCount;         ///< Reference count for asset management.
 

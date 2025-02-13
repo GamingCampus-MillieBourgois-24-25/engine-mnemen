@@ -106,6 +106,17 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
         entityJson["scripts"].push_back(instance->Handle->Path);
     }
 
+    // Audio Source component
+    if (entity.HasComponent<AudioSourceComponent>()) {
+        AudioSourceComponent source = entity.GetComponent<AudioSourceComponent>();
+        entityJson["audioSource"] = {
+            { "volume", source.Volume },
+            { "looping", source.Looping },
+            { "playOnAwake", source.PlayOnAwake },
+            { "path", source.Handle ? source.Handle->Path : nullptr }
+        };
+    }
+
     return entityJson;
 }
 
@@ -135,6 +146,16 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
         camera.Near = c["near"];
         camera.Far = c["far"];
         camera.AspectRatio = c["aspectRatio"];
+    }
+    if (entityJson.contains("audioSource")) {
+        auto& audio = entity.AddComponent<AudioSourceComponent>();
+        auto a = entityJson["audioSource"];
+        if (!a["path"].is_null()) {
+            audio.Init(a["path"]);
+        }
+        audio.Looping = a["looping"];
+        audio.PlayOnAwake = a["playOnAwake"];
+        audio.Volume = a["volume"];
     }
     for (auto& script : entityJson["scripts"]) {
         auto& sc = entity.GetComponent<ScriptComponent>();

@@ -17,6 +17,10 @@ Scene::~Scene()
         Entity entity(&mRegistry);
         entity.ID = id;
 
+        if (entity.HasComponent<AudioSourceComponent>()) {
+            entity.GetComponent<AudioSourceComponent>().Free();
+            entity.RemoveComponent<AudioSourceComponent>();
+        }
         if (entity.HasComponent<MeshComponent>()) {
             entity.GetComponent<MeshComponent>().Free();
         }
@@ -83,6 +87,10 @@ void Scene::RemoveEntity(Entity e)
     }
 
     // Cleanup entity data
+    if (e.HasComponent<AudioSourceComponent>()) {
+        e.GetComponent<AudioSourceComponent>().Free();
+        e.RemoveComponent<AudioSourceComponent>();
+    }
     if (e.HasComponent<MeshComponent>()) {
         e.GetComponent<MeshComponent>().Free();
     }
