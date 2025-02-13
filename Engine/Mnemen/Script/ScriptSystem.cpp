@@ -62,14 +62,39 @@ void ScriptSystem::Exit()
 
 void ScriptSystem::Awake(Ref<Scene> scene)
 {
+    entt::registry* reg = scene->GetRegistry();
 
+    auto view = reg->view<ScriptComponent>();
+    for (auto [id, script] : view.each()) {
+        for (auto& instance : script.Instances) {
+            instance->Instance->Reset((int)id);
+            instance->Instance->Awake();
+        }
+    }
 }
 
 void ScriptSystem::Update(Ref<Scene> scene, float dt)
 {
     PROFILE_FUNCTION();
+
+    entt::registry* reg = scene->GetRegistry();
+
+    auto view = reg->view<ScriptComponent>();
+    for (auto [id, script] : view.each()) {
+        for (auto& instance : script.Instances) {
+            instance->Instance->Update(dt);
+        }
+    }
 }
 
 void ScriptSystem::Quit(Ref<Scene> scene)
 {
+    entt::registry* reg = scene->GetRegistry();
+
+    auto view = reg->view<ScriptComponent>();
+    for (auto [id, script] : view.each()) {
+        for (auto& instance : script.Instances) {
+            instance->Instance->Quit();
+        }
+    }
 }

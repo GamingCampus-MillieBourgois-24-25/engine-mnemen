@@ -8,7 +8,7 @@
 #include <Asset/Shader.hpp>
 #include <Asset/Image.hpp>
 #include <Asset/Mesh.hpp>
-#include <Asset/ScriptSource.hpp>
+#include <Script/Script.hpp>
 
 #include <RHI/RHI.hpp>
 
@@ -40,7 +40,7 @@ struct Asset
     Mesh Mesh;              ///< Mesh data if the asset is a mesh.
     Texture::Ref Texture;   ///< Pointer to texture data if the asset is a texture.
     Shader Shader;          ///< Shader data if the asset is a shader.
-    ScriptSource Script;    ///< Script data if the asset is a script.
+    Script::Ref Script;    ///< Script data if the asset is a script.
 
     Int32 RefCount;         ///< Reference count for asset management.
 

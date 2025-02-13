@@ -106,7 +106,11 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
         }
         case AssetType::Script: {
             LOG_INFO("Loading script {0}", path);
-            asset->Script.Load(path);
+            asset->Script = MakeRef<Script>(path);
+            if (!asset->Script->IsValid()) {
+                asset.reset();
+                return nullptr;
+            }
             break;
         }
     }

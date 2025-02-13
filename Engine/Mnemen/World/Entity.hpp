@@ -10,6 +10,7 @@
 #include <Core/Logger.hpp>
 
 #include <Asset/AssetManager.hpp>
+#include <Script/ScriptInstance.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -206,27 +207,20 @@ struct CameraComponent
 /// @brief A component holding a game script
 struct ScriptComponent
 {
-    /// @brief An instance of a script
-    struct Instance
+    struct EntityScript
     {
-        /// @brief Script instance ID util whatever
         Util::UUID ID;
-        /// @brief The path of the script
-        String Path;
+        Asset::Handle Handle;
+        Ref<ScriptInstance> Instance;
 
-        /// @brief Default constructor
-        Instance() = default;
-        /// @brief Default destructor
-        ~Instance() = default;
+        EntityScript();
+        ~EntityScript();
+
+        void Load(const String& path);
     };
 
-    /// @brief All attached instances of the script
-    Vector<Ref<Instance>> Instances;
+    Vector<Ref<EntityScript>> Instances;
 
-    /// @brief Pushes an empty script
     void AddEmptyScript();
-
-    /// @brief Pushes a script from the given path
-    /// @param path The path of the script
     void PushScript(const String& path);
 };

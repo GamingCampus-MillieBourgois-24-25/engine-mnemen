@@ -535,7 +535,7 @@ void Editor::EntityEditor()
         // SCRIPT
         ScriptComponent& scripts = mSelectedEntity.GetComponent<ScriptComponent>();
         for (int i = 0; i < scripts.Instances.size(); i++) {
-            Ref<ScriptComponent::Instance> script = scripts.Instances[i];
+            Ref<ScriptComponent::EntityScript> script = scripts.Instances[i];
             ImGui::PushID((UInt64)script->ID);
             if (ImGui::TreeNodeEx(ICON_FA_CODE " Script Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 bool shouldDelete = false;
@@ -548,20 +548,21 @@ void Editor::EntityEditor()
                 }
                 ImGui::PopStyleColor(3);
                 
-                if (false) {
+                if (script->Handle) {
                     char temp[512];
-                    sprintf(temp, "%s %s", ICON_FA_FILE, script->Path.c_str());
+                    sprintf(temp, "%s %s", ICON_FA_FILE, script->Handle->Path.c_str());
                     if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
                         String path = Dialog::Open({ ".lua" });
                         if (!path.empty()) {
-                            
+                            // Load script
+                            script->Load(path);
                         }
                     }
                 } else {
                     if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
                         String path = Dialog::Open({ ".lua" });
                         if (!path.empty()) {
-                            
+                            script->Load(path);
                         }
                     }
                 }
@@ -575,6 +576,7 @@ void Editor::EntityEditor()
                             for (int i = 0; i < scriptString.size(); i++) {
                                 scriptString[i] = scriptString[i] == '\\' ? '/' : scriptString[i];
                             }
+                            script->Load(scriptString);
                         }
                     }
                     ImGui::EndDragDropTarget();

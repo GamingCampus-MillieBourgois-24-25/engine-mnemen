@@ -103,7 +103,7 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
     ScriptComponent scripts = entity.GetComponent<ScriptComponent>();
     entityJson["scripts"] = nlohmann::json::array();
     for (auto& instance : scripts.Instances) {
-        entityJson["scripts"].push_back(instance->Path);
+        entityJson["scripts"].push_back(instance->Handle->Path);
     }
 
     return entityJson;
