@@ -15,8 +15,9 @@ Script::Script(const String& path)
     mHandle = state->load_file(path);
     if (!mHandle.valid()) {
         mValid = false;
-        LOG_ERROR("Failed to compile Lua script!");
-        mHandle = {};
+
+        sol::error err = mHandle;
+        LOG_ERROR("Failed to load Lua script: {0}", err.what());
         return;
     }
     mValid = true;
@@ -24,8 +25,8 @@ Script::Script(const String& path)
 
 Script::~Script()
 {
-    if (mHandle) {
-        mHandle = {};
+    if (mValid) {
         ScriptSystem::GetState()->collect_garbage();
+        mValid = false;
     }
 }

@@ -25,7 +25,8 @@ void ScriptComponent::EntityScript::Load(const String& path)
         AssetManager::GiveBack(Handle->Path);
     }
     Handle = AssetManager::Get(path, AssetType::Script);
-    Instance = MakeRef<ScriptInstance>(Handle->Script->GetHandle());
+    if (Handle)
+        Instance = MakeRef<ScriptInstance>(Handle->Script->GetHandle());
 }
 
 void ScriptComponent::AddEmptyScript()

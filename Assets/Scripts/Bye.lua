@@ -15,7 +15,7 @@ return function(entityID)
     end
 
     function self:quit()
-        print("Bye")
+        print("Bye " .. entityID)
     end
 
     return self
