@@ -7,6 +7,7 @@ return function(entityID)
     local self = {}
 
     function self.awake()
+        print("hello")
         self.transform = Entity.GetTransform(entityID)
     end
 
@@ -26,7 +27,7 @@ return function(entityID)
     end
 
     function self.quit()
-        
+        print("hello")
     end
 
     return self

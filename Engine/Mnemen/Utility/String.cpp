@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-String StringUtil::Lowercase(const String& str)
+String StringUtil::Lowercase(String& str)
 {
     std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c){ return std::tolower(c); });
     return str;

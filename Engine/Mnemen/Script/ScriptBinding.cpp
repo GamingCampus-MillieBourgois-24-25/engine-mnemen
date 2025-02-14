@@ -75,10 +75,6 @@ void ScriptBinding::InitInput(sol::state& state)
     );
 
     auto input = state.create_table("Input");
-    input["Init"] = &Input::Init;
-    input["Update"] = &Input::Update;
-    input["PostUpdate"] = &Input::PostUpdate;
-    input["Exit"] = &Input::Exit;
     input["IsKeyPressed"] = &Input::IsKeyPressed;
     input["IsKeyHeld"] = &Input::IsKeyHeld;
     input["IsKeyDown"] = &Input::IsKeyDown;

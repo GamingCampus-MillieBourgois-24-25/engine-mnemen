@@ -9,5 +9,5 @@
 
 namespace StringUtil
 {
-    String Lowercase(const String& str);
+    String Lowercase(String& str);
 };

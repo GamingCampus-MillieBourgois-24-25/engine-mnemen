@@ -31,10 +31,6 @@ void ScriptInstance::Reset(int entityID)
         LOG_ERROR("mTable is not a table! Type: {0}", (int)mTable.get_type());
         return;
     }
-
-    mAwake = mTable["awake"];
-    mUpdate = mTable["update"];
-    mQuit = mTable["quit"];
 }
 
 void ScriptInstance::Awake()
