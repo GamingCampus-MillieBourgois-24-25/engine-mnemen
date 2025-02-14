@@ -75,7 +75,10 @@ class BroadPhaseLayerInterface
 {
 public:
     BroadPhaseLayerInterface();
+    int	GetNumBroadPhaseLayers();
+    JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer Layer);
+    
 
 private:
-    JPH::BroadPhaseLayer mObjectToBroadPhase[mLayers];
+    JPH::BroadPhaseLayer mObjectToBroadPhase[];
 };

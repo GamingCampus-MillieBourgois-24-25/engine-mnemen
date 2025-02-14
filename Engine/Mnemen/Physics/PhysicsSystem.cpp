@@ -38,6 +38,13 @@ BroadPhaseLayerInterface::BroadPhaseLayerInterface()
     mObjectToBroadPhase[sMovingLayer] = sMoving;
 }
 
+int BroadPhaseLayerInterface::GetNumBroadPhaseLayers()
+{
+    return mLayers;
+}
+
+
+
 void PhysicsSystem::Init()
 {
     JPH::RegisterDefaultAllocator();
