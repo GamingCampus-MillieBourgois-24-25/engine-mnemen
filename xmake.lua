@@ -22,8 +22,7 @@ target("Mnemen")
              "Detour",
              "DetourCrowd",
              "DetourDebugUtils",
-             "Wren",
-             "Wren++")
+             "Lua")
     
     add_files("Engine/**.cpp") -- Might need to change this for multi-platform or multi-API
     add_headerfiles("Engine/**.hpp")
@@ -46,8 +45,8 @@ target("Mnemen")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/Wren/src/include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua/src")
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
 
@@ -120,8 +119,8 @@ target("Editor")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/Wren/src/include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua/src")
     add_deps("Mnemen")
     add_defines("GLM_ENABLE_EXPERIMENTAL")
 
@@ -166,8 +165,8 @@ target("Runtime")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/Wren/src/include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua/src")
     add_deps("Mnemen")
     add_defines("GLM_ENABLE_EXPERIMENTAL")
 

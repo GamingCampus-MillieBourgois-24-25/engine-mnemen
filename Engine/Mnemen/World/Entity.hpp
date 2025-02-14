@@ -10,12 +10,12 @@
 #include <Core/Logger.hpp>
 
 #include <Asset/AssetManager.hpp>
+#include <Script/ScriptInstance.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <Script/Script.hpp>
 #include <Utility/UUID.hpp>
 
 class Scene;
@@ -207,29 +207,36 @@ struct CameraComponent
 /// @brief A component holding a game script
 struct ScriptComponent
 {
-    /// @brief An instance of a script
-    struct Instance
+    struct EntityScript
     {
-        /// @brief Script instance ID util whatever
         Util::UUID ID;
-        /// @brief The path of the script
-        String Path;
-        /// @brief The handle of the script
-        Script Handle;
+        Asset::Handle Handle;
+        Ref<ScriptInstance> Instance;
 
-        /// @brief Default constructor
-        Instance() = default;
-        /// @brief Default destructor
-        ~Instance() = default;
+        EntityScript();
+        ~EntityScript();
+
+        void Load(const String& path);
     };
 
-    /// @brief All attached instances of the script
-    Vector<Ref<Instance>> Instances;
+    Vector<Ref<EntityScript>> Instances;
 
-    /// @brief Pushes an empty script
     void AddEmptyScript();
-
-    /// @brief Pushes a script from the given path
-    /// @param path The path of the script
     void PushScript(const String& path);
+};
+
+/// @brief A component holding an audio source
+struct AudioSourceComponent
+{
+    Asset::Handle Handle;
+    ma_sound Sound;
+    bool Looping = false;
+    bool PlayOnAwake = false;
+    float Volume = 1.0f;
+
+    void Init(const String& path);
+    void Free();
+    void Play();
+    void Stop();
+    void Update();
 };

@@ -12,6 +12,7 @@
 #include <imgui_internal.h>
 
 #include <Utility/Dialog.hpp>
+#include <Utility/String.hpp>
 
 void Editor::Viewport(const Frame& frame)
 {
@@ -368,7 +369,8 @@ void Editor::AssetPanel()
                 ICON_FA_FILE_IMAGE_O " Textures",
                 ICON_FA_PAINT_BRUSH " Shaders",
                 ICON_FA_SUN_O " Environment Maps",
-                ICON_FA_CODE " Scripts"
+                ICON_FA_CODE " Scripts",
+                ICON_FA_MUSIC " Audio Files"
             };
             for (int i = 1; i < (int)AssetType::MAX; i++) {
                 ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
@@ -385,7 +387,8 @@ void Editor::AssetPanel()
                             ICON_FA_FILE_IMAGE_O,
                             ICON_FA_PAINT_BRUSH,
                             ICON_FA_SUN_O,
-                            ICON_FA_CODE
+                            ICON_FA_CODE,
+                            ICON_FA_MUSIC
                         };
 
                         char temp[256];
@@ -535,7 +538,7 @@ void Editor::EntityEditor()
         // SCRIPT
         ScriptComponent& scripts = mSelectedEntity.GetComponent<ScriptComponent>();
         for (int i = 0; i < scripts.Instances.size(); i++) {
-            Ref<ScriptComponent::Instance> script = scripts.Instances[i];
+            Ref<ScriptComponent::EntityScript> script = scripts.Instances[i];
             ImGui::PushID((UInt64)script->ID);
             if (ImGui::TreeNodeEx(ICON_FA_CODE " Script Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 bool shouldDelete = false;
@@ -547,23 +550,26 @@ void Editor::EntityEditor()
                     shouldDelete = true;
                 }
                 ImGui::PopStyleColor(3);
-                
-                if (script->Handle.IsLoaded()) {
+                if (ImGui::Button(ICON_FA_QUESTION " Reload", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    if (script->Handle)
+                        script->Handle->Script->Reload();
+                }
+
+                if (script->Handle) {
                     char temp[512];
-                    sprintf(temp, "%s %s", ICON_FA_FILE, script->Path.c_str());
+                    sprintf(temp, "%s %s", ICON_FA_FILE, script->Handle->Path.c_str());
                     if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-                        String path = Dialog::Open({ ".wren" });
+                        String path = Dialog::Open({ ".lua" });
                         if (!path.empty()) {
-                            if (script->Handle.SetSource(AssetManager::Get(path, AssetType::Script)))
-                                script->Path = path;
+                            // Load script
+                            script->Load(path);
                         }
                     }
                 } else {
                     if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-                        String path = Dialog::Open({ ".wren" });
+                        String path = Dialog::Open({ ".lua" });
                         if (!path.empty()) {
-                            if (script->Handle.SetSource(AssetManager::Get(path, AssetType::Script)))
-                                script->Path = path;
+                            script->Load(path);
                         }
                     }
                 }
@@ -573,12 +579,11 @@ void Editor::EntityEditor()
                         const wchar_t* path = (const wchar_t*)payload->Data;
 				        std::filesystem::path scriptPath(path);
                         std::string scriptString = scriptPath.string();
-                        if (scriptString.find(".wren") != std::string::npos) {
+                        if (scriptString.find(".lua") != std::string::npos) {
                             for (int i = 0; i < scriptString.size(); i++) {
                                 scriptString[i] = scriptString[i] == '\\' ? '/' : scriptString[i];
                             }
-                            if (script->Handle.SetSource(AssetManager::Get(scriptString, AssetType::Script)))
-                                script->Path = scriptString;
+                            script->Load(scriptString);
                         }
                     }
                     ImGui::EndDragDropTarget();
@@ -590,6 +595,70 @@ void Editor::EntityEditor()
                 ImGui::TreePop();
             }
             ImGui::PopID();
+        }
+
+        // Audio
+        if (mSelectedEntity.HasComponent<AudioSourceComponent>()) {
+            if (ImGui::TreeNodeEx(ICON_FA_MUSIC " Audio Source Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                auto& audio = mSelectedEntity.GetComponent<AudioSourceComponent>();
+
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleColor(3);
+                
+                if (audio.Handle) {
+                    char temp[512];
+                    sprintf(temp, "%s %s", ICON_FA_FILE, audio.Handle->Path.c_str());
+                    if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".mp3", ".wav", ".ogg" });
+                        path = StringUtil::Lowercase(path);
+                        if (!path.empty()) {
+                            audio.Init(path);
+                        }
+                    }
+                } else {
+                    if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".mp3", ".wav", ".ogg" });
+                        path = StringUtil::Lowercase(path);
+                        if (!path.empty()) {
+                            audio.Init(path);
+                        }
+                    }
+                }
+                ImGui::PopStyleVar();
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path audioPath(path);
+                        std::string audioString = audioPath.string();
+                        audioString = StringUtil::Lowercase(audioString);
+                        if (audioString.find(".mp3") != std::string::npos || audioString.find(".wav") != std::string::npos || audioString.find(".ogg") != std::string::npos) {
+                            for (int i = 0; i < audioString.size(); i++) {
+                                audioString[i] = audioString[i] == '\\' ? '/' : audioString[i];
+                            }
+                            audio.Init(audioString);
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                ImGui::Separator();
+                ImGui::SliderFloat("Volume", &audio.Volume, 0.0f, 100.0f, "%.1f");
+                ImGui::Checkbox("Play On Awake", &audio.PlayOnAwake);
+                ImGui::Checkbox("Looping", &audio.Looping);
+                ImGui::TreePop();
+
+                if (shouldDelete) {
+                    audio.Free();
+                    mSelectedEntity.RemoveComponent<AudioSourceComponent>();
+                }
+            }
         }
 
         ImGui::Separator();
@@ -608,6 +677,11 @@ void Editor::EntityEditor()
             if (!mSelectedEntity.HasComponent<CameraComponent>()) {
                 if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera Component")) {
                     mSelectedEntity.AddComponent<CameraComponent>();
+                }
+            }
+            if (!mSelectedEntity.HasComponent<AudioSourceComponent>()) {
+                if (ImGui::MenuItem(ICON_FA_MUSIC " Audio Source Component")) {
+                    mSelectedEntity.AddComponent<AudioSourceComponent>();
                 }
             }
             if (ImGui::MenuItem(ICON_FA_CODE " Script Component")) {
@@ -661,7 +735,7 @@ void Editor::AssetBrowser()
         auto extension = path.extension().string();
         if (extension.find("hlsl") != std::string::npos) {
             icon = ICON_FA_PAINT_BRUSH;
-        } else if (extension.find("wren") != std::string::npos) {
+        } else if (extension.find("lua") != std::string::npos) {
             icon = ICON_FA_CODE;
         } else if (extension.find("png") != std::string::npos || extension.find("jpg") != std::string::npos || extension.find("jpeg") != std::string::npos) {
             icon = ICON_FA_FILE_IMAGE_O;
@@ -669,6 +743,8 @@ void Editor::AssetBrowser()
             icon = ICON_FA_CUBE;
         } else if (extension.find("msf") != std::string::npos) {
             icon = ICON_FA_GLOBE;
+        } else if (extension.find(".mp3") != std::string::npos || extension.find(".ogg") != std::string::npos || extension.find(".wav") != std::string::npos) {
+            icon = ICON_FA_MUSIC;
         }
 
         ImGui::PushFont(mRHI->GetLargeIconFont());

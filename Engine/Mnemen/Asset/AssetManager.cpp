@@ -37,6 +37,9 @@ void AssetManager::GiveBack(const String& path)
 
 Asset::Handle AssetManager::Get(const String& path, AssetType type)
 {
+    if (!File::Exists(path))
+        return nullptr;
+
     if (sData.mAssets.count(path) > 0) {
         sData.mAssets[path]->RefCount++;
         return sData.mAssets[path];
@@ -106,7 +109,20 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
         }
         case AssetType::Script: {
             LOG_INFO("Loading script {0}", path);
-            asset->Script.Load(path);
+            asset->Script = MakeRef<Script>(path);
+            if (!asset->Script->IsValid()) {
+                asset.reset();
+                return nullptr;
+            }
+            break;
+        }
+        case AssetType::Audio: {
+            LOG_INFO("Loading audio file {0}", path);
+            asset->Audio = MakeRef<AudioFile>(path);
+            if (!asset->Audio->IsValid()) {
+                asset.reset();
+                nullptr;
+            }
             break;
         }
     }
@@ -133,8 +149,7 @@ void AssetManager::Purge(int refCount)
         if (it->second->RefCount < refCount) {
             it->second.reset();
             it = sData.mAssets.erase(it);
-        }
-        else {
+        } else {
             ++it;
         }
     }

@@ -1,52 +1,27 @@
 //
 // > Notice: Amélie Heinrich @ 2025
-// > Create Time: 2025-02-04 23:48:04
+// > Create Time: 2025-02-13 16:20:41
 //
 
 #pragma once
 
-#include <Wren++/Wren++.h>
-#include <Asset/AssetManager.hpp>
+#include <Core/Common.hpp>
+#include <sol/sol.hpp>
 
-/// @brief Represents an individual script within the scripting system.
-/// @details The `Script` class is responsible for managing the execution of a script,
-/// including initialization, updates, and cleanup.
 class Script
 {
 public:
-    /// @brief Default constructor.
-    Script() = default;
+    using Ref = Ref<Script>;
 
-    /// @brief Default destructor.
+    Script(const String& path);
     ~Script();
 
-    /// @brief Sets the script source from an asset handle.
-    /// @param handle The asset handle pointing to the script source.
-    bool SetSource(Asset::Handle handle);
+    void Reload();
 
-    /// @brief Calls the "Awake" method of the script.
-    /// @details This method is typically called when the script is first initialized.
-    void Awake();
-
-    /// @brief Calls the "Quit" method of the script.
-    /// @details This method is called when the script is about to be removed or the scene is closing.
-    void Quit();
-
-    /// @brief Calls the "Update" method of the script.
-    /// @param dt Delta time (time elapsed since the last frame).
-    /// @details This method is called every frame to update the script's logic.
-    void Update(float dt);
-
-    /// @brief Returns whether or not the asset handle for the script is loaded
-    /// @return True if loaded, false otherwise.
-    bool IsLoaded() { return mLoaded; }
+    bool IsValid() { return mValid; }
+    sol::load_result* GetHandle() { return &mHandle; }
 private:
-    wrenpp::VM mVirtualMachine; ///< The Wren virtual machine instance managing the script execution.
-    wrenpp::Method mAwake;      ///< Reference to the "Awake" method within the script.
-    wrenpp::Method mQuit;       ///< Reference to the "Quit" method within the script.
-    wrenpp::Method mUpdate;     ///< Reference to the "Update" method within the script.
-
-    Asset::Handle mHandle;      ///< Handle to the script asset.
-    bool mLoaded = false;       ///< Whether or not the script is loaded.
+    String mPath;
+    bool mValid = false;
+    sol::load_result mHandle;
 };
-

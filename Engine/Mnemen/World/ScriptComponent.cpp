@@ -5,18 +5,42 @@
 
 #include "Entity.hpp"
 
+#include <Core/File.hpp>
+
+ScriptComponent::EntityScript::EntityScript()
+{
+    ID = Util::NewUUID();
+}
+
+ScriptComponent::EntityScript::~EntityScript()
+{
+    if (Handle) {
+        AssetManager::GiveBack(Handle->Path);
+    }
+}
+
+void ScriptComponent::EntityScript::Load(const String& path)
+{
+    if (Handle) {
+        AssetManager::GiveBack(Handle->Path);
+    }
+    Handle = AssetManager::Get(path, AssetType::Script);
+    if (Handle)
+        Instance = MakeRef<ScriptInstance>(Handle->Script->GetHandle());
+}
+
 void ScriptComponent::AddEmptyScript()
 {
-    Ref<Instance> instance = MakeRef<Instance>();
-    instance->ID = Util::NewUUID();
-    Instances.push_back(instance);
+    Ref<EntityScript> script = MakeRef<EntityScript>();
+    Instances.push_back(script);
 }
 
 void ScriptComponent::PushScript(const String& path)
 {
-    Ref<Instance> instance = MakeRef<Instance>();
-    instance->ID = Util::NewUUID();
-    instance->Path = path;
-    instance->Handle.SetSource(AssetManager::Get(path, AssetType::Script));
-    Instances.push_back(instance);
+    if (!File::Exists(path))
+        return;
+
+    Ref<EntityScript> script = MakeRef<EntityScript>();
+    script->Load(path);
+    Instances.push_back(script);
 }

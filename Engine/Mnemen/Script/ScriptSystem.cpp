@@ -4,35 +4,75 @@
 //
 
 #include "ScriptSystem.hpp"
+#include "ScriptWrapper.hpp"
+#include "ScriptBinding.hpp"
+
+#include <sstream>
 
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
 
+ScriptSystem::Data ScriptSystem::sData;
+
+void ScriptSystem::LogCallback(const sol::variadic_args& args)
+{
+    std::stringstream ss;
+        
+    for (int i = 0; i < args.size(); i++) {
+        if (i > 0)
+            ss << " ";
+        if (args[i].is<std::string>()) {
+            ss << args[i].as<std::string>();
+        } else if (args[i].is<int>()) {
+            ss << args[i].as<int>();
+        } else if (args[i].is<double>()) {
+            ss << args[i].as<double>();
+        } else if (args[i].is<bool>()) {
+            ss << (args[i].as<bool>() ? "true" : "false");
+        }
+    }
+    LOG_INFO("[LUA] {0}", ss.str());
+}
+
+int ScriptSystem::PanicCallback(lua_State* L)
+{
+    const char* errorMsg = lua_tostring(L, -1);
+    LOG_ERROR("[LUA::ERROR] {0}", errorMsg);
+    return 0;
+}
+
 void ScriptSystem::Init()
 {
-    wrenpp::VM::writeFn = [](const char* text) {
-        LOG_INFO("[SCRIPT_LOG] {0}", text);
-    };
-    wrenpp::VM::errorFn = [](WrenErrorType type, const char* module_name, int line, const char* message) {
-        LOG_ERROR("WREN ERROR: [{0} at {1}] - {2}", module_name, line, message);
-    };
+    sData.State.open_libraries(sol::lib::base,
+                               sol::lib::math,
+                               sol::lib::os,
+                               sol::lib::string,
+                               sol::lib::table,
+                               sol::lib::utf8,
+                               sol::lib::io,
+                               sol::lib::jit);
+    sData.State.set_function("print", &ScriptSystem::LogCallback);
+    sData.State.set_panic(&ScriptSystem::PanicCallback);
+
+    ScriptBinding::InitBindings(sData.State);
 
     LOG_INFO("Initialized Script System");
 }
 
 void ScriptSystem::Exit()
 {
-    // Nothing to do, it auto cleans itself. Yay!!!
+    
 }
 
 void ScriptSystem::Awake(Ref<Scene> scene)
 {
-    auto registry = scene->GetRegistry();
-    auto view = registry->view<ScriptComponent>();
-    
-    for (auto [entity, script] : view.each()) {
-        for (auto instance : script.Instances) {
-            instance->Handle.Awake();
+    entt::registry* reg = scene->GetRegistry();
+
+    auto view = reg->view<ScriptComponent>();
+    for (auto [id, script] : view.each()) {
+        for (auto& instance : script.Instances) {
+            instance->Instance->Reset((int)id);
+            instance->Instance->Awake();
         }
     }
 }
@@ -41,24 +81,24 @@ void ScriptSystem::Update(Ref<Scene> scene, float dt)
 {
     PROFILE_FUNCTION();
 
-    auto registry = scene->GetRegistry();
-    auto view = registry->view<ScriptComponent>();
-    
-    for (auto [entity, script] : view.each()) {
-        for (auto instance : script.Instances) {
-            instance->Handle.Update(dt);
+    entt::registry* reg = scene->GetRegistry();
+
+    auto view = reg->view<ScriptComponent>();
+    for (auto [id, script] : view.each()) {
+        for (auto& instance : script.Instances) {
+            instance->Instance->Update(dt);
         }
     }
 }
 
 void ScriptSystem::Quit(Ref<Scene> scene)
 {
-    auto registry = scene->GetRegistry();
-    auto view = registry->view<ScriptComponent>();
-    
-    for (auto [entity, script] : view.each()) {
-        for (auto instance : script.Instances) {
-            instance->Handle.Quit();
+    entt::registry* reg = scene->GetRegistry();
+
+    auto view = reg->view<ScriptComponent>();
+    for (auto [id, script] : view.each()) {
+        for (auto& instance : script.Instances) {
+            instance->Instance->Quit();
         }
     }
 }

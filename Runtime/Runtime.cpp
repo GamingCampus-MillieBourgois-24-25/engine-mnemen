@@ -11,6 +11,8 @@ Runtime::Runtime(ApplicationSpecs specs)
     : Application(specs)
 {
     mScenePlaying = true;
+
+    OnAwake();
 }
 
 Runtime::~Runtime()

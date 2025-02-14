@@ -61,13 +61,13 @@ A wide variety of documents regarding the engine, resources, and some other thin
 - ImGuizmo - ImGui plugin to add Gizmos
 - Jolt - Physics API
 - JSON - Writing/parsing of JSON files (used for scene files)
+- Lua - Scripting Language
 - MeshOptimizer - Mesh optimizing and meshlet generation
 - MiniAudio - Audio API
 - NVTT - Texture compression
 - PIX - GPU debugging
 - Recast - Navigation Meshes and Agents
 - SDL3 - Windowing & Input
+- Sol3 - C++ wrapper over Lua
 - spdlog - Logging
 - STB - Image loading
-- Wren - Scripting Language
-- Wren++ - Tools for Wren

@@ -1,57 +1,43 @@
 //
 // > Notice: Amélie Heinrich @ 2025
-// > Create Time: 2025-02-04 23:52:20
+// > Create Time: 2025-02-13 16:25:05
 //
-
-#include "Script.hpp"
 
 #include <Core/Logger.hpp>
 
+#include "Script.hpp"
+#include "ScriptSystem.hpp"
+
+Script::Script(const String& path)
+    : mPath(path)
+{
+    Reload();
+}
+
 Script::~Script()
 {
-    if (mLoaded)
-        AssetManager::GiveBack(mHandle->Path);
-}
-
-bool Script::SetSource(Asset::Handle handle)
-{
-    mVirtualMachine = wrenpp::VM(); // Reset VM
-    mAwake = {};
-    mQuit = {};
-    mUpdate = {};
-    mLoaded = false;
-
-    auto result = mVirtualMachine.executeString(handle->Script.Source);
-    if (result == wrenpp::Result::Success) {
-        if (mHandle) {
-            AssetManager::GiveBack(mHandle->Path);
-        }
-        mHandle = handle;
-        mAwake = mVirtualMachine.method("main", "awake", "call()");
-        mQuit = mVirtualMachine.method("main", "quit", "call()");
-        mUpdate = mVirtualMachine.method("main", "update", "call(_)");
-        mLoaded = true;
-        return true;
-    } else  {
-        LOG_ERROR("???");
+    if (mValid) {
+        ScriptSystem::GetState()->collect_garbage();
+        mValid = false;
     }
-    return false;
 }
 
-void Script::Awake()
+void Script::Reload()
 {
-    if (mLoaded)
-        mAwake();
-}
+    if (mValid) {
+        ScriptSystem::GetState()->collect_garbage();
+        mValid = false;
+    }
 
-void Script::Quit()
-{
-    if (mLoaded)
-        mQuit();
-}
+    sol::state* state = ScriptSystem::GetState();   
+    
+    mHandle = state->load_file(mPath);
+    if (!mHandle.valid()) {
+        mValid = false;
 
-void Script::Update(float dt)
-{
-    if (mLoaded)
-        mUpdate(dt);
+        sol::error err = mHandle;
+        LOG_ERROR("Failed to load Lua script: {0}", err.what());
+        return;
+    }
+    mValid = true;
 }

@@ -75,8 +75,6 @@ RHI::RHI(::Ref<Window> window)
     ImGui::StyleColorsLight();
 
     ImGuiIO& IO = ImGui::GetIO();
-    IO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    IO.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImFontConfig mergeConfig = {};

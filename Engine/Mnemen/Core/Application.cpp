@@ -56,6 +56,7 @@ Application::Application(ApplicationSpecs specs)
 
 Application::~Application()
 {
+    AssetManager::Purge();
     Profiler::Exit();
     ScriptSystem::Exit();
     AISystem::Exit();
@@ -67,12 +68,16 @@ Application::~Application()
 void Application::OnAwake()
 {
     mScenePlaying = true;
+
     ScriptSystem::Awake(mScene);
+    AudioSystem::Awake(mScene);
 }
 
 void Application::OnStop()
 {
+    AudioSystem::Quit(mScene);
     ScriptSystem::Quit(mScene);
+
     mScenePlaying = false;
 }
 
