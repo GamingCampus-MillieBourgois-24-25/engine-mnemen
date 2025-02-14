@@ -5,6 +5,7 @@
 
 #include "PhysicsSystem.hpp"
 
+
 JPH::PhysicsSystem* sPhysicsSystem;
 JPH::BodyInterface* sPhysicsWorld;
 JPH::Vec3 sGravity;
@@ -12,14 +13,34 @@ JPH::TempAllocatorImpl* sAllocator;
 JPH::BroadPhaseLayer sNonMoving(0) ;
 JPH::BroadPhaseLayer sMoving(1);
 int mLayers(2);
+constexpr JPH::ObjectLayer sNonMovingLayer = 0;
+constexpr JPH::ObjectLayer sMovingLayer = 1;
+constexpr JPH::ObjectLayer sLayers = 2;
 
 #include <Core/Logger.hpp>
+
+bool ObjectLayerPairFilter::ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2)
+{
+    switch (ObjectLayer1)
+    {
+    case sNonMovingLayer:
+        return ObjectLayer2 == sMovingLayer;
+    case sMovingLayer:
+        return true;
+    default:
+        LOG_INFO("Initialized Collision System");
+        return false;
+    }
+}
+
 
 void PhysicsSystem::Init()
 {
     JPH::RegisterDefaultAllocator();
 
     JPH::Factory::sInstance = new JPH::Factory();
+
+    JPH::RegisterTypes();
 
     int MaxBodies = 65536;
     int NumBodyMutexes = 0;

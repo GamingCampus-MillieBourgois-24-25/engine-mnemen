@@ -61,5 +61,11 @@ private:
 class ContactListener
 {
 public:
-    
+    static void ValidateResult();
+};
+
+class ObjectLayerPairFilter
+{
+public :
+    bool ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2);
 };
