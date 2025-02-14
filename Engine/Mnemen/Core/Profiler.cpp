@@ -10,6 +10,7 @@
 
 #include <sstream>
 #include <imgui.h>
+#include <FontAwesome/FontAwesome.hpp>
 
 Profiler::Data Profiler::sData = {};
 
@@ -145,7 +146,7 @@ void Profiler::OnUI()
 {
     Statistics::Update();
 
-    ImGui::Begin("Profiler");
+    ImGui::Begin(ICON_FA_CLOCK_O " Profiler");
     if (ImGui::TreeNodeEx("Statistics", ImGuiTreeNodeFlags_Framed)) {
         ImGui::Text("Instance Count : %llu", Statistics::Get().InstanceCount);
         ImGui::Text("Triangle Count : %llu", Statistics::Get().TriangleCount);
@@ -159,7 +160,7 @@ void Profiler::OnUI()
             UInt64 percentage = (Statistics::Get().UsedVRAM * 100) / Statistics::Get().MaxVRAM;
             float stupidVRAMPercetange = percentage / 100.0f;
             std::stringstream ss;
-            ss << "VRAM Usage (" << percentage << "%%): " << (((Statistics::Get().UsedVRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb/" << (((Statistics::Get().MaxVRAM / 1024.0f) / 1024.0f) / 1024.0f) << "gb";
+            ss << ICON_FA_VIDEO_CAMERA << " VRAM Usage (" << percentage << "%%): " << (((Statistics::Get().UsedVRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb/" << (((Statistics::Get().MaxVRAM / 1024.0f) / 1024.0f) / 1024.0f) << "gb";
             std::stringstream percents;
             percents << percentage << "%";
             ImGui::Text(ss.str().c_str());
@@ -171,7 +172,7 @@ void Profiler::OnUI()
             UInt64 percentage = (Statistics::Get().UsedRAM * 100) / Statistics::Get().MaxRAM;
             float stupidRAMPercetange = percentage / 100.0f;
             std::stringstream ss;
-            ss << "RAM Usage (" << percentage << "%%): " << (((Statistics::Get().UsedRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb/" << (((Statistics::Get().MaxRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb";
+            ss << ICON_FA_LAPTOP << " RAM Usage (" << percentage << "%%): " << (((Statistics::Get().UsedRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb/" << (((Statistics::Get().MaxRAM / 1024.0F) / 1024.0f) / 1024.0f) << "gb";
             std::stringstream percents;
             percents << percentage << "%";
             ImGui::Text(ss.str().c_str());
@@ -181,7 +182,7 @@ void Profiler::OnUI()
         // Battery
         {
             std::stringstream ss;
-            ss << "Battery (" << Statistics::Get().Battery << "%%)";
+            ss << ICON_FA_BATTERY_FULL << " Battery (" << Statistics::Get().Battery << "%%)";
             std::stringstream percentss;
             percentss << Statistics::Get().Battery << "%";
             ImGui::Text(ss.str().c_str());
@@ -200,11 +201,11 @@ void Profiler::OnUI()
     }
     if (ImGui::TreeNodeEx("GPU Resource Tree", ImGuiTreeNodeFlags_Framed)) {
         const char* tags[] = {
-            "Model Geometry",
-            "Material Texture",
-            "Render Pass Shared",
-            "Render Pass Not Shared",
-            "GPU Readback"
+            ICON_FA_CUBE " Model Geometry",
+            ICON_FA_PAINT_BRUSH " Material Texture",
+            ICON_FA_SQUARE " Render Pass Shared",
+            ICON_FA_WINDOW_CLOSE " Render Pass Not Shared",
+            ICON_FA_TAG " GPU Readback"
         };
 
         for (int i = 0; i < (int)ResourceTag::MAX; i++) {

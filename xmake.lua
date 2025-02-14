@@ -13,6 +13,7 @@ target("Mnemen")
     set_encodings("utf-8")
     add_deps("spdlog",
              "ImGui",
+             "ImGuizmo",
              "STB",
              "meshopt",
              "miniaudio",
@@ -21,8 +22,7 @@ target("Mnemen")
              "Detour",
              "DetourCrowd",
              "DetourDebugUtils",
-             "Wren",
-             "Wren++")
+             "Lua")
     
     add_files("Engine/**.cpp") -- Might need to change this for multi-platform or multi-API
     add_headerfiles("Engine/**.hpp")
@@ -45,8 +45,8 @@ target("Mnemen")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/Wren/src/include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua/src")
     add_linkdirs("ThirdParty/SDL3/lib")
     add_defines("GLM_ENABLE_EXPERIMENTAL", "USE_PIX", "GLM_FORCE_DEPTH_ZERO_TO_ONE")
 
@@ -57,6 +57,8 @@ target("Mnemen")
                      "d3d12",
                      "dxgi",
                      "SDL3.lib",
+                     "Comdlg32.lib",
+                     "Shlwapi.lib",
                      "ThirdParty/PIX/lib/WinPixEventRuntime.lib",
                      "ThirdParty/DXC/lib/dxcompiler.lib",
                      "ThirdParty/nvtt/lib64/nvtt30205.lib",
@@ -117,9 +119,10 @@ target("Editor")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/Wren/src/include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua/src")
     add_deps("Mnemen")
+    add_defines("GLM_ENABLE_EXPERIMENTAL")
 
     if is_mode("debug") then
         set_symbols("debug")
@@ -162,9 +165,10 @@ target("Runtime")
                     "ThirdParty/Recast/DetourCrowd/Include",
                     "ThirdParty/Recast/DetourTileCache/Include",
                     "ThirdParty/Recast/DebugUtils/Include",
-                    "ThirdParty/Wren/src/include",
-                    "ThirdParty/JSON/single_include")
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua/src")
     add_deps("Mnemen")
+    add_defines("GLM_ENABLE_EXPERIMENTAL")
 
     if is_mode("debug") then
         set_symbols("debug")

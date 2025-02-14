@@ -8,7 +8,7 @@
 #include <Asset/Shader.hpp>
 #include <Asset/Image.hpp>
 #include <Asset/Mesh.hpp>
-#include <Asset/ScriptSource.hpp>
+#include <Script/Script.hpp>
 
 #include <RHI/RHI.hpp>
 
@@ -18,12 +18,13 @@
 /// This enumeration defines various types of assets that can be handled by the system.
 enum class AssetType
 {
-    None,            ///< No asset type specified.
-    Mesh,            ///< A mesh asset.
-    Texture,         ///< A texture asset.
-    Shader,          ///< A shader asset.
-    EnvironmentMap,  ///< An environment map asset.
-    Script           ///< A game script.
+    None,             ///< No asset type specified.
+    Mesh,             ///< A mesh asset.
+    Texture,          ///< A texture asset.
+    Shader,           ///< A shader asset.
+    EnvironmentMap,   ///< An environment map asset.
+    Script,           ///< A game script.
+    MAX               ///< Max enum.
 };
 
 /// @struct Asset
@@ -39,16 +40,11 @@ struct Asset
     Mesh Mesh;              ///< Mesh data if the asset is a mesh.
     Texture::Ref Texture;   ///< Pointer to texture data if the asset is a texture.
     Shader Shader;          ///< Shader data if the asset is a shader.
-    ScriptSource Script;    ///< Script data if the asset is a script.
+    Script::Ref Script;    ///< Script data if the asset is a script.
 
-    Int32 RefCount;        ///< Reference count for asset management.
+    Int32 RefCount;         ///< Reference count for asset management.
 
     using Handle = Ref<Asset>; ///< Alias for asset pointer handle.
-
-    /// @brief Initializes the Asset
-    Asset()
-        : RefCount(0), Type(AssetType::None) {
-    }
 };
 
 /// @class AssetManager
@@ -71,16 +67,23 @@ public:
     /// @return A handle to the retrieved asset.
     static Asset::Handle Get(const String& path, AssetType type);
 
+    /// @brief Decreases the ref count of the given asset, mostly used for better recycling/cleaning of resources
+    /// @param path The path of the asset to give back
+    static void GiveBack(const String& path);
+
     /// @brief Frees a previously loaded asset.
     /// @param handle The handle to the asset to be freed.
     static void Free(Asset::Handle handle);
 
-private:
+    /// @brief Removes every asset that has a the given ref count. Used for purging unused assets when loading a new scene
+    /// @param refCount The refCount of the assets to delete.
+    static void Purge(int refCount = 1);
+
     /// @struct Data
     /// @brief Internal data structure for asset management.
     static struct Data
     {
         RHI::Ref mRHI; ///< Pointer to the rendering hardware interface.
         UnorderedMap<String, Asset::Handle> mAssets; ///< Storage for assets mapped by file path.
-    } sData;
+    } sData; ///< Static instance of the AssetManager's data;
 };

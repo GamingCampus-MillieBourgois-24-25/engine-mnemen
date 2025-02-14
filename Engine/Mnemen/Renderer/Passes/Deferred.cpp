@@ -100,7 +100,7 @@ Deferred::Deferred(RHI::Ref rhi)
         specs.DepthEnabled = true;
         specs.DepthFormat = TextureFormat::Depth32;
         specs.CCW = false;
-        specs.Signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 8);
+        specs.Signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 12 + sizeof(glm::mat4));
 
         mPipeline = mRHI->CreateMeshPipeline(specs);
     }
@@ -126,8 +126,12 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     auto normalBuffer = RendererTools::Get("GBufferNormal");
     auto albedoBuffer = RendererTools::Get("GBufferAlbedo");
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
+    auto whiteTexture = RendererTools::Get("WhiteTexture");
 
-    SceneCamera camera = scene->GetMainCamera();
+    SceneCamera camera = {};
+    if (scene) {
+        camera = scene->GetMainCamera();
+    }
     cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(&camera, sizeof(camera));
 
     frame.CommandBuffer->BeginMarker("Deferred");
@@ -149,10 +153,13 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
             if (!node) {
                 return;
             }
+
             glm::mat4 globalTransform = transform * node->Transform;
             for (MeshPrimitive primitive : node->Primitives) {
                 Statistics::Get().InstanceCount++;
                 MeshMaterial material = model->Materials[primitive.MaterialIndex];
+
+                int albedoIndex = material.Albedo ? material.AlbedoView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
 
                 struct PushConstants {
                     int Matrices;
@@ -163,6 +170,10 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
                     int MeshletTriangleBuffer;
                     int Albedo;
                     int Sampler;
+                    int ShowMeshlets;
+                    glm::ivec3 Padding;
+
+                    glm::mat4 Transform;
                 } data = {
                     cameraBuffer->Descriptor(ViewType::None, frame.FrameIndex),
                     primitive.VertexBuffer->SRV(),
@@ -170,8 +181,12 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
                     primitive.MeshletBuffer->SRV(),
                     primitive.MeshletVertices->SRV(),
                     primitive.MeshletTriangles->SRV(),
-                    material.AlbedoView->GetDescriptor().Index,
-                    sampler->Descriptor()
+                    albedoIndex,
+                    sampler->Descriptor(),
+                    mShowMeshlets,
+                    glm::ivec3(0),
+                    
+                    transform
                 };
                 frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
                 frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);
@@ -184,10 +199,17 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         };
 
         // Iterate over every mesh. This is messy as hell but fuck it
-        auto registry = scene->GetRegistry();
-        auto view = registry->view<TransformComponent, MeshComponent>();
-        for (auto [entity, transform, mesh]: view.each()) {
-            drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, transform.Matrix);
+        if (scene) {
+            auto registry = scene->GetRegistry();
+            auto view = registry->view<TransformComponent, MeshComponent>();
+            for (auto [id, transform, mesh] : view.each()) {
+                Entity entity(registry);
+                entity.ID = id;
+
+                if (mesh.Loaded) {
+                    drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, entity.GetWorldTransform());
+                }
+            }
         }
         frame.CommandBuffer->Barrier(albedoBuffer->Texture, ResourceLayout::Shader);
         frame.CommandBuffer->Barrier(normalBuffer->Texture, ResourceLayout::Shader);
@@ -221,5 +243,8 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
 
 void Deferred::UI(const Frame& frame)
 {
-
+    if (ImGui::TreeNodeEx("Geometry Pass", ImGuiTreeNodeFlags_Framed)) {
+        ImGui::Checkbox("Visualize Meshlets", &mShowMeshlets);
+        ImGui::TreePop();
+    }
 }

@@ -1,31 +1,53 @@
 //
 // > Notice: Amélie Heinrich @ 2025
-// > Create Time: 2025-02-04 23:52:20
+// > Create Time: 2025-02-13 16:25:05
 //
 
+#include <Core/Logger.hpp>
+
 #include "Script.hpp"
+#include "ScriptSystem.hpp"
 
-void Script::SetSource(Asset::Handle handle)
+Script::Script(const String& path)
+    : mPath(path)
 {
-    mHandle = handle;
+    sol::state* state = ScriptSystem::GetState();   
+    
+    mHandle = state->load_file(path);
+    if (!mHandle.valid()) {
+        mValid = false;
 
-    mVirtualMachine.executeString(mHandle->Script.Source);
-    mAwake = mVirtualMachine.method("main", "awake", "call()");
-    mQuit = mVirtualMachine.method("main", "quit", "call()");
-    mUpdate = mVirtualMachine.method("main", "update", "call(_)");
+        sol::error err = mHandle;
+        LOG_ERROR("Failed to load Lua script: {0}", err.what());
+        return;
+    }
+    mValid = true;
 }
 
-void Script::Awake()
+Script::~Script()
 {
-    mAwake();
+    if (mValid) {
+        ScriptSystem::GetState()->collect_garbage();
+        mValid = false;
+    }
 }
 
-void Script::Quit()
+void Script::Reload()
 {
-    mQuit();
-}
+    if (mValid) {
+        ScriptSystem::GetState()->collect_garbage();
+        mValid = false;
+    }
 
-void Script::Update(float dt)
-{
-    mUpdate(dt);
+    sol::state* state = ScriptSystem::GetState();   
+    
+    mHandle = state->load_file(mPath);
+    if (!mHandle.valid()) {
+        mValid = false;
+
+        sol::error err = mHandle;
+        LOG_ERROR("Failed to load Lua script: {0}", err.what());
+        return;
+    }
+    mValid = true;
 }

@@ -24,6 +24,8 @@ struct ApplicationSpecs
     String GameName; ///< Name of the game/application.
     String WindowTitle; ///< Title displayed on the game window.
     String StartScene; ///< The path of the start scene. If empty, will create an empty scene.
+
+    bool CopyToBackBuffer; ///< If set to true, the output color will be copied to the swapchain. Used in Runtime.
 };
 
 /// @class Application
@@ -51,12 +53,29 @@ public:
     /// @brief Called during the UI rendering phase to handle ImGui drawing.
     virtual void OnImGui(const Frame& frame) = 0;
 
+    /// @brief Called after present
+    virtual void PostPresent() {};
+
+    /// @brief Called when the scene is awaken
+    void OnAwake();
+
+    /// @brief Called when the scene is stopped
+    void OnStop();
+
     /// @brief Starts the application loop.
     void Run();
 
     /// @brief Retrieves the main application window.
     /// @return A shared pointer to the window instance.
     Ref<Window> GetWindow() { return mWindow; }
+
+    /// @brief Retrieves the current scene
+    /// @return The active scene that the application is manipulating
+    Ref<Scene> GetScene() { return mScene; }
+    
+    /// @brief Returns the settings of the application.
+    /// @return The settings of the application.
+    ApplicationSpecs GetSpecs() { return mApplicationSpecs; }
 
     /// @brief Retrieves the current application instance.
     /// @return Pointer to the singleton application instance.
@@ -68,18 +87,19 @@ protected:
     static Application* sInstance; ///< Singleton instance of the application.
     
     ApplicationSpecs mApplicationSpecs; ///< Cached application settings.
-    Ref<Window> mWindow; ///< Main application window.
+    Ref<Window> mWindow = nullptr; ///< Main application window.
 
     Timer mTimer; ///< Delta-time tracking timer.
     float mLastFrame = 0.0f; ///< Time of the last frame update.
 
     Timer mPhysicsTimer; ///< Timer for fixed-step physics updates.
 
-    RHI::Ref mRHI; ///< Rendering Hardware Interface.
-    Renderer::Ref mRenderer; ///< Renderer instance.
+    RHI::Ref mRHI = nullptr; ///< Rendering Hardware Interface.
+    Renderer::Ref mRenderer = nullptr; ///< Renderer instance.
     
-    Ref<Scene> mScene; ///< Currently active scene.
+    Ref<Scene> mScene = nullptr; ///< Currently active scene.
 
-    bool mUIFocused; ///< Whether or not UI elements are focused.
+    bool mUIFocused = true; ///< Whether or not UI elements are focused.
+    bool mScenePlaying = false; ///< Whether the scene is playing or not.
 };
 

@@ -10,9 +10,10 @@ int main()
     ApplicationSpecs specs;
     specs.Width = 1920;
     specs.Height = 1080;
-    specs.WindowTitle = "MNEMEN EDITOR";
+    specs.WindowTitle = "MNEMEN | <D3D12>";
     specs.GameName = "MnmEditor";
-    specs.StartScene = "Assets/Scenes/Test.json";
+    specs.StartScene = "";
+    specs.CopyToBackBuffer = false;
 
     Editor editor(specs);
     editor.Run();

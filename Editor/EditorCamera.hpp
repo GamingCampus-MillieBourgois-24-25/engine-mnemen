@@ -10,7 +10,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-constexpr float CAMERA_NEAR = 0.1f;
+constexpr float CAMERA_NEAR = 0.01f;
 constexpr float CAMERA_FAR = 150.0f;
 
 struct Plane
@@ -25,7 +25,8 @@ public:
     Camera() = default;
     ~Camera() = default;
 
-    void Update(float dt, int width, int height);
+    void UpdateMatrices(int width, int height);
+    void Input(float dt);
 
     glm::mat4 View() const { return mView; }
     glm::mat4 Projection() const { return mProjection; }

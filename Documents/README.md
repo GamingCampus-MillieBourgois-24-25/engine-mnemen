@@ -4,6 +4,10 @@ This folder contains a variety of documents related to the engine, coding style,
 
 ## Index
 
+### Logs
+
+- [Alpha Release Log](Versions/ALPHA.md)
+
 ### Engine
 - [Technical Planning](Engine/TECHNICAL_PLANNING.md)
 

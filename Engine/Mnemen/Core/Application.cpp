@@ -33,7 +33,8 @@ Application::Application(ApplicationSpecs specs)
     Logger::Init();
     Input::Init();
     PhysicsSystem::Init();
-    AudioSystem::Init();
+    AudioSystem::Init("Assets/Audio/Back_music.mp3");
+    AudioSystem::SetVolume(0.1f);
     AISystem::Init();
     ScriptSystem::Init();
 
@@ -45,12 +46,12 @@ Application::Application(ApplicationSpecs specs)
     AssetCacher::Init("Assets");
 
     mRenderer = MakeRef<Renderer>(mRHI);
-    if (specs.StartScene.empty()) {
-        mScene = MakeRef<Scene>();
-    } else {
+    if (!specs.StartScene.empty()) {
         mScene = SceneSerializer::DeserializeScene(specs.StartScene);
     }
 
+    Uploader::Flush();
+       
     LOG_INFO("Initialized Mnemen! Ready to rock 8)");
 }
 
@@ -64,15 +65,20 @@ Application::~Application()
     Input::Exit();
 }
 
+void Application::OnAwake()
+{
+    mScenePlaying = true;
+    ScriptSystem::Awake(mScene);
+}
+
+void Application::OnStop()
+{
+    ScriptSystem::Quit(mScene);
+    mScenePlaying = false;
+}
+
 void Application::Run()
 {
-    // Flush any uploads before running
-    Uploader::Flush();
-    mRHI->Wait();
-
-    // Awake script system
-    ScriptSystem::Awake(mScene);
-
     while (mWindow->IsOpen()) {
         Profiler::BeginFrame();
 
@@ -88,7 +94,9 @@ void Application::Run()
             float minStepDuration = 1.0f / mApplicationSpecs.PhysicsRefreshRate;
             if (TO_SECONDS(mPhysicsTimer.GetElapsed()) > minStepDuration) {
                 OnPhysicsTick();
-                PhysicsSystem::Update(mScene, minStepDuration);
+                if (mScenePlaying && mScene) {
+                    PhysicsSystem::Update(mScene, minStepDuration);
+                }
                 mPhysicsTimer.Restart();
             }
         }
@@ -98,10 +106,13 @@ void Application::Run()
             PROFILE_SCOPE("Systems Update");
             
             mWindow->Update();
-            AISystem::Update(mScene);
-            AudioSystem::Update(mScene);
-            ScriptSystem::Update(mScene, dt);
-            mScene->Update();
+            if (mScenePlaying && mScene) {
+                AISystem::Update(mScene);
+                AudioSystem::Update(mScene);
+                ScriptSystem::Update(mScene, dt);
+            }
+            if (mScene)
+                mScene->Update();
         }
 
         // App Update
@@ -117,8 +128,8 @@ void Application::Run()
         }
         Input::PostUpdate();
     }
-    ScriptSystem::Quit(mScene);
     mRHI->Wait();
+    AssetManager::Clean();
 }
 
 void Application::OnPrivateRender()
@@ -158,4 +169,5 @@ void Application::OnPrivateRender()
     // Profiler::ReadbackGPUResults();
 
     mRHI->Present(false);
+    PostPresent();
 }

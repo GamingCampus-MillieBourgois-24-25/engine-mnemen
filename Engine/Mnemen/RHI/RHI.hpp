@@ -18,9 +18,12 @@
 #include <RHI/MeshPipeline.hpp>
 #include <RHI/Buffer.hpp>
 #include <RHI/Texture.hpp>
+#include <RHI/View.hpp>
 #include <RHI/Sampler.hpp>
 #include <RHI/BLAS.hpp>
 #include <RHI/TLAS.hpp>
+
+#include <imgui.h>
 
 /// @brief A structure representing the state of a single frame in the rendering pipeline.
 /// @details Contains all necessary data for rendering a frame, including command buffers and backbuffer information.
@@ -142,6 +145,9 @@ public:
     /// @return A reference to the created `TLAS` object.
     TLAS::Ref CreateTLAS(Buffer::Ref instanceBuffer, UInt32 numInstance, const String& name = "TLAS");
 
+    /// @brief Returns the large icon font loaded for ImGui.
+    /// @return The large icon font handle
+    ImFont* GetLargeIconFont() { return mLargeFont; }
 private:
     friend class GPUTimer;
 
@@ -156,6 +162,7 @@ private:
     Array<CommandBuffer::Ref, FRAMES_IN_FLIGHT> mCommandBuffers; ///< Command buffers for each frame.
     UInt32 mFrameIndex = 0; ///< The current frame index.
 
+    ImFont* mLargeFont; ///< Large ImGui font used for rendering icons
     DescriptorHeap::Descriptor mFontDescriptor; ///< Descriptor for the font texture or resource.
 };
 

@@ -5,6 +5,8 @@
 
 #include "RendererTools.hpp"
 
+#include <RHI/Uploader.hpp>
+
 RendererTools::RendererToolsData RendererTools::sData;
 
 View::Ref RenderPassResource::AddView(ViewType type, ViewDimension dimension, TextureFormat format)
@@ -55,6 +57,20 @@ int RenderPassResource::Descriptor(ViewType type, int frameIndex)
 void RendererTools::Init(RHI::Ref rhi)
 {
     sData.RHI = rhi;
+
+    TextureDesc desc = {};
+    desc.Width = 1;
+    desc.Height = 1;
+    desc.Levels = 1;
+    desc.Depth = 1;
+    desc.Name = "White Texture";
+    desc.Format = TextureFormat::RGBA8;
+    
+    auto tex = CreateSharedTexture("WhiteTexture", desc);
+    tex->AddView(ViewType::ShaderResource);
+    tex->Texture->Tag(ResourceTag::RenderPassIO);
+
+    Uploader::EnqueueTextureUpload(Vector<UInt8>{ 0xFF, 0xFF, 0xFF, 0xFF }, tex->Texture);
 }
 
 Ref<RenderPassResource> RendererTools::CreateSharedTexture(const String& name, TextureDesc desc)

@@ -7,16 +7,17 @@
 #include "RendererTools.hpp"
 
 #include "Passes/Deferred.hpp"
-#include "Passes/Forward.hpp"
 #include "Passes/Composite.hpp"
 #include "Passes/DOF.hpp"
 #include "Passes/SSAO.hpp"
 #include "Passes/ColorGrading.hpp"
+#include "Passes/Debug.hpp"
 
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
 
 #include <imgui.h>
+#include <FontAwesome/FontAwesome.hpp>
 
 Renderer::Renderer(RHI::Ref rhi)
 {
@@ -27,7 +28,8 @@ Renderer::Renderer(RHI::Ref rhi)
         MakeRef<SSAO>(rhi),
         MakeRef<DOF>(rhi),
         MakeRef<ColorGrading>(rhi),
-        MakeRef<Composite>(rhi)
+        MakeRef<Composite>(rhi),
+        MakeRef<Debug>(rhi)
     };
 
     LOG_INFO("Initialized Render System");
@@ -48,7 +50,7 @@ void Renderer::Render(const Frame& frame, ::Ref<Scene> scene)
 
 void Renderer::UI(const Frame& frame)
 {
-    ImGui::Begin("Renderer");
+    ImGui::Begin(ICON_FA_PAINT_BRUSH " Renderer");
     for (auto& pass : mPasses) {
         pass->UI(frame);
     }

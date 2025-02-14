@@ -56,7 +56,8 @@ public:
 
     /// @brief Flushes all pending upload requests to the GPU.
     /// @details This function will process all enqueued upload requests, ensuring that they are transferred to the GPU.
-    static void Flush();
+    /// @return True if there was something to flush, otherwise false
+    static bool Flush();
 
     /// @brief Clears all enqueued upload requests.
     /// @details This function clears all pending upload requests, effectively resetting the state of the uploader.

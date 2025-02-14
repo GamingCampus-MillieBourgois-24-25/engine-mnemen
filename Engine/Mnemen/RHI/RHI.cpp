@@ -6,13 +6,44 @@
 #include <RHI/RHI.hpp>
 #include <RHI/Uploader.hpp>
 
-#include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_dx12.h>
+
+#include <FontAwesome/FontAwesome.hpp>
 
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
 #include <Core/Statistics.hpp>
+
+// NOTE(amelie): Courtesy of Robert Ryan A.K.A Implodee
+DWORD AwaitFence(ID3D12Fence* fence, uint64_t val, uint64_t timeout)
+{
+    DWORD result = WAIT_FAILED;
+    if (fence->GetCompletedValue() < val) {
+        HANDLE eventHandle = CreateEvent(NULL, FALSE, FALSE, NULL);
+        fence->SetEventOnCompletion(val, eventHandle);
+        if (eventHandle != 0) {
+            result = WaitForSingleObject(eventHandle, timeout);
+            CloseHandle(eventHandle);
+        }
+    } else {
+        result = WAIT_OBJECT_0;
+    }
+    return result;
+}
+
+DWORD AwaitQueue(ID3D12Device* device, ID3D12CommandQueue* queue, uint64_t timeout)
+{
+    ID3D12Fence1* fence = nullptr;
+    device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+    if (!fence) {
+        return WAIT_FAILED;
+    }
+    queue->Signal(fence, 1);
+    auto result = AwaitFence(fence, 1, timeout);
+    fence->Release();
+    return result;
+}
 
 RHI::RHI(::Ref<Window> window)
     : mWindow(window)
@@ -44,11 +75,26 @@ RHI::RHI(::Ref<Window> window)
     ImGui::StyleColorsLight();
 
     ImGuiIO& IO = ImGui::GetIO();
-    IO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    IO.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-    IO.FontDefault = IO.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf", 15);
+    ImFontConfig mergeConfig = {};
+    mergeConfig.MergeMode = true;
+
+    static const ImWchar rangesFixed[] = {
+    	0x0020, 0x00FF, // Basic Latin + Latin Supplement
+    	0x2026, 0x2026, // ellipsis
+    	0
+    };
+    static const ImWchar rangesIcons[] = {
+    	ICON_MIN_FA, ICON_MAX_FA,
+    	0
+    };
+
+    IO.Fonts->AddFontFromFileTTF("Assets/Fonts/Roboto-Regular.ttf", 18, NULL, rangesFixed);
+    IO.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 14, &mergeConfig, rangesIcons);
+    IO.Fonts->Build();
+
+    mLargeFont = IO.Fonts->AddFontFromFileTTF("Assets/Fonts/fontawesome-webfont.ttf", 64, nullptr, rangesIcons);
 
     ImGui_ImplSDL3_InitForD3D(window->GetSDLHandle());
     ImGui_ImplDX12_InitInfo initInfo = {};
@@ -76,9 +122,7 @@ RHI::~RHI()
 
 void RHI::Wait()
 {
-    mGraphicsQueue->Signal(mFrameFence, mFrameValues[mFrameIndex]);
-    mFrameFence->Wait(mFrameValues[mFrameIndex]);
-    mFrameValues[mFrameIndex]++;
+    AwaitQueue(mDevice->GetDevice(), mGraphicsQueue->GetQueue(), 10'000'000);
 }
 
 void RHI::Submit(const Vector<CommandBuffer::Ref> buffers)

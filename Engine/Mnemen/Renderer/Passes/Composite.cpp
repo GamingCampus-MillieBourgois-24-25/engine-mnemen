@@ -32,7 +32,8 @@ Composite::Composite(RHI::Ref rhi)
     
     auto ldr = RendererTools::CreateSharedTexture("LDRColorBuffer", desc);
     ldr->AddView(ViewType::Storage);
-    ldr->Texture->Tag(ResourceTag::RenderPassIO);
+    ldr->AddView(ViewType::ShaderResource);
+    ldr->AddView(ViewType::RenderTarget);
 }
 
 void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
@@ -69,13 +70,15 @@ void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
     //
     
     // Copy LDR to backbuffer
-    frame.CommandBuffer->BeginMarker("Copy to Backbuffer");
-    frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::CopySource);
-    frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::CopyDest);
-    frame.CommandBuffer->CopyTextureToTexture(frame.Backbuffer, ldr->Texture);
-    frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::Common);
-    frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
-    frame.CommandBuffer->EndMarker();
+    if (Application::Get()->GetSpecs().CopyToBackBuffer) {
+        frame.CommandBuffer->BeginMarker("Copy to Backbuffer");
+        frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::CopySource);
+        frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::CopyDest);
+        frame.CommandBuffer->CopyTextureToTexture(frame.Backbuffer, ldr->Texture);
+        frame.CommandBuffer->Barrier(ldr->Texture, ResourceLayout::Common);
+        frame.CommandBuffer->Barrier(frame.Backbuffer, ResourceLayout::ColorWrite);
+        frame.CommandBuffer->EndMarker();
+    }
     //
 
     frame.CommandBuffer->EndMarker();

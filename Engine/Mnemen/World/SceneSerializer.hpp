@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 #include "Scene.hpp"
 
 /// @brief Handles serialization and deserialization of scenes.
@@ -21,4 +23,7 @@ public:
     /// @param path The file path from which the scene will be loaded.
     /// @return A reference to the deserialized scene.
     static Ref<Scene> DeserializeScene(const String& path);
+private:
+    static nlohmann::json SerializeEntity(Entity entity);
+    static Entity DeserializeEntity(Ref<Scene> scene, const nlohmann::json& entityJson, UnorderedMap<UInt32, Entity>& entityMap);
 };

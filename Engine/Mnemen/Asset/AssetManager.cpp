@@ -23,15 +23,30 @@ void AssetManager::Clean()
     sData.mAssets.clear();
 }
 
+void AssetManager::GiveBack(const String& path)
+{
+    if (sData.mAssets.empty())
+        return;
+    if (sData.mAssets.count(path) > 0) {
+        LOG_DEBUG("Decreasing ref count of asset {0}", path);
+        sData.mAssets[path]->RefCount--;
+    } else {
+        LOG_WARN("Trying to give back resource {0} that isn't in cache!", path);
+    }
+}
+
 Asset::Handle AssetManager::Get(const String& path, AssetType type)
 {
+    if (!File::Exists(path))
+        return nullptr;
+
     if (sData.mAssets.count(path) > 0) {
         sData.mAssets[path]->RefCount++;
         return sData.mAssets[path];
     }
 
     Asset::Handle asset = MakeRef<Asset>();
-    asset->RefCount++;
+    asset->RefCount = 1;
     asset->Type = type;
     asset->Path = path;
 
@@ -94,7 +109,11 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
         }
         case AssetType::Script: {
             LOG_INFO("Loading script {0}", path);
-            asset->Script.Load(path);
+            asset->Script = MakeRef<Script>(path);
+            if (!asset->Script->IsValid()) {
+                asset.reset();
+                return nullptr;
+            }
             break;
         }
     }
@@ -110,5 +129,19 @@ void AssetManager::Free(Asset::Handle handle)
         LOG_DEBUG("Freeing asset {0}", handle->Path);
         sData.mAssets[handle->Path].reset();
         sData.mAssets.erase(handle->Path);
+    }
+}
+
+void AssetManager::Purge(int refCount)
+{
+    if (sData.mAssets.empty())
+        return;
+    for (auto it = sData.mAssets.begin(); it != sData.mAssets.end(); ) {
+        if (it->second->RefCount < refCount) {
+            it->second.reset();
+            it = sData.mAssets.erase(it);
+        } else {
+            ++it;
+        }
     }
 }

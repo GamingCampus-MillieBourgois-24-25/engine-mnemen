@@ -10,7 +10,7 @@
 Runtime::Runtime(ApplicationSpecs specs)
     : Application(specs)
 {
-
+    mScenePlaying = true;
 }
 
 Runtime::~Runtime()
