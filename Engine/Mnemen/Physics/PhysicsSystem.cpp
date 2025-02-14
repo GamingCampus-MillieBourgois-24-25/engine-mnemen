@@ -15,7 +15,6 @@ constexpr int mLayers(2);
 constexpr JPH::ObjectLayer sNonMovingLayer = 0;
 constexpr JPH::ObjectLayer sMovingLayer = 1;
 constexpr JPH::ObjectLayer sLayers = 2;
-JPH::BroadPhaseLayer mObjectToBroadPhase[mLayers];
 
 #include <Core/Logger.hpp>
 
