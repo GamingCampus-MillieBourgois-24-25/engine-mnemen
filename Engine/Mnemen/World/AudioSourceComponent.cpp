@@ -14,7 +14,10 @@ void AudioSourceComponent::Init(const String& path)
     Free();
     Handle = AssetManager::Get(path, AssetType::Audio);
     if (Handle) {
-        ma_sound_init_copy(engine, Handle->Audio->GetDecoder(), 0, nullptr, &Sound);
+        ma_result result = ma_sound_init_from_data_source(engine, Handle->Audio->GetDecoder(), 0, nullptr, &Sound);
+        if (result != MA_SUCCESS) {
+            LOG_CRITICAL("Failed to create sound source copy!");
+        }
         ma_sound_set_position(&Sound, 0.0f, 0.0f, 0.0f);
     }
 }
@@ -23,6 +26,7 @@ void AudioSourceComponent::Free()
 {
     Stop();
     if (Handle) {
+        ma_sound_uninit(&Sound);
         AssetManager::GiveBack(Handle->Path);
     }
 }

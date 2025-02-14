@@ -22,6 +22,7 @@ public:
     static ma_engine* GetEngine() { return &sData.Engine; }
 private:
     static struct Data {
+        ma_device Device;
         ma_engine Engine;
     } sData;
 };

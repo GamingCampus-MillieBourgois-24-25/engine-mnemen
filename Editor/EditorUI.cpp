@@ -12,6 +12,7 @@
 #include <imgui_internal.h>
 
 #include <Utility/Dialog.hpp>
+#include <Utility/String.hpp>
 
 void Editor::Viewport(const Frame& frame)
 {
@@ -616,6 +617,7 @@ void Editor::EntityEditor()
                     sprintf(temp, "%s %s", ICON_FA_FILE, audio.Handle->Path.c_str());
                     if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
                         String path = Dialog::Open({ ".mp3", ".wav", ".ogg" });
+                        path = StringUtil::Lowercase(path);
                         if (!path.empty()) {
                             audio.Init(path);
                         }
@@ -623,6 +625,7 @@ void Editor::EntityEditor()
                 } else {
                     if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
                         String path = Dialog::Open({ ".mp3", ".wav", ".ogg" });
+                        path = StringUtil::Lowercase(path);
                         if (!path.empty()) {
                             audio.Init(path);
                         }
@@ -634,6 +637,7 @@ void Editor::EntityEditor()
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path audioPath(path);
                         std::string audioString = audioPath.string();
+                        audioString = StringUtil::Lowercase(audioString);
                         if (audioString.find(".mp3") != std::string::npos || audioString.find(".wav") != std::string::npos || audioString.find(".ogg") != std::string::npos) {
                             for (int i = 0; i < audioString.size(); i++) {
                                 audioString[i] = audioString[i] == '\\' ? '/' : audioString[i];

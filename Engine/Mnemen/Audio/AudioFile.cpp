@@ -12,7 +12,7 @@ AudioFile::AudioFile(const String& path)
 {
     auto engine = AudioSystem::GetEngine();
 
-    ma_result result = ma_sound_init_from_file(engine, path.c_str(), 0, nullptr, nullptr, &mDecoder);
+    ma_result result = ma_decoder_init_file(path.c_str(), nullptr, &mDecoder);
     if (result != MA_SUCCESS) {
         LOG_ERROR("Failed to load audio file {0}", path);
         mValid = false;
@@ -22,6 +22,6 @@ AudioFile::AudioFile(const String& path)
 
 AudioFile::~AudioFile()
 {
-    ma_sound_uninit(&mDecoder);
+    ma_decoder_uninit(&mDecoder);
     mValid = false;
 }

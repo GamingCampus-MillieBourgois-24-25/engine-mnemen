@@ -18,8 +18,8 @@ public:
     ~AudioFile();
 
     bool IsValid() { return mValid; }
-    ma_sound* GetDecoder() { return &mDecoder; }
+    ma_decoder* GetDecoder() { return &mDecoder; }
 private:
     bool mValid = false;
-    ma_sound mDecoder;
+    ma_decoder mDecoder;
 };
