@@ -34,7 +34,7 @@ bool ObjectLayerPairFilter::ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::Ob
 
 BroadPhaseLayerInterface::BroadPhaseLayerInterface()
 {
-    //JPH::mObjectToBroadPhase[sNonMovingLayer] = sNonMoving;
+    //JPH::BroadPhaseLayer mObjectToBroadPhase[sNonMovingLayer] = sNonMoving;
 }
 
 void PhysicsSystem::Init()
