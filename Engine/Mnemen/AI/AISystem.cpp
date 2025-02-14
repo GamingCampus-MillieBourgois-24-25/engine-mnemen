@@ -77,11 +77,11 @@ void AISystem::Exit()
 
 
 void AISystem::Update(Ref<Scene> scene) {
-    float deltaTime = scene->GetDeltaTime(); // Temps écoulé entre les frames
-
-    for (auto& agent : agents) {
-        agent.Update(deltaTime);
-    }
+    // float deltaTime = scene->GetDeltaTime(); // Temps écoulé entre les frames
+// 
+    // for (auto& agent : agents) {
+    //     agent.Update(deltaTime);
+    // }
 }
 
 
@@ -235,12 +235,12 @@ std::vector<glm::vec3> AISystem::FindPath(const glm::vec3& start, const glm::vec
     return path;
 }
 
-void AISystem::MoveAgent(NavAgent& agent, const glm::vec3& destination) {
-    std::vector<glm::vec3> path = FindPath(agent.GetPosition(), destination);
-    
-    if (!path.empty()) {
-        agent.SetPath(path);
-    } else {
-        LOG_WARNING("No valid path found for agent!");
-    }
-}
+// void AISystem::MoveAgent(NavAgent& agent, const glm::vec3& destination) {
+//     std::vector<glm::vec3> path = FindPath(agent.GetPosition(), destination);
+//     
+//     if (!path.empty()) {
+//         agent.SetPath(path);
+//     } else {
+//         LOG_WARNING("No valid path found for agent!");
+//     }
+// }

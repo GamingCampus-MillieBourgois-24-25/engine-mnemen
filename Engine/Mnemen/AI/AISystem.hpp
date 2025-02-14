@@ -33,7 +33,7 @@ public:
 
     static std::vector<glm::vec3> FindPath(const glm::vec3& start, const glm::vec3& end);
 
-    static void MoveAgent(NavAgent& agent, const glm::vec3& destination);
+    // static void MoveAgent(NavAgent& agent, const glm::vec3& destination);
 
 
 private:
