@@ -23,6 +23,7 @@
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Math/Vec3.h>
+#include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayerInterfaceTable.h>
 
 /// @brief A system for handling physics simulation in the application.
 /// 
@@ -68,4 +69,10 @@ class ObjectLayerPairFilter
 {
 public :
     bool ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2);
+};
+
+class BroadPhaseLayerInterface
+{
+public:
+    BroadPhaseLayerInterface();
 };

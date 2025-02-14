@@ -5,14 +5,13 @@
 
 #include "PhysicsSystem.hpp"
 
-
 JPH::PhysicsSystem* sPhysicsSystem;
 JPH::BodyInterface* sPhysicsWorld;
 JPH::Vec3 sGravity;
 JPH::TempAllocatorImpl* sAllocator;
-JPH::BroadPhaseLayer sNonMoving(0) ;
-JPH::BroadPhaseLayer sMoving(1);
-int mLayers(2);
+constexpr JPH::BroadPhaseLayer sNonMoving(0) ;
+constexpr JPH::BroadPhaseLayer sMoving(1);
+constexpr int mLayers(2);
 constexpr JPH::ObjectLayer sNonMovingLayer = 0;
 constexpr JPH::ObjectLayer sMovingLayer = 1;
 constexpr JPH::ObjectLayer sLayers = 2;
@@ -33,6 +32,10 @@ bool ObjectLayerPairFilter::ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::Ob
     }
 }
 
+BroadPhaseLayerInterface::BroadPhaseLayerInterface()
+{
+    //JPH::mObjectToBroadPhase[sNonMovingLayer] = sNonMoving;
+}
 
 void PhysicsSystem::Init()
 {
@@ -70,6 +73,7 @@ void PhysicsSystem::Init()
 void PhysicsSystem::Exit()
 {
     // Clean up allocated resources
+    JPH::UnregisterTypes();
     delete JPH::Factory::sInstance;
     JPH::Factory::sInstance = nullptr;
     delete sPhysicsSystem;
