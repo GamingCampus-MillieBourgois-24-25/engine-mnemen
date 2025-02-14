@@ -13,6 +13,8 @@
 
 void Editor::SetColors()
 {
+    // MNEMEN THEME
+    
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
 
