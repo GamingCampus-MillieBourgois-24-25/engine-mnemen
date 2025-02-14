@@ -22,6 +22,11 @@ void ScriptInstance::Reset(int entityID)
     }
 
     sol::protected_function_result result = scriptConstructor();
+    if (!result.valid()) {
+        LOG_ERROR("Failed to load script constructor!");
+        return;
+    }
+
     mTable = result.get<sol::function>()(entityID);
     if (!mTable.valid()) {
         LOG_ERROR("mTable is not valid after script call!");
@@ -31,6 +36,10 @@ void ScriptInstance::Reset(int entityID)
         LOG_ERROR("mTable is not a table! Type: {0}", (int)mTable.get_type());
         return;
     }
+
+    mAwake = mTable["awake"];
+    mUpdate = mTable["update"];
+    mQuit = mTable["quit"];
 }
 
 void ScriptInstance::Awake()

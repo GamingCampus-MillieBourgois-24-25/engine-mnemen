@@ -30,6 +30,14 @@ Scene::~Scene()
 
 void Scene::Update()
 {
+    // Transform update
+    {
+        auto view = mRegistry.view<TransformComponent>();
+        for (auto [entity, transform] : view.each()) {
+            transform.Update();
+        }
+    }
+
     // Camera Update (to sync camera with transformations)
     {
         auto view = mRegistry.view<TransformComponent, CameraComponent>();
