@@ -222,6 +222,7 @@ void Editor::BeginDockSpace()
                 if (ImGui::MenuItem(ICON_FA_MOON_O " ImGui Dark")) ImGui::StyleColorsDark();
                 if (ImGui::MenuItem(ICON_FA_SUN_O " ImGui Light")) ImGui::StyleColorsLight();
                 if (ImGui::MenuItem(ICON_FA_SMILE_O " ImGui Classic")) ImGui::StyleColorsClassic();
+                if (ImGui::MenuItem(ICON_FA_GAMEPAD " Lavender")) SetLavender();
                 ImGui::EndMenu();
             }
             ImGui::EndMenu();

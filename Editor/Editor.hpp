@@ -36,13 +36,16 @@ private:
     void BeginDockSpace();
     void EndDockSpace();
     void HierarchyPanel();
-    void SetColors();
     void AssetPanel();
     void EntityEditor();
     void AssetBrowser();
     void LogWindow();
     void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
     void DrawEntityNode(Entity entity);
+
+    // Theme
+    void SetColors();
+    void SetLavender();
 
     Camera mCamera;
     String mCurrentScenePath;
