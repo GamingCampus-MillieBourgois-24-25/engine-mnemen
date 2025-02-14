@@ -15,6 +15,7 @@ constexpr int mLayers(2);
 constexpr JPH::ObjectLayer sNonMovingLayer = 0;
 constexpr JPH::ObjectLayer sMovingLayer = 1;
 constexpr JPH::ObjectLayer sLayers = 2;
+JPH::BroadPhaseLayer mObjectToBroadPhase[mLayers];
 
 #include <Core/Logger.hpp>
 
@@ -34,7 +35,8 @@ bool ObjectLayerPairFilter::ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::Ob
 
 BroadPhaseLayerInterface::BroadPhaseLayerInterface()
 {
-    //JPH::BroadPhaseLayer mObjectToBroadPhase[sNonMovingLayer] = sNonMoving;
+    mObjectToBroadPhase[sNonMovingLayer] = sNonMoving;
+    mObjectToBroadPhase[sMovingLayer] = sMoving;
 }
 
 void PhysicsSystem::Init()
