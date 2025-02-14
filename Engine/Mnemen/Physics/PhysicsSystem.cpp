@@ -16,7 +16,7 @@ void PhysicsSystem::Init()
 {
     JPH::RegisterDefaultAllocator();
 
-    Factory::sInstance = new Factory();
+    JPH::Factory::sInstance = new JPH::Factory();
 
     int cMaxBodies = 65536;
     int cNumBodyMutexes = 0;
@@ -47,8 +47,8 @@ void PhysicsSystem::Init()
 void PhysicsSystem::Exit()
 {
     // Clean up allocated resources
-    delete Factory::sInstance;
-    Factory::sInstance = nullptr;
+    delete JPH::Factory::sInstance;
+    JPH::Factory::sInstance = nullptr;
     delete sPhysicsSystem;
     delete sAllocator;
 }
