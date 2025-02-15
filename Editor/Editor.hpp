@@ -73,5 +73,5 @@ private:
     // Asset browing
     std::filesystem::path mBaseDirectory;
     std::filesystem::path mCurrentDirectory;
-    char mFileNameBuffer[256];
+    char mFileNameBuffer[256] = {};
 };

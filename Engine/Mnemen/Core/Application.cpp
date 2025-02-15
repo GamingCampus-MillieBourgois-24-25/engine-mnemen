@@ -6,6 +6,7 @@
 #include <Core/Application.hpp>
 #include <Core/Logger.hpp>
 #include <Core/Profiler.hpp>
+#include <Core/Assert.hpp>
 
 #include <Input/Input.hpp>
 #include <Asset/AssetCacher.hpp>
@@ -29,6 +30,10 @@ Application::Application(ApplicationSpecs specs)
     : mApplicationSpecs(specs)
 {
     sInstance = this;
+    if (specs.ProjectPath.empty()) {
+        ASSERT(false, "Please provide a project file!");
+        return;
+    }
 
     Logger::Init();
     Input::Init();
@@ -40,14 +45,16 @@ Application::Application(ApplicationSpecs specs)
     mWindow = MakeRef<Window>(specs.Width, specs.Height, specs.WindowTitle);
     mRHI = MakeRef<RHI>(mWindow);
 
+    mProject = MakeRef<Project>();
+    mProject->Load(specs.ProjectPath);
+
     Profiler::Init(mRHI);
     AssetManager::Init(mRHI);
     AssetCacher::Init("Assets");
 
     mRenderer = MakeRef<Renderer>(mRHI);
-    if (!specs.StartScene.empty()) {
-        mScene = SceneSerializer::DeserializeScene(specs.StartScene);
-    }
+    if (!mProject->StartScenePathRelative.empty())
+        mScene = SceneSerializer::DeserializeScene(mProject->StartScenePathRelative);
 
     Uploader::Flush();
        
@@ -95,7 +102,7 @@ void Application::Run()
         // On Physics Update
         {
             PROFILE_SCOPE("Physics Update");
-            float minStepDuration = 1.0f / mApplicationSpecs.PhysicsRefreshRate;
+            float minStepDuration = 1.0f / mProject->Settings.PhysicsRefreshRate;
             if (TO_SECONDS(mPhysicsTimer.GetElapsed()) > minStepDuration) {
                 OnPhysicsTick();
                 if (mScenePlaying && mScene) {

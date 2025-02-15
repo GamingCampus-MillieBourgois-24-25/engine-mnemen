@@ -11,8 +11,7 @@ int main()
     specs.Width = 1920;
     specs.Height = 1080;
     specs.WindowTitle = "MNEMEN | <D3D12>";
-    specs.GameName = "MnmEditor";
-    specs.StartScene = "";
+    specs.ProjectPath = "TestGame.mpj";
     specs.CopyToBackBuffer = false;
 
     Editor editor(specs);

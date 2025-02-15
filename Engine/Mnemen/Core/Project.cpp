@@ -25,10 +25,12 @@ void Project::Load(const String& path)
     StartSceneName = SceneMap[StartScenePathRelative];
     
     // Load settings
-    if (root.contains("Settings") && root["Settings"].is_object()) {
-        auto& settings = root["Settings"];
+    if (root.contains("settings") && root["settings"].is_object()) {
+        auto& settings = root["settings"];
+
+        Settings.PhysicsRefreshRate = settings.value("physicsRefreshRate", 90.0f);
+
         String compressionFormat = settings.value("compressionFormat", "bc3");
-        
         if (compressionFormat == "bc3")
             Settings.Format = CompressionFormat::BC3;
         else if (compressionFormat == "bc7")
@@ -53,7 +55,8 @@ void Project::Save(const String& path)
     }
     
     // Save settings
-    root["Settings"]["compressionFormat"] = (Settings.Format == CompressionFormat::BC7) ? "bc7" : "bc3";
+    root["settings"]["physicsRefreshRate"] = Settings.PhysicsRefreshRate;
+    root["settings"]["compressionFormat"] = (Settings.Format == CompressionFormat::BC7) ? "bc7" : "bc3";
     
     // Write to file
     File::WriteJSON(root, path);

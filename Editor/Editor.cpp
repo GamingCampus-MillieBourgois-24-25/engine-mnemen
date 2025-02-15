@@ -14,9 +14,15 @@
 Editor::Editor(ApplicationSpecs specs)
     : Application(specs)
 {
-    mCurrentScenePath = specs.StartScene;
-    if (mCurrentScenePath.empty())
+    mCurrentScenePath = mProject->StartScenePathRelative;
+    if (mCurrentScenePath.empty()) {
         NewScene();
+    } else {
+        mCameraEntity = mScene->AddEntity("Editor Camera");
+        mCameraEntity.AddComponent<PrivateComponent>();
+        auto& cam = mCameraEntity.AddComponent<CameraComponent>(true);
+        cam.Primary = 2;
+    }
     mScenePlaying = false;
 
     SetColors();

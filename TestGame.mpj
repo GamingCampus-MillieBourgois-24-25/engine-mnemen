@@ -1,11 +1,12 @@
 {
     "name": "TestGame",
     "projectPath": "C:/dev/Mnemen/",
-    "startScene": "",
+    "startScene": "TestScene",
     "sceneFiles": {
         "TestScene": "Assets/Scenes/Test.msf"
     },
-    "Settings": {
-        "compressionFormat": "bc3"
+    "settings": {
+        "compressionFormat": "bc3",
+        "physicsRefreshRate": 90.0
     }
 }

@@ -16,6 +16,7 @@ enum class CompressionFormat
 struct ProjectSettings
 {
     CompressionFormat Format;
+    float PhysicsRefreshRate;
 };
 
 struct Project
