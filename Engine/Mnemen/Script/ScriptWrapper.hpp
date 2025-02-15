@@ -120,11 +120,15 @@ namespace LuaWrapper
     class LuaEntity
     {
     public:
-        // TODO: delete
+        static void DeleteEntity(int entity);
 
         static String GetName(int entity);
         static void SetName(int entity, const char* name);
 
+        static int GetEntityByName(const char* name);
+
         static TransformComponent& GetTransform(int entity);
+        static CameraComponent& GetCamera(int entity);
+        static AudioSourceComponent& GetAudioSource(int entity);
     };
 }
