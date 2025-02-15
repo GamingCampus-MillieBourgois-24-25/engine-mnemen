@@ -51,6 +51,8 @@ struct Asset
     Int32 RefCount;         ///< Reference count for asset management.
 
     using Handle = Ref<Asset>; ///< Alias for asset pointer handle.
+
+    ~Asset();
 };
 
 /// @class AssetManager

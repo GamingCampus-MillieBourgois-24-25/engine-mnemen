@@ -392,7 +392,7 @@ void Editor::AssetPanel()
                 ICON_FA_SUN_O " Environment Maps",
                 ICON_FA_CODE " Scripts",
                 ICON_FA_MUSIC " Audio Files",
-                ICON_FA_CAMERA_RETRO " Post Process Volume"
+                ICON_FA_CAMERA_RETRO " Post Process Volumes"
             };
             for (int i = 1; i < (int)AssetType::MAX; i++) {
                 ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
@@ -478,6 +478,8 @@ void Editor::EntityEditor()
         // CAMERA
         if (mSelectedEntity.HasComponent<CameraComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                CameraComponent& camera = mSelectedEntity.GetComponent<CameraComponent>();
+
                 bool shouldDelete = false;
                 ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
@@ -487,12 +489,44 @@ void Editor::EntityEditor()
                     shouldDelete = true;
                 }
                 ImGui::PopStyleColor(3);
-                ImGui::PopStyleVar();
 
-                CameraComponent& camera = mSelectedEntity.GetComponent<CameraComponent>();
+                if (camera.Volume) {
+                    char temp[512];
+                    sprintf(temp, "%s %s", ICON_FA_FILE, camera.Volume->Path.c_str());
+                    if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".mfx" });
+                        if (!path.empty()) {
+                            camera.Load(path);
+                        }
+                    }
+                } else {
+                    if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".mfx" });
+                        if (!path.empty()) {
+                            camera.Load(path);
+                        }
+                    }
+                }
+                ImGui::PopStyleVar();
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path fxPath(path);
+                        std::string fxString = fxPath.string();
+                        if (fxString.find(".mfx") != std::string::npos) {
+                            for (int i = 0; i < fxString.size(); i++) {
+                                fxString[i] = fxString[i] == '\\' ? '/' : fxString[i];
+                            }
+                            camera.Load(fxString);
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                ImGui::Separator();
+
                 ImGui::Checkbox("Primary", (bool*)&camera.Primary);
                 ImGui::SliderFloat("FOV", &camera.FOV, 0.0f, 360.0f);
-                ImGui::SliderFloat("Near", &camera.Near, 0.0f, camera.Far);
+                ImGui::SliderFloat("Near", &camera.Near, 0.1f, camera.Far);
                 ImGui::SliderFloat("Far", &camera.Far, camera.Near, 1000.0f);
                 ImGui::TreePop();
 
@@ -768,6 +802,8 @@ void Editor::AssetBrowser()
             icon = ICON_FA_GLOBE;
         } else if (extension.find(".mp3") != std::string::npos || extension.find(".ogg") != std::string::npos || extension.find(".wav") != std::string::npos) {
             icon = ICON_FA_MUSIC;
+        } else if (extension.find(".mfx") != std::string::npos) {
+            icon = ICON_FA_CAMERA_RETRO;
         }
 
         ImGui::PushFont(mRHI->GetLargeIconFont());
@@ -826,7 +862,74 @@ void Editor::FXVolumeEditor()
 {
     ImGui::Begin(ICON_FA_PAINT_BRUSH " Post Process Volume");
     if (mSelectedVolume) {
-        
+        char temp[512];
+        sprintf(temp, "%s %s", ICON_FA_FILE, mSelectedVolume->Path.c_str());
+        if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+            String path = Dialog::Open({ ".mfx" });
+            if (!path.empty()) {
+                mSelectedVolume = AssetManager::Get(path, AssetType::PostFXVolume);
+            }
+        }
+    } else {
+        if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+            String path = Dialog::Open({ ".mfx" });
+            if (!path.empty()) {
+                mSelectedVolume = AssetManager::Get(path, AssetType::PostFXVolume);
+            }
+        }
+    }
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+            const wchar_t* path = (const wchar_t*)payload->Data;
+            std::filesystem::path fxPath(path);
+            std::string fxString = fxPath.string();
+            if (fxString.find(".mfx") != std::string::npos) {
+                for (int i = 0; i < fxString.size(); i++) {
+                    fxString[i] = fxString[i] == '\\' ? '/' : fxString[i];
+                }
+                mSelectedVolume = AssetManager::Get(fxString, AssetType::PostFXVolume);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+    if (mSelectedVolume) {
+        auto* volume = &mSelectedVolume->Volume;
+
+        if (ImGui::TreeNodeEx("Geometry Pass", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Visualize Meshlets", &volume->VisualizeMeshlets);
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Color Grading", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnableColorGrading);
+            ImGui::SliderFloat("Brightness", &volume->Brightness, 0.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Exposure", &volume->Exposure, 0.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Saturation", &volume->Saturation, -10.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Contrast", &volume->Contrast, -10.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Hue Shift", &volume->HueShift, -180.0f, 180.0f, "%.1f");
+            ImGui::SliderFloat("Temperature", &volume->Temperature, -1.0f, 1.0f, "%.1f");
+            ImGui::SliderFloat("Tint", &volume->Tint, -1.0f, 1.0f, "%.1f");
+            if (ImGui::TreeNodeEx("Split Toning", ImGuiTreeNodeFlags_Framed)){
+                ImGui::ColorPicker3("Shadows", glm::value_ptr(volume->Shadows), ImGuiColorEditFlags_PickerHueBar);
+                ImGui::ColorPicker3("Hightlights", glm::value_ptr(volume->Highlights), ImGuiColorEditFlags_PickerHueBar);
+                ImGui::SliderFloat("Balance", &volume->Balance, -100.0f, 100.0f, "%.1f");
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNodeEx("Color Filter", ImGuiTreeNodeFlags_Framed)) {
+                ImGui::ColorPicker3("Color Filter", glm::value_ptr(volume->ColorFilter), ImGuiColorEditFlags_PickerHueBar);
+                ImGui::TreePop();
+            }
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Depth of Field", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnableDOF);
+            ImGui::SliderFloat("Focus Point", &volume->FocusPoint, 0.1f, 200.0f, "%.3f");
+            ImGui::SliderFloat("Focal Range", &volume->FocusRange, 0.1f, 200.0f, "%.3f");
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Composite", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::SliderFloat("Gamma", &volume->GammaCorrection, 0.1f, 10.0f);
+            ImGui::TreePop();
+        }
     }
     ImGui::End();
 }

@@ -47,6 +47,10 @@ void Editor::UpdateShortcuts()
     }
     if (Input::IsKeyPressed(SDLK_ESCAPE)) {
         mSelectedEntity = {};
+        if (mSelectedVolume) {
+            AssetManager::GiveBack(mSelectedVolume->Path);
+            mSelectedVolume = nullptr;
+        }
     }
 }
 

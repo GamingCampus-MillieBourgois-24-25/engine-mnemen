@@ -11,6 +11,13 @@
 
 AssetManager::Data AssetManager::sData;
 
+Asset::~Asset()
+{
+    if (!Path.empty() && Type == AssetType::PostFXVolume) {
+        Volume.Save(Path);
+    }
+}
+
 void AssetManager::Init(RHI::Ref rhi)
 {
     sData.mRHI = rhi;

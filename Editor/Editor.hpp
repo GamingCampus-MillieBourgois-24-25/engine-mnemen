@@ -52,7 +52,7 @@ private:
     // Entity stuff
     Entity mCameraEntity;
     Entity mSelectedEntity = {};
-    PostProcessVolume* mSelectedVolume = nullptr;
+    Asset::Handle mSelectedVolume = nullptr;
     bool mMarkForDeletion = false;
     bool mMarkForClose = false;
     bool mMarkForStop = false;
