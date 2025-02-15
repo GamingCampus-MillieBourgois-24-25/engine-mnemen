@@ -3,10 +3,10 @@
         "balance": 1.0,
         "brightness": 1.0,
         "colorFilter": [
-            1.0,
-            1.0,
-            1.0,
-            1.0
+            0.5,
+            0.5,
+            0.5,
+            0.5
         ],
         "contrast": 1.0,
         "enable": false,

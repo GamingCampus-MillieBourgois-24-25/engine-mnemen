@@ -761,11 +761,79 @@ void Editor::AssetBrowser()
         return;
 
     if (mCurrentDirectory != std::filesystem::path(mBaseDirectory)) {
-        if (ImGui::Button("<-")) {
+        if (ImGui::Button(ICON_FA_FOLDER " Back")) {
             mCurrentDirectory = mCurrentDirectory.parent_path();
         }
+        ImGui::SameLine();
     }
-    
+    ImGui::InputText("##FilePath", mFileNameBuffer, sizeof(mFileNameBuffer));
+    ImGui::SameLine();
+    if (ImGui::BeginMenu(ICON_FA_PLUS " Create...")) {
+        if (ImGui::MenuItem(ICON_FA_FILE " File")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s", mCurrentDirectory.string().c_str(), mFileNameBuffer);
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateFileFromPath(newBuffer);
+            }
+            memset(newBuffer, 0, sizeof(newBuffer));
+        }
+        if (ImGui::MenuItem(ICON_FA_FOLDER " Directory")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s", mCurrentDirectory.string().c_str(), mFileNameBuffer);
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateDirectoryFromPath(newBuffer);
+            }
+            memset(newBuffer, 0, sizeof(newBuffer));
+        }
+        if (ImGui::MenuItem(ICON_FA_CODE " Script")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s%s", mCurrentDirectory.string().c_str(), mFileNameBuffer, ".lua");
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateFileFromPath(newBuffer);
+                File::WriteString(newBuffer, R"(
+                    return function(entityID)
+                        local self = {}
+
+                        function self.awake()
+                        end
+
+                        function self.update(dt)
+                        end
+
+                        function self.quit()
+                        end
+
+                        return self
+                    end
+                )");
+            }
+            memset(mFileNameBuffer, 0, sizeof(mFileNameBuffer));
+        }
+        if (ImGui::MenuItem(ICON_FA_GLOBE " Scene")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s%s", mCurrentDirectory.string().c_str(), mFileNameBuffer, ".msf");
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateFileFromPath(newBuffer);
+
+                Ref<Scene> scene = MakeRef<Scene>();
+                SceneSerializer::SerializeScene(scene, newBuffer);
+            }
+            memset(mFileNameBuffer, 0, sizeof(mFileNameBuffer));
+        }
+        if (ImGui::MenuItem(ICON_FA_CAMERA_RETRO " Post Process Volume")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s%s", mCurrentDirectory.string().c_str(), mFileNameBuffer, ".mfx");
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateFileFromPath(newBuffer);
+
+                PostProcessVolume volume;
+                volume.Save(newBuffer);
+            }
+            memset(mFileNameBuffer, 0, sizeof(mFileNameBuffer));
+        }
+        ImGui::EndMenu();
+    }
+
     static float padding = 16.0f;
 	static float thumbnailSize = 92.0f;
 	float cellSize = thumbnailSize + padding;
@@ -809,7 +877,17 @@ void Editor::AssetBrowser()
         ImGui::PushFont(mRHI->GetLargeIconFont());
         ImVec2 buttonPos = ImGui::GetCursorPos();
         ImGui::Button(icon, ImVec2(thumbnailSize, thumbnailSize));
+        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+            ImGui::OpenPopup("FileContextMenu");
+        }
         ImGui::PopFont();
+
+        if (ImGui::BeginPopup("FileContextMenu")) {
+            if (ImGui::Button("Delete")) {
+                File::Delete(directoryEntry.path().string());
+            }
+            ImGui::EndPopup();
+        }
 		
         if (ImGui::BeginDragDropSource())
 		{

@@ -105,6 +105,11 @@ public:
     /// @param size The size of the data to write.
     static void WriteBytes(const String& path, const void* data, UInt64 size);
 
+    /// @brief Writes the given string to the file at the given path.
+    /// @param path The path of the file to write.
+    /// @param str The string to write.
+    static void WriteString(const String& path, const String& str);
+
     /// @brief Gets the last time a file was modified.
     /// @param path The path of the file to check.
     /// @return A `Filetime` representing the last modification time of the file.
