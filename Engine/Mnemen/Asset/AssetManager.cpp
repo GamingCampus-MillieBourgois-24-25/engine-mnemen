@@ -8,6 +8,7 @@
 
 #include <Core/Logger.hpp>
 #include <RHI/Uploader.hpp>
+#include <Core/Profiler.hpp>
 
 AssetManager::Data AssetManager::sData;
 
@@ -28,6 +29,22 @@ void AssetManager::Init(RHI::Ref rhi)
 void AssetManager::Clean()
 {
     sData.mAssets.clear();
+}
+
+void AssetManager::Update()
+{
+    PROFILE_FUNCTION();
+
+    if (sData.mAssets.empty())
+        return;
+    for (auto it = sData.mAssets.begin(); it != sData.mAssets.end(); ) {
+        if (!File::Exists(it->first)) {
+            it->second.reset();
+            it = sData.mAssets.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void AssetManager::GiveBack(const String& path)

@@ -110,6 +110,7 @@ void Application::Run()
             PROFILE_SCOPE("Systems Update");
             
             mWindow->Update();
+            AssetManager::Update();
             if (mScenePlaying && mScene) {
                 AISystem::Update(mScene);
                 AudioSystem::Update(mScene);

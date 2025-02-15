@@ -69,6 +69,9 @@ public:
     /// @brief Cleans up and releases resources held by the asset manager.
     static void Clean();
 
+    /// @brief Checks if the current assets still exist -- if they don't, they're out!
+    static void Update();
+
     /// @brief Retrieves an asset based on its path and type.
     /// @param path The file path of the asset.
     /// @param type The type of asset being requested.
