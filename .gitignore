@@ -1,11 +1,13 @@
 # Binaries
 .xmake
 build
+target
 
 # IDE files
 .vs
 .vscode
 vsxmake2022
+Cargo.lock
 
 # Engine files and cache
 imgui.ini

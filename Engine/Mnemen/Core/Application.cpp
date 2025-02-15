@@ -30,10 +30,6 @@ Application::Application(ApplicationSpecs specs)
     : mApplicationSpecs(specs)
 {
     sInstance = this;
-    if (specs.ProjectPath.empty()) {
-        ASSERT(false, "Please provide a project file!");
-        return;
-    }
 
     Logger::Init();
     Input::Init();
@@ -46,7 +42,8 @@ Application::Application(ApplicationSpecs specs)
     mRHI = MakeRef<RHI>(mWindow);
 
     mProject = MakeRef<Project>();
-    mProject->Load(specs.ProjectPath);
+    if (!specs.ProjectPath.empty())
+        mProject->Load(specs.ProjectPath);
 
     Profiler::Init(mRHI);
     AssetManager::Init(mRHI);
@@ -55,8 +52,8 @@ Application::Application(ApplicationSpecs specs)
     mRenderer = MakeRef<Renderer>(mRHI);
     if (!mProject->StartScenePathRelative.empty())
         mScene = SceneSerializer::DeserializeScene(mProject->StartScenePathRelative);
-
-    Uploader::Flush();
+    else
+        mScene = MakeRef<Scene>();
        
     LOG_INFO("Initialized Mnemen! Ready to rock 8)");
 }
@@ -90,6 +87,7 @@ void Application::OnStop()
 
 void Application::Run()
 {
+    Uploader::Flush();
     while (mWindow->IsOpen()) {
         Profiler::BeginFrame();
 

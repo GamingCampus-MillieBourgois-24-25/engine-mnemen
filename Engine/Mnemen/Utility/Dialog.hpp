@@ -32,5 +32,9 @@ public:
     /// @param extensions A vector of allowed file extensions (e.g., {"*.txt", "*.png"}).
     /// @return The chosen file path to save the file, or an empty string if no location is selected.
     static String Save(const Vector<String>& extensions);
+
+    /// @brief Opens a file dialog to select a directory
+    /// @return The selected directory
+    static String OpenFolder();
 };
 

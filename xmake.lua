@@ -4,6 +4,7 @@
 --
 
 add_rules("mode.debug", "mode.release", "mode.releasedbg")
+add_requires("cargo::eframe 0.31.0")
 
 includes("ThirdParty")
 
@@ -58,8 +59,10 @@ target("Mnemen")
                      "d3d12",
                      "dxgi",
                      "SDL3.lib",
-                     "Comdlg32.lib",
-                     "Shlwapi.lib",
+                     "Comdlg32",
+                     "Shlwapi",
+                     "Shell32",
+                     "ole32",
                      "ThirdParty/PIX/lib/WinPixEventRuntime.lib",
                      "ThirdParty/DXC/lib/dxcompiler.lib",
                      "ThirdParty/nvtt/lib64/nvtt30205.lib",
@@ -189,3 +192,49 @@ target("Runtime")
         set_strip("all")
     end
 
+target("Launcher")
+    set_kind("binary")
+    set_group("Engine")
+    set_languages("c++17")
+    set_rundir(".")
+    set_encodings("utf-8")
+
+    add_files("Launcher/*.cpp")
+    add_headerfiles("Launcher/**.hpp")
+    add_includedirs("Engine",
+                    "Engine/Mnemen",
+                    "Runtime",
+                    "ThirdParty/SDL3/include",
+                    "ThirdParty/spdlog/include",
+                    "ThirdParty/glm",
+                    "ThirdParty/ImGui/",
+                    "ThirdParty/DirectX/include",
+                    "ThirdParty/",
+                    "ThirdParty/nvtt/",
+                    "ThirdParty/Jolt",
+                    "ThirdParty/miniaudio",
+                    "ThirdParty/Recast/Recast/Include",
+                    "ThirdParty/Recast/Detour/Include",
+                    "ThirdParty/Recast/DetourCrowd/Include",
+                    "ThirdParty/Recast/DetourTileCache/Include",
+                    "ThirdParty/Recast/DebugUtils/Include",
+                    "ThirdParty/JSON/single_include",
+                    "ThirdParty/Lua/src")
+    add_deps("Mnemen")
+    add_defines("GLM_ENABLE_EXPERIMENTAL")
+
+    if is_mode("debug") then
+        set_symbols("debug")
+        set_optimize("none")
+        add_defines("LAUNCHER_DEBUG")
+    end
+    if is_mode("release") then
+        set_symbols("hidden")
+        set_optimize("fastest")
+        set_strip("all")
+    end
+    if is_mode("releasedbg") then
+        set_symbols("debug")
+        set_optimize("fastest")
+        set_strip("all")
+    end
