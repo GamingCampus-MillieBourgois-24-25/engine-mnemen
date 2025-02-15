@@ -6,6 +6,7 @@
 #include "DOF.hpp"
 
 #include <imgui.h>
+#include <Core/Profiler.hpp>
 
 DOF::DOF(RHI::Ref rhi)
     : RenderPass(rhi)
@@ -18,6 +19,10 @@ DOF::DOF(RHI::Ref rhi)
 
 void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
 {
+    PROFILE_FUNCTION();
+
+    CameraComponent mainCamera = scene->GetMainCamera();
+
     auto color = RendererTools::Get("HDRColorBuffer");
     auto depth = RendererTools::Get("GBufferDepth");
 
@@ -34,13 +39,13 @@ void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
         depth->Descriptor(ViewType::ShaderResource),
  
 
-        0.1f,
-        200.0f,
-        mFocusPoint,
-        mFocalRange
+        mainCamera.Near,
+        mainCamera.Far,
+        mainCamera.Volume.FocusPoint,
+        mainCamera.Volume.FocusRange
     };
 
-    if (mEnable) {
+    if (mainCamera.Volume.EnableDOF) {
         frame.CommandBuffer->BeginMarker("Depth of field");
         frame.CommandBuffer->Barrier(color->Texture, ResourceLayout::Storage);
         frame.CommandBuffer->Barrier(depth->Texture, ResourceLayout::Shader);
@@ -50,15 +55,5 @@ void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
         frame.CommandBuffer->Barrier(color->Texture, ResourceLayout::Common);
         frame.CommandBuffer->Barrier(depth->Texture, ResourceLayout::Common);
         frame.CommandBuffer->EndMarker();
-    }
-}
-
-void DOF::UI(const Frame& frame)
-{
-    if (ImGui::TreeNodeEx("Depth of Field", ImGuiTreeNodeFlags_Framed)) {
-        ImGui::Checkbox("Enable", &mEnable);
-        ImGui::SliderFloat("Focus Point", &mFocusPoint, 0.1f, 200.0f, "%.3f");
-        ImGui::SliderFloat("Focal Range", &mFocalRange, 0.1f, 200.0f, "%.3f");
-        ImGui::TreePop();
     }
 }

@@ -10,6 +10,8 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
+#include <Core/Profiler.hpp>
+
 Debug::Data Debug::sData;
 
 Debug::Debug(RHI::Ref rhi)
@@ -38,10 +40,12 @@ Debug::Debug(RHI::Ref rhi)
 
 void Debug::Render(const Frame& frame, ::Ref<Scene> scene)
 {
+    PROFILE_FUNCTION();
+
     auto cameraBuffer = RendererTools::Get("CameraRingBuffer");
     auto ldr = RendererTools::Get("LDRColorBuffer");
 
-    SceneCamera camera = {};
+    CameraComponent camera = {};
     if (scene) {
         camera = scene->GetMainCamera();
     }
@@ -81,14 +85,6 @@ void Debug::Render(const Frame& frame, ::Ref<Scene> scene)
         frame.CommandBuffer->EndMarker();
         
         sData.Lines.clear();
-    }
-}
-
-void Debug::UI(const Frame& frame)
-{
-    if (ImGui::TreeNodeEx("Debug", ImGuiTreeNodeFlags_Framed)) {
-        ImGui::Text("Line Count: %llu", mLineCount);
-        ImGui::TreePop();
     }
 }
 

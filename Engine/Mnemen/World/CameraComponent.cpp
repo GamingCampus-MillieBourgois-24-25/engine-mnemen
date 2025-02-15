@@ -5,8 +5,13 @@
 
 #include "Entity.hpp"
 
+#include <Core/Application.hpp>
+
 void CameraComponent::Update(glm::vec3 Position, glm::quat Rotation)
 {
+    int width, height;
+    Application::Get()->GetWindow()->PollSize(width, height);
+
     // Convert rotation angles from degrees to radians
     const float pitch = glm::radians(Rotation.y); // X-axis (Pitch)
     const float yaw = glm::radians(Rotation.x);   // Y-axis (Yaw)
@@ -21,7 +26,7 @@ void CameraComponent::Update(glm::vec3 Position, glm::quat Rotation)
     glm::vec3 up = glm::normalize(glm::vec3(rotationMatrix[1]));     // Up is Y-axis in DirectX
 
     // Set the projection matrix for perspective (left-handed)
-    Projection = glm::perspective(glm::radians(FOV), AspectRatio, Near, Far);
+    Projection = glm::perspective(glm::radians(FOV), (float)width / (float)height, Near, Far);
 
     // Set the view matrix using the lookAt function for the left-handed system
     View = glm::lookAt(Position, Position + front, up);

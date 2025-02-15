@@ -11,6 +11,7 @@
 
 #include <Asset/AssetManager.hpp>
 #include <Script/ScriptInstance.hpp>
+#include <Renderer/PostProcessVolume.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -190,8 +191,8 @@ struct CameraComponent
     float Near = 0.1f;
     /// @brief The far plane of the camera
     float Far = 200.0f;
-    /// @brief The aspect ratio of the camera, set to 16:9 by default
-    float AspectRatio = 1.77777777778f;
+    /// @brief The post process volume of the camera
+    PostProcessVolume Volume;
 
     /// @brief The view matrix of the camera
     glm::mat4 View = glm::mat4(1.0f);
@@ -204,39 +205,104 @@ struct CameraComponent
     void Update(glm::vec3 Position, glm::quat Rotation);
 };
 
-/// @brief A component holding a game script
+/// @struct ScriptComponent
+/// @brief A component that holds scripts for entities.
+///
+/// This structure is used to store and manage the scripts associated with an entity in the game.
+/// It provides functionality to load and add scripts dynamically at runtime.
 struct ScriptComponent
 {
+    /// @struct EntityScript
+    /// @brief A structure that holds information about a script associated with an entity.
+    ///
+    /// This structure holds the unique ID, asset handle, and the instance of a script for an entity.
     struct EntityScript
     {
-        Util::UUID ID;
-        Asset::Handle Handle;
-        Ref<ScriptInstance> Instance;
+        Util::UUID ID; ///< The unique identifier for the script.
+        Asset::Handle Handle; ///< The handle to the asset representing the script.
+        Ref<ScriptInstance> Instance; ///< A reference to the script instance for execution.
 
+        /// @brief Default constructor for the EntityScript structure.
         EntityScript();
+
+        /// @brief Destructor for the EntityScript structure.
         ~EntityScript();
 
+        /// @brief Loads the script from a specified file path.
+        ///
+        /// This function loads a script into the entity by its file path. The script will be associated
+        /// with the `ID` and `Handle` and can be instantiated for execution.
+        ///
+        /// @param path The file path to the script to load.
         void Load(const String& path);
     };
 
+    /// @brief A vector of script instances associated with the entity.
     Vector<Ref<EntityScript>> Instances;
 
+    /// @brief Adds an empty script to the `Instances` vector.
+    ///
+    /// This function adds an empty script to the collection of script instances, allowing it to be
+    /// populated or loaded later.
     void AddEmptyScript();
+
+    /// @brief Adds a script by loading it from a specified file path.
+    ///
+    /// This function loads a script from the given file path and adds it to the collection of script instances.
+    ///
+    /// @param path The file path to the script to load and add.
     void PushScript(const String& path);
 };
 
-/// @brief A component holding an audio source
+
+/// @struct AudioSourceComponent
+/// @brief A component that handles audio playback for an entity.
+///
+/// This structure is responsible for managing and controlling audio playback for an entity,
+/// including loading sounds, controlling playback, and adjusting properties like volume and looping.
 struct AudioSourceComponent
 {
+    /// @brief The handle to the audio asset representing the sound.
     Asset::Handle Handle;
+
+    /// @brief The sound instance that manages the audio playback.
     ma_sound Sound;
+
+    /// @brief Flag indicating whether the sound should loop during playback.
     bool Looping = false;
+
+    /// @brief Flag indicating whether the sound should start playing automatically when initialized.
     bool PlayOnAwake = false;
+
+    /// @brief The volume of the sound, ranging from 0.0f (muted) to 1.0f (full volume).
     float Volume = 1.0f;
 
+    /// @brief Initializes the audio source with a specified sound file.
+    ///
+    /// This function loads and prepares the sound file for playback from the given path.
+    ///
+    /// @param path The file path to the sound asset to load.
     void Init(const String& path);
+
+    /// @brief Frees any resources associated with the audio source.
+    ///
+    /// This function releases the sound resource and resets the `AudioSourceComponent` to an idle state.
     void Free();
+
+    /// @brief Plays the sound from the beginning.
+    ///
+    /// This function starts the audio playback from the beginning, respecting the `Looping`
+    /// and `Volume` properties.
     void Play();
+
+    /// @brief Stops the sound if it is currently playing.
+    ///
+    /// This function stops the audio playback and resets it to the idle state.
     void Stop();
+
+    /// @brief Updates the audio source, typically called every frame.
+    ///
+    /// This function can be used to update properties or check the status of the audio playback
+    /// during the game loop, such as whether the sound has finished playing.
     void Update();
 };

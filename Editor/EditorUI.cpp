@@ -29,8 +29,7 @@ void Editor::Viewport(const Frame& frame)
     // Play/Stop
     ImGui::SetCursorPosX(10.0f);
     if (ImGui::Button(ICON_FA_PLAY)) {
-        if (mCurrentScenePath.empty())
-            SaveSceneAs();
+        SaveScene();
         if (!mCurrentScenePath.empty()) {
             OnAwake();
         }
@@ -818,6 +817,15 @@ void Editor::LogWindow()
             ImGui::TextColored(entry.Color, entry.Message.c_str());
     }
     ImGui::EndChild();
+    ImGui::End();
+}
+
+void Editor::FXVolumeEditor()
+{
+    ImGui::Begin(ICON_FA_PAINT_BRUSH " Post Process Volume");
+    if (mSelectedVolume) {
+        
+    }
     ImGui::End();
 }
 

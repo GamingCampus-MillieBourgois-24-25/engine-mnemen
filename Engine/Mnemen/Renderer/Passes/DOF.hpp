@@ -23,10 +23,4 @@ public:
 
     void Bake(::Ref<Scene> scene) {}
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
-    void UI(const Frame& frame) override;
-private:
-    bool mEnable = false;
-    /// @brief The focus point for the Depth of Field effect.
-    float mFocusPoint = 1.0f;
-    float mFocalRange = 0.25f;
 };

@@ -98,7 +98,7 @@ void Editor::OnImGui(const Frame& frame)
 
     BeginDockSpace();
     Profiler::OnUI();
-    mRenderer->UI(frame);
+    FXVolumeEditor();
     Viewport(frame);
     LogWindow();
     HierarchyPanel();

@@ -15,8 +15,3 @@ void SSAO::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     // Alex
 }
-
-void SSAO::UI(const Frame& frame)
-{
-    // Alex
-}

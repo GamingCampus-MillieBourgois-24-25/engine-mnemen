@@ -47,12 +47,3 @@ void Renderer::Render(const Frame& frame, ::Ref<Scene> scene)
         pass->Render(frame, scene);
     }
 }
-
-void Renderer::UI(const Frame& frame)
-{
-    ImGui::Begin(ICON_FA_PAINT_BRUSH " Renderer");
-    for (auto& pass : mPasses) {
-        pass->UI(frame);
-    }
-    ImGui::End();
-}

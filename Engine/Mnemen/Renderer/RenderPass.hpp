@@ -46,14 +46,6 @@ public:
     /// @param scene The scene to be rendered during this pass.
     virtual void Render(const Frame& frame, ::Ref<Scene> scene) = 0;
 
-    /// @brief Handles the UI rendering for this render pass.
-    /// 
-    /// This pure virtual function defines how the UI should be rendered during the given frame.
-    /// Derived classes will implement this method to provide UI updates for the render pass.
-    /// 
-    /// @param frame The current frame to be used for rendering UI elements.
-    virtual void UI(const Frame& frame) = 0;
-
 protected:
     RHI::Ref mRHI; ///< The rendering hardware interface (RHI) used for GPU operations during this pass.
 };

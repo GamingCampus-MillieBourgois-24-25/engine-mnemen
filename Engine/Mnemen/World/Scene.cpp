@@ -47,7 +47,7 @@ void Scene::Update()
     }
 }
 
-SceneCamera Scene::GetMainCamera()
+CameraComponent Scene::GetMainCamera()
 {
     // NOTE(amelie): This is professional grade spaghetti bullshit but lowkey iterating through entities is fast as hell. Love EnTT x
 
@@ -64,9 +64,9 @@ SceneCamera Scene::GetMainCamera()
     if (!cameras.empty()) {
         const auto& bestCamera = cameras.front();
         if (bestCamera.Primary > 0)
-            return { bestCamera.View, bestCamera.Projection };
+            return bestCamera;
     }
-    return { glm::mat4(0.0f), glm::mat4(0.0f) };
+    return {};
 }
 
 Entity Scene::AddEntity(const String& name)

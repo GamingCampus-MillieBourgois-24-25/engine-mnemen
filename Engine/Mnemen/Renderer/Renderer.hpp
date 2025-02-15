@@ -43,15 +43,6 @@ public:
     /// @param frame The frame data that includes rendering parameters.
     /// @param scene The scene to be rendered, which contains all the objects and data for rendering.
     void Render(const Frame& frame, ::Ref<Scene> scene);
-
-    /// @brief Renders the user interface for the specified frame.
-    /// 
-    /// This method handles the UI rendering for the given frame. It typically includes overlay elements,
-    /// HUD elements, or other UI components handled by ImGui.
-    /// 
-    /// @param frame The frame data used to render the user interface.
-    void UI(const Frame& frame);
-
 private:
     Vector<RenderPass::Ref> mPasses; ///< A collection of render passes associated with the renderer.
 };
