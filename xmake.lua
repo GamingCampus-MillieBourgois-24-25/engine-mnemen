@@ -9,6 +9,7 @@ includes("ThirdParty")
 
 target("Mnemen")
     set_kind("static")
+    set_group("Engine")
     set_languages("c++20")
     set_encodings("utf-8")
     add_deps("spdlog",
@@ -96,6 +97,7 @@ target("Mnemen")
 
 target("Editor")
     set_kind("binary")
+    set_group("Engine")
     set_languages("c++17")
     set_rundir(".")
     set_encodings("utf-8")
@@ -142,6 +144,7 @@ target("Editor")
 
 target("Runtime")
     set_kind("binary")
+    set_group("Engine")
     set_languages("c++17")
     set_rundir(".")
     set_encodings("utf-8")
