@@ -30,6 +30,7 @@ private:
     bool SaveScene();
     bool SaveSceneAs();
     void NewScene();
+    void ReloadScene(const String& path);
 
     // UI
     void Viewport(const Frame& frame);
@@ -52,6 +53,7 @@ private:
     Entity mSelectedEntity = {};
     bool mMarkForDeletion = false;
     bool mMarkForClose = false;
+    bool mMarkForStop = false;
     String mModelChange = "";
     UnorderedMap<entt::entity, String> mEntityNameBuffer;
 

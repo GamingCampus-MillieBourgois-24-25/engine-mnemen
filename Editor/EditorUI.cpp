@@ -29,12 +29,18 @@ void Editor::Viewport(const Frame& frame)
     // Play/Stop
     ImGui::SetCursorPosX(10.0f);
     if (ImGui::Button(ICON_FA_PLAY)) {
-        OnAwake();
+        if (mCurrentScenePath.empty())
+            SaveSceneAs();
+        if (!mCurrentScenePath.empty()) {
+            OnAwake();
+        }
     }
     ImGui::SameLine();
     if (ImGui::Button(ICON_FA_STOP)) {
-        if (mScenePlaying)
+        if (mScenePlaying) {
             OnStop();
+            mMarkForStop = true;
+        }
     }
     ImGui::SameLine();
     if (ImGui::RadioButton("Translate", mOperation == ImGuizmo::OPERATION::TRANSLATE)) mOperation = ImGuizmo::OPERATION::TRANSLATE;
@@ -260,7 +266,12 @@ void Editor::HierarchyPanel()
 
     // Draw root entities only
     ImGui::BeginChild("EntityNodes");
+
+    // Fetch all entities first
     auto view = mScene->GetRegistry()->view<TagComponent>();
+    std::vector<Entity> entities;
+
+    // Collect entities
     for (auto id : view) {
         Entity entity(mScene->GetRegistry());
         entity.ID = id;
@@ -271,9 +282,20 @@ void Editor::HierarchyPanel()
             continue;
 
         if (!entity.HasParent()) {
-            DrawEntityNode(entity);
+            entities.push_back(entity);
         }
     }
+
+    // Sort entities alphabetically based on TagComponent
+    std::sort(entities.begin(), entities.end(), [](Entity& a, Entity& b) {
+        return a.GetComponent<TagComponent>().Tag < b.GetComponent<TagComponent>().Tag;
+    });
+
+    // Draw sorted entities
+    for (const auto& entity : entities) {
+        DrawEntityNode(entity);
+    }
+
     ImGui::EndChild();
     ImGui::End();
 }

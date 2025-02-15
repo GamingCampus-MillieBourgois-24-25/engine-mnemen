@@ -55,7 +55,7 @@ void Editor::OpenScene(const String& path)
     CloseScene();
 
     mCurrentScenePath = path;
-    mScene = SceneSerializer::DeserializeScene(mCurrentScenePath);
+    mScene = SceneSerializer::DeserializeScene(path);
     
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
@@ -103,6 +103,22 @@ void Editor::NewScene()
 
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
+    cam.Primary = 2;
+}
+
+void Editor::ReloadScene(const String& path)
+{
+    mCurrentScenePath = {};
+    mSelectedEntity = {};
+    mScene.reset();
+
+    mCurrentScenePath = path;
+    mScene = SceneSerializer::DeserializeScene(path);
+
+    mCameraEntity = mScene->AddEntity("Editor Camera");
+    mCameraEntity.AddComponent<PrivateComponent>();
+
     auto& cam = mCameraEntity.AddComponent<CameraComponent>();
     cam.Primary = 2;
 }

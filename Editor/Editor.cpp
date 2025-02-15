@@ -66,6 +66,12 @@ void Editor::PostPresent()
         mSelectedEntity = nullptr;
         mMarkForDeletion = false;
     }
+    if (mMarkForStop) {
+        mSelectedEntity = {};
+        String pathCopy = mCurrentScenePath;
+        ReloadScene(pathCopy);
+        mMarkForStop = false;
+    }
     // Purge unused assets every frame
     AssetManager::Purge();
 
