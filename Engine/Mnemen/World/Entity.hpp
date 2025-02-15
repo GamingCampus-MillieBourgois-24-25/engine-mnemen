@@ -192,12 +192,20 @@ struct CameraComponent
     /// @brief The far plane of the camera
     float Far = 200.0f;
     /// @brief The post process volume of the camera
-    PostProcessVolume Volume;
+    Asset::Handle Volume;
 
     /// @brief The view matrix of the camera
     glm::mat4 View = glm::mat4(1.0f);
     /// @brief The projection matrix of the camera
     glm::mat4 Projection = glm::mat4(1.0f);
+
+    /// @brief Constructor -- just loads the default volume.
+    CameraComponent(bool load = false);
+    /// @brief Loads a post processing volume
+    /// @param path The path of the volume
+    void Load(const String& path);
+    /// @brief Frees the current volume if needed
+    void Free();
 
     /// @brief Updates the camera matrices using the transform's position and rotation
     /// @param Position The position pulled from the transform

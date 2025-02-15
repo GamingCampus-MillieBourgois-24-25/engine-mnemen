@@ -7,6 +7,25 @@
 
 #include <Core/Application.hpp>
 
+CameraComponent::CameraComponent(bool load)
+{
+    if (load)
+        Load("Assets/Volumes/DefaultVolume.mfx");
+}
+
+void CameraComponent::Load(const String& path)
+{
+    Free();
+    Volume = AssetManager::Get(path, AssetType::PostFXVolume);
+}
+
+void CameraComponent::Free()
+{
+    if (Volume) {
+        AssetManager::GiveBack(Volume->Path);
+    }
+}
+
 void CameraComponent::Update(glm::vec3 Position, glm::quat Rotation)
 {
     int width, height;

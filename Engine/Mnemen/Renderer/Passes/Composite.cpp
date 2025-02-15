@@ -54,7 +54,7 @@ void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
     } PushConstants = {
         hdr->Descriptor(ViewType::ShaderResource),
         ldr->Descriptor(ViewType::Storage),
-        camera.Volume.GammaCorrection,
+        camera->Volume->Volume.GammaCorrection,
         0
     };
 

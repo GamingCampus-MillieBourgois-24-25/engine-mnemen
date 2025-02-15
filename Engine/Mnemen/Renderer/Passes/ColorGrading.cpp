@@ -23,7 +23,7 @@ ColorGrading::ColorGrading(RHI::Ref rhi)
 
 void ColorGrading::Render(const Frame& frame, ::Ref<Scene> scene)
 {
-    CameraComponent mainCamera = scene->GetMainCamera();
+    CameraComponent* mainCamera = scene->GetMainCamera();
 
     // Retrieve the HDR color texture that we will write to 
     auto color = RendererTools::Get("HDRColorBuffer");
@@ -62,29 +62,29 @@ void ColorGrading::Render(const Frame& frame, ::Ref<Scene> scene)
     } PushConstants = {
         //descriptor of the HDR texture to write to (storage view type)
         color->Descriptor(ViewType::Storage),
-        mainCamera.Volume.Brightness,
-        mainCamera.Volume.Exposure,
+        mainCamera->Volume->Volume.Brightness,
+        mainCamera->Volume->Volume.Exposure,
         0.0,
 
-        mainCamera.Volume.Contrast,
-        mainCamera.Volume.Saturation,
+        mainCamera->Volume->Volume.Contrast,
+        mainCamera->Volume->Volume.Saturation,
         glm::vec2(0.0f),
        
-        mainCamera.Volume.HueShift,
-        mainCamera.Volume.Balance,
+        mainCamera->Volume->Volume.HueShift,
+        mainCamera->Volume->Volume.Balance,
         glm::vec2(0.0f),
 
-        mainCamera.Volume.Shadows,
-        mainCamera.Volume.ColorFilter,
+        mainCamera->Volume->Volume.Shadows,
+        mainCamera->Volume->Volume.ColorFilter,
 
-        mainCamera.Volume.Highlights,
+        mainCamera->Volume->Volume.Highlights,
 
-        mainCamera.Volume.Temperature,
-        mainCamera.Volume.Tint,
+        mainCamera->Volume->Volume.Temperature,
+        mainCamera->Volume->Volume.Tint,
         glm::vec2(0.0f)
     };
 
-    if (mainCamera.Volume.EnableColorGrading) {
+    if (mainCamera->Volume->Volume.EnableColorGrading) {
         frame.CommandBuffer->BeginMarker("Color Grading");
         frame.CommandBuffer->Barrier(color->Texture, ResourceLayout::Storage);
         frame.CommandBuffer->SetComputePipeline(mPipeline);

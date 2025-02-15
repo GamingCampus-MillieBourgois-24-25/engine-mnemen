@@ -128,13 +128,13 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
     auto whiteTexture = RendererTools::Get("WhiteTexture");
 
-    CameraComponent camera = {};
+    CameraComponent* camera = {};
     if (scene) {
         camera = scene->GetMainCamera();
     }
     glm::mat4 matrices[] = {
-        camera.View,
-        camera.Projection
+        camera->View,
+        camera->Projection
     };
     cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(matrices, sizeof(matrices));
 
@@ -187,7 +187,7 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
                     primitive.MeshletTriangles->SRV(),
                     albedoIndex,
                     sampler->Descriptor(),
-                    camera.Volume.VisualizeMeshlets,
+                    camera->Volume->Volume.VisualizeMeshlets,
                     glm::ivec3(0),
                     
                     transform

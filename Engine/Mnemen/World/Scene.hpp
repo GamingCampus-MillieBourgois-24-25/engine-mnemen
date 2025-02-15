@@ -38,7 +38,7 @@ public:
     /// @brief Retrieves the main camera of the scene.
     /// 
     /// @return The main SceneCamera object.
-    CameraComponent GetMainCamera();
+    CameraComponent* GetMainCamera();
 
     /// @brief Retrieves the entity registry.
     /// 

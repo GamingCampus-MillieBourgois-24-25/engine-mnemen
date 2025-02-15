@@ -21,7 +21,7 @@ void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
 
-    CameraComponent mainCamera = scene->GetMainCamera();
+    CameraComponent* mainCamera = scene->GetMainCamera();
 
     auto color = RendererTools::Get("HDRColorBuffer");
     auto depth = RendererTools::Get("GBufferDepth");
@@ -39,13 +39,13 @@ void DOF::Render(const Frame& frame, ::Ref<Scene> scene)
         depth->Descriptor(ViewType::ShaderResource),
  
 
-        mainCamera.Near,
-        mainCamera.Far,
-        mainCamera.Volume.FocusPoint,
-        mainCamera.Volume.FocusRange
+        mainCamera->Near,
+        mainCamera->Far,
+        mainCamera->Volume->Volume.FocusPoint,
+        mainCamera->Volume->Volume.FocusRange
     };
 
-    if (mainCamera.Volume.EnableDOF) {
+    if (mainCamera->Volume->Volume.EnableDOF) {
         frame.CommandBuffer->BeginMarker("Depth of field");
         frame.CommandBuffer->Barrier(color->Texture, ResourceLayout::Storage);
         frame.CommandBuffer->Barrier(depth->Texture, ResourceLayout::Shader);

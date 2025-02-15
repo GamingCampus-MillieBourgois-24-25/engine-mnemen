@@ -391,7 +391,8 @@ void Editor::AssetPanel()
                 ICON_FA_PAINT_BRUSH " Shaders",
                 ICON_FA_SUN_O " Environment Maps",
                 ICON_FA_CODE " Scripts",
-                ICON_FA_MUSIC " Audio Files"
+                ICON_FA_MUSIC " Audio Files",
+                ICON_FA_CAMERA_RETRO " Post Process Volume"
             };
             for (int i = 1; i < (int)AssetType::MAX; i++) {
                 ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
@@ -409,7 +410,8 @@ void Editor::AssetPanel()
                             ICON_FA_PAINT_BRUSH,
                             ICON_FA_SUN_O,
                             ICON_FA_CODE,
-                            ICON_FA_MUSIC
+                            ICON_FA_MUSIC,
+                            ICON_FA_CAMERA_RETRO
                         };
 
                         char temp[256];
@@ -697,7 +699,7 @@ void Editor::EntityEditor()
             }
             if (!mSelectedEntity.HasComponent<CameraComponent>()) {
                 if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera Component")) {
-                    mSelectedEntity.AddComponent<CameraComponent>();
+                    mSelectedEntity.AddComponent<CameraComponent>(true);
                 }
             }
             if (!mSelectedEntity.HasComponent<AudioSourceComponent>()) {

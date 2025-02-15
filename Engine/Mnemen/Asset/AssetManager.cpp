@@ -125,6 +125,10 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
             }
             break;
         }
+        case AssetType::PostFXVolume: {
+            LOG_INFO("Loading post processing volume {0}", path);
+            asset->Volume.Load(path);
+        }
     }
 
     sData.mAssets[path] = asset;

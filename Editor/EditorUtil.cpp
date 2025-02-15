@@ -59,8 +59,7 @@ void Editor::OpenScene(const String& path)
     
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
-    
-    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>(true);
     cam.Primary = 2;
 }
 
@@ -103,14 +102,13 @@ void Editor::NewScene()
 
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
-    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>(true);
     cam.Primary = 2;
 }
 
 void Editor::ReloadScene(const String& path)
 {
     mCurrentScenePath = {};
-    mSelectedEntity = {};
     mScene.reset();
 
     mCurrentScenePath = path;
@@ -118,7 +116,6 @@ void Editor::ReloadScene(const String& path)
 
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
-
-    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>(true);
     cam.Primary = 2;
 }

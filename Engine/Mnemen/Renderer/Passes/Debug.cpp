@@ -45,7 +45,7 @@ void Debug::Render(const Frame& frame, ::Ref<Scene> scene)
     auto cameraBuffer = RendererTools::Get("CameraRingBuffer");
     auto ldr = RendererTools::Get("LDRColorBuffer");
 
-    CameraComponent camera = {};
+    CameraComponent* camera = {};
     if (scene) {
         camera = scene->GetMainCamera();
     }
@@ -61,8 +61,8 @@ void Debug::Render(const Frame& frame, ::Ref<Scene> scene)
         sData.TransferBuffer[frame.FrameIndex]->CopyMapped(vertices.data(), vertices.size() * sizeof(LineVertex));
 
         glm::mat4 pushConstants[] = {
-            camera.Projection,
-            camera.View
+            camera->Projection,
+            camera->View
         };
 
         // Copy to the vertex buffer
