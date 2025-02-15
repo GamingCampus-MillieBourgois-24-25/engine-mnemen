@@ -1,71 +1,69 @@
-struct ToneMapperSettings
+struct PushConstants
 {
     uint InputIndex;
     uint DepthIndex;
-    
+
+    float Near;
     float Far;
-    float Golden_Angle;
-    float Max_Blur_Size;
-    float Rad_Scale;
+    float FocalDistance;
+    float FocalRange;
 };
 
-ConstantBuffer<ToneMapperSettings> Settings : register(b0);
+ConstantBuffer<PushConstants> Settings : register(b0);
 
-float GetBlurSize(float Depth, float FocusPoint, float FocusScale)
+float LinearizeDepth(float depth)
 {
-    float Coc = clamp((1.0 / FocusPoint - 1.0 / Depth) * FocusScale, -1.0, 1.0);
-    return abs(Coc) * Settings.Max_Blur_Size;
+    float z = depth * 2.0 - 1.0; // Convert depth to NDC (-1 to 1)
+    return (2.0 * Settings.Near * Settings.Far) / (Settings.Far + Settings.Near - z * (Settings.Far - Settings.Near));
 }
 
-float3 DepthOfField(uint2 threadID, float FocusPoint, float FocusScale, uint Width, uint Height)
-{   
-    RWTexture2D<float4> Output = ResourceDescriptorHeap[Settings.InputIndex];
-    Texture2D<float> Depth = ResourceDescriptorHeap[Settings.DepthIndex];
-
-    float CenterDepth = Depth.Load(uint3(threadID, 0)).r;
-    float CenterSize = GetBlurSize(CenterDepth, FocusPoint, FocusScale);
-    float2 PixelSize = 1.0 / float2(Width, Height);
-
-    float3 Color = Output.Load(threadID).rgb;
-    float Tot = 1.0;
-    float Radius = Settings.Rad_Scale;
-
-    for (float Ang = 0.0; Radius < Settings.Max_Blur_Size; Ang += Settings.Golden_Angle) 
-    {
-        float2 TexCoord = threadID / float2(Width, Height);
-        float2 Tc = TexCoord + float2(cos(Ang), sin(Ang)) * PixelSize * Radius;
-        float2 SampleCoords = Tc * float2(Width, Height);
-        float4 SampleColorFull = Output[uint2(SampleCoords.x, SampleCoords.y)];
-        float3 SampleColor = SampleColorFull.rgb;
-        float SampleDepth = Depth.Load(uint3(threadID, 0)).r * Settings.Far;
-        float SampleSize = GetBlurSize(SampleDepth, FocusPoint, FocusScale);
-
-        if (SampleDepth > CenterDepth) 
-        {
-            SampleSize = clamp(SampleSize, 0.0, CenterSize * 2.0);
-        }
-        float M = smoothstep(Radius - 0.5, Radius + 0.5, SampleSize);
-        Color += lerp(Color / Tot, SampleColor, M);
-        Tot += 1.0;     
-        Radius += Settings.Rad_Scale / Radius;
-    }
-    return Color /= Tot;
+float ComputeBlurFactor(float depth)
+{
+    float linearDepth = LinearizeDepth(depth);
+    float blurFactor = clamp(abs(linearDepth - Settings.FocalDistance) / Settings.FocalRange, 0.0, 1.0);
+    return blurFactor * blurFactor; // Increase effect for stronger blur
 }
 
 [numthreads(8, 8, 1)]
 void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 {
     RWTexture2D<float4> Output = ResourceDescriptorHeap[Settings.InputIndex];
+    Texture2D<float> Depth = ResourceDescriptorHeap[Settings.DepthIndex];
 
     uint Width, Height;
-    Output.GetDimensions(Width, Height); 
+    Output.GetDimensions(Width, Height);
 
     if (ThreadID.x < Width && ThreadID.y < Height)
     {
-        float FocusPoint = 10.0; 
-        float FocusScale = 1.0;
+        float depth = Depth.Load(uint3(ThreadID.xy, 0)).r;
+        float blurFactor = ComputeBlurFactor(depth);
 
-        float3 FinalColor = DepthOfField(ThreadID.xy, FocusPoint, FocusScale, Width, Height);
-        Output[ThreadID.xy] = float4(FinalColor, 1.0);
+        float2 PixelSize = 1.0 / float2(Width, Height);
+        float4 color = Output.Load(ThreadID.xy);
+
+        if (blurFactor > 0.0)
+        {
+            float4 blurColor = float4(0.0, 0.0, 0.0, 0.0);
+            float weight = 0.0;
+
+            const float2 offsets[9] = {
+                float2(-1,  1), float2(0,  1), float2(1,  1),
+                float2(-1,  0), float2(0,  0), float2(1,  0),
+                float2(-1, -1), float2(0, -1), float2(1, -1)
+            };
+
+            for (int i = 0; i < 9; i++)
+            {
+                float2 sampleTexCoord = (ThreadID.xy + offsets[i] * blurFactor * 2.0) / float2(Width, Height);
+                float2 SampleCoords = sampleTexCoord * float2(Width, Height);
+                blurColor += Output.Load(uint2(SampleCoords.x, SampleCoords.y));
+                weight += 1.0;
+            }
+
+            blurColor /= weight;
+            color = lerp(color, blurColor, blurFactor);
+        }
+
+        Output[ThreadID.xy] = color;
     }
 }
