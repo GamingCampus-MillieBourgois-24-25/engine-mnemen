@@ -8,6 +8,8 @@
 #include "World/Scene.hpp"
 
 #include <iostream>
+#include <cstdarg>
+#include <thread>
 
 #include <Jolt/Jolt.h>
 
@@ -24,6 +26,75 @@
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Math/Vec3.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayerInterfaceTable.h>
+
+
+class ObjectLayerPairFilter
+{
+public:
+    bool ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2);
+};
+
+class MyBroadPhaseLayerInterface : public JPH::BroadPhaseLayerInterface
+{
+public:
+    MyBroadPhaseLayerInterface();
+
+    unsigned int GetNumBroadPhaseLayers() const override;
+    JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer Layer) const override;
+
+private:
+    JPH::BroadPhaseLayer mObjectToBroadPhase[2];
+};
+
+class ObjectVsBroadPhaseLayerFilter
+{
+public:
+    bool ShouldCollide(JPH::ObjectLayer Layer1, JPH::BroadPhaseLayer Layer2);
+
+};
+
+class MyContactListener : public JPH::ContactListener
+{
+public:
+    // See: ContactListener
+    JPH::ValidateResult	OnContactValidate(const JPH::Body& inBody1, const JPH::Body& inBody2, JPH::RVec3Arg inBaseOffset, const JPH::CollideShapeResult& inCollisionResult) override
+    {
+        std::cout << "Contact validate callback" << std::endl;
+
+        // Allows you to ignore a contact before it is created (using layers to not make objects collide is cheaper!)
+        return JPH::ValidateResult::AcceptAllContactsForThisBodyPair;
+    }
+
+    void OnContactAdded(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold, JPH::ContactSettings& ioSettings) override
+    {
+        std::cout << "A contact was added" << std::endl;
+    }
+
+    void OnContactPersisted(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold, JPH::ContactSettings& ioSettings) override
+    {
+        std::cout << "A contact was persisted" << std::endl;
+    }
+
+    void OnContactRemoved(const JPH::SubShapeIDPair& inSubShapePair) override
+    {
+        std::cout << "A contact was removed" << std::endl;
+    }
+};
+
+class MyBodyActivationListener : public JPH::BodyActivationListener
+{
+public:
+    void OnBodyActivated(const JPH::BodyID& inBodyID, JPH::uint64 inBodyUserData) override
+    {
+        std::cout << "A body got activated" << std::endl;
+    }
+
+    void OnBodyDeactivated(const JPH::BodyID& inBodyID, JPH::uint64 inBodyUserData) override
+    {
+        std::cout << "A body went to sleep" << std::endl;
+    }
+};
+
 
 /// @brief A system for handling physics simulation in the application.
 /// 
@@ -53,32 +124,9 @@ public:
     /// @param scene The scene object that provides the current state of entities for physics processing.
     /// @param minStepDuration The minimum duration (in seconds) of a physics simulation step.
     static void Update(Ref<Scene> scene, float minStepDuration);
-private:
-
-    
-    
-};
-
-class ContactListener
-{
-public:
-    static void ValidateResult();
-};
-
-class ObjectLayerPairFilter
-{
-public :
-    bool ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2);
-};
-
-class BroadPhaseLayerInterface
-{
-public:
-    BroadPhaseLayerInterface();
-    int	GetNumBroadPhaseLayers();
-    JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer Layer);
+//private:
     
 
-private:
-    JPH::BroadPhaseLayer mObjectToBroadPhase[];
+     
 };
+
