@@ -7,8 +7,49 @@
 
 #include <Utility/Dialog.hpp>
 #include <windows.h>
-
+#include <sstream>
+#include <functional>
 #include <imgui.h>
+
+namespace fs = std::filesystem;
+
+bool CopyFolderRecursively(const fs::path& sourceDir, const fs::path& destDir)
+{
+    try {
+        // Check if the source directory exists
+        if (!fs::exists(sourceDir) || !fs::is_directory(sourceDir)) {
+            std::cerr << "Source directory does not exist or is not a directory: " << sourceDir << std::endl;
+            return false;
+        }
+
+        // Create the destination directory if it does not exist
+        if (!fs::exists(destDir)) {
+            fs::create_directories(destDir);
+        }
+
+        // Iterate over the contents of the source directory
+        for (const auto& entry : fs::directory_iterator(sourceDir)) {
+            const fs::path& sourcePath = entry.path();
+            fs::path destPath = destDir / sourcePath.filename();
+
+            if (fs::is_directory(sourcePath)) {
+                // Recursively copy subdirectories
+                if (!CopyFolderRecursively(sourcePath, destPath)) {
+                    return false;
+                }
+            } else if (fs::is_regular_file(sourcePath)) {
+                // Copy files
+                fs::copy(sourcePath, destPath, fs::copy_options::overwrite_existing);
+            }
+        }
+
+        return true;
+    }
+    catch (const fs::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+        return false;
+    }
+}
 
 Launcher::Launcher(ApplicationSpecs specs)
     : Application(specs)
@@ -45,7 +86,7 @@ Launcher::Launcher(ApplicationSpecs specs)
     }
 }
 
-Launcher::~Launcher()
+void Launcher::Save()
 {
     nlohmann::json root;
     root["projects"] = nlohmann::json::array();
@@ -57,6 +98,11 @@ Launcher::~Launcher()
         });
     }
     File::WriteJSON(root, ".cache/launcher.json");
+}
+
+Launcher::~Launcher()
+{
+    Save();
 }
 
 void Launcher::OnUpdate(float dt)
@@ -97,17 +143,33 @@ void Launcher::OnImGui(const Frame& frame)
 
     ImGui::SameLine();
 
-    ImGui::BeginChild("right pane", ImVec2(1280 - 300, 0), ImGuiChildFlags_AlwaysAutoResize);
-    if (ImGui::Button("New", ImVec2(ImGui::GetContentRegionAvail().x, 100))) {
+    const char* items[] = {
+        "BC3 (Faster, Lower Quality)",
+        "BC7 (Slower, Higher Quality)"
+    };
 
+    ImGui::BeginChild("right pane", ImVec2(1280 - 300, 0), ImGuiChildFlags_AlwaysAutoResize);
+    ImGui::InputText("Name", mBuffer, 256);
+    if (ImGui::Button("Create...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+        String path = Dialog::OpenFolder();
+        if (!path.empty() && strlen(mBuffer) > 0) {
+            CreateNewProject(mBuffer, path);
+        }
+    }
+    if (ImGui::TreeNodeEx("Creation Settings", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::SliderFloat("Physics Update (Hz)", &mSelectedPhysicsHertz, 30.0f, 120.0f, "%.0f");
+        ImGui::Combo("Compression Format", (int*)&mFormat, items, 2);
+        ImGui::TreePop();
     }
     ImGui::Separator();
     for (auto& project : mLoadedProjects) {
         ImGui::Text(project.first.c_str());
         ImGui::SameLine();
+        ImGui::PushID(project.first.c_str());
         if (ImGui::Button("Open")) {
             LaunchProject(project.second);
         }
+        ImGui::PopID();
         ImGui::TextColored(ImVec4(1, 1, 1, 0.6), project.second.c_str());
         ImGui::Separator();
     }
@@ -121,6 +183,39 @@ void Launcher::PostPresent()
     if (!SelectedProject.empty()) {
         mWindow->Close();
     }
+}
+
+void Launcher::CreateNewProject(String name, String folder)
+{
+    for (int i = 0; i < name.size(); i++) {
+        if (name[i] == ' ') name[i] = '_';
+    }
+
+    std::stringstream ss;
+    ss << folder << "/" << name << ".mpj";
+
+    std::stringstream ssAssets;
+    ssAssets << folder << "/" << "Assets/";
+    if (!File::Exists(ssAssets.str())) {
+        File::CreateDirectoryFromPath(ssAssets.str());
+    }
+
+    Ref<Project> project = MakeRef<Project>();
+    project->PathAbsolute = ss.str();
+    project->Name = name;
+    project->StartScenePathRelative = "Assets/Scenes/Default.msf";
+    project->SceneMap["Start"] = project->StartScenePathRelative;
+    project->StartSceneName = "Start";
+    project->Settings.Format = mFormat;
+    project->Settings.PhysicsRefreshRate = mSelectedPhysicsHertz;
+    project->Save(project->PathAbsolute);
+
+    // Copy all that shiii
+    fs::copy("imgui.ini", folder + "/imgui.ini");
+    CopyFolderRecursively("Assets", ssAssets.str());
+
+    mLoadedProjects[project->Name] = project->PathAbsolute;
+    Save();
 }
 
 void Launcher::LoadProjects()

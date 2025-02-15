@@ -222,6 +222,10 @@ target("Launcher")
     add_deps("Mnemen")
     add_defines("GLM_ENABLE_EXPERIMENTAL")
 
+    before_link(function (target)
+        os.cp("imgui.ini", "$(buildir)/$(plat)/$(arch)/$(mode)/imgui.ini")
+    end)
+
     if is_mode("debug") then
         set_symbols("debug")
         set_optimize("none")

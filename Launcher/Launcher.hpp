@@ -20,6 +20,8 @@ public:
 
     String SelectedProject = "";
 private:
+    void Save();
+    void CreateNewProject(String name, String folder);
     void LoadProjects();
     void CenteredImage(ImTextureID id, ImVec2 size);
     void CenteredText(const char* str);
@@ -29,4 +31,7 @@ private:
     Texture::Ref mLogo;
     View::Ref mView;
     UnorderedMap<String, String> mLoadedProjects;
+    float mSelectedPhysicsHertz = 90.0f;
+    CompressionFormat mFormat = CompressionFormat::BC3;
+    char mBuffer[256] = {};
 };
