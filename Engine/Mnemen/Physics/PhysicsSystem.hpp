@@ -7,6 +7,24 @@
 
 #include "World/Scene.hpp"
 
+#include <iostream>
+
+#include <Jolt/Jolt.h>
+
+#include <Jolt/RegisterTypes.h>
+#include <Jolt/Core/TempAllocator.h>
+#include <Jolt/Core/Factory.h>
+#include <Jolt/Core/JobSystemThreadPool.h>
+#include <Jolt/Physics/PhysicsSettings.h>
+#include <Jolt/Physics/PhysicsSystem.h>
+#include <Jolt/Physics/Body/BodyInterface.h>
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Body/BodyActivationListener.h>
+#include <Jolt/Math/Vec3.h>
+#include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayerInterfaceTable.h>
+
 /// @brief A system for handling physics simulation in the application.
 /// 
 /// The `PhysicsSystem` class provides static methods for initializing, updating, and exiting 
@@ -35,4 +53,32 @@ public:
     /// @param scene The scene object that provides the current state of entities for physics processing.
     /// @param minStepDuration The minimum duration (in seconds) of a physics simulation step.
     static void Update(Ref<Scene> scene, float minStepDuration);
+private:
+
+    
+    
+};
+
+class ContactListener
+{
+public:
+    static void ValidateResult();
+};
+
+class ObjectLayerPairFilter
+{
+public :
+    bool ShouldCollide(JPH::ObjectLayer ObjectLayer1, JPH::ObjectLayer ObjectLayer2);
+};
+
+class BroadPhaseLayerInterface
+{
+public:
+    BroadPhaseLayerInterface();
+    int	GetNumBroadPhaseLayers();
+    JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer Layer);
+    
+
+private:
+    JPH::BroadPhaseLayer mObjectToBroadPhase[];
 };
