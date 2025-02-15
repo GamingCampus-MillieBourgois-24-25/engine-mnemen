@@ -9,6 +9,8 @@
 #include <Input/Input.hpp>
 #include <imgui_impl_sdl3.h>
 
+#include <Asset/Image.hpp>
+
 Window::Window(int width, int height, const String& title)
 {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -18,6 +20,17 @@ Window::Window(int width, int height, const String& title)
     mWindow = SDL_CreateWindow(title.c_str(), width, height, 0);
     if (!mWindow) {
         LOG_CRITICAL("Failed to create window!");
+    }
+
+    Image image;
+    image.Load("Assets/Icon/icon.png");
+
+    SDL_Surface* surface = SDL_CreateSurfaceFrom(
+        image.Width, image.Height, SDL_PIXELFORMAT_RGBA32, image.Pixels.data(), image.Width * 4
+    );
+    if (surface) {
+        SDL_SetWindowIcon(mWindow, surface);
+        SDL_DestroySurface(surface);
     }
 
     LOG_INFO("Created window {0} ({1}, {2})", title, width, height);
