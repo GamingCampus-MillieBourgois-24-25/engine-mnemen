@@ -14,6 +14,13 @@
 #include <Utility/Dialog.hpp>
 #include <Utility/String.hpp>
 
+void Editor::ProjectEditor()
+{
+    ImGui::Begin(ICON_FA_GITHUB " Project Settings");
+
+    ImGui::End();
+}
+
 void Editor::Viewport(const Frame& frame)
 {
     if (!mScene)
@@ -384,6 +391,10 @@ void Editor::AssetPanel()
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem(ICON_FA_FILE_IMAGE_O " Loaded Assets")) {
+            if (ImGui::Button("Run Asset Cache")) {
+                AssetCacher::Init("Assets");
+            }
+
             const char* tags[] = {
                 ICON_FA_QUESTION " Unknown",
                 ICON_FA_CUBE " Models",
@@ -920,7 +931,7 @@ void Editor::LogWindow()
     if (!mScene)
         return;
 
-    ImGui::Begin("Log");
+    ImGui::Begin(ICON_FA_TERMINAL " Log");
     if (ImGui::Button(ICON_FA_ERASER " Clear")) {
         Logger::sEntries.clear();
     }

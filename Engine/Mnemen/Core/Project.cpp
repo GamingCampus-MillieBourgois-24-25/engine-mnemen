@@ -21,8 +21,8 @@ void Project::Load(const String& path)
     // Load basic project properties
     Name = root["name"];
     PathAbsolute = root["projectPath"];
-    StartScenePathRelative = root["startScene"];
-    StartSceneName = SceneMap[StartScenePathRelative];
+    StartSceneName = root["startScene"];
+    StartScenePathRelative = SceneMap[StartSceneName];
     
     // Load settings
     if (root.contains("settings") && root["settings"].is_object()) {
@@ -47,7 +47,7 @@ void Project::Save(const String& path)
     // Save basic project properties
     root["name"] = Name;
     root["projectPath"] = PathAbsolute;
-    root["startScene"] = StartScenePathRelative;
+    root["startScene"] = StartSceneName;
     
     // Save scene files
     for (const auto& [sceneName, scenePath] : SceneMap) {

@@ -33,6 +33,7 @@ private:
     void ReloadScene(const String& path);
 
     // UI
+    void ProjectEditor();
     void Viewport(const Frame& frame);
     void BeginDockSpace();
     void EndDockSpace();

@@ -103,6 +103,7 @@ void Editor::OnImGui(const Frame& frame)
     PROFILE_FUNCTION();
 
     BeginDockSpace();
+    ProjectEditor();
     Profiler::OnUI();
     FXVolumeEditor();
     Viewport(frame);

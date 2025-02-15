@@ -78,6 +78,7 @@ void Editor::CloseScene()
 
 bool Editor::SaveScene()
 {
+    mProject->Save(mApplicationSpecs.ProjectPath);
     if (mCurrentScenePath.empty()) {
         return SaveSceneAs();
     }
