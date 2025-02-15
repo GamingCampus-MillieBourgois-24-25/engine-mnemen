@@ -222,7 +222,8 @@ void Launcher::LoadProjects()
 {
     nlohmann::json root = File::LoadJSON(".cache/launcher.json");
     for (auto project : root["projects"]) {
-        mLoadedProjects[project["name"]] = project["path"];
+        if (File::Exists(project["path"]))
+            mLoadedProjects[project["name"]] = project["path"];
     }
 }
 
