@@ -196,7 +196,6 @@ target("Launcher")
     set_kind("binary")
     set_group("Engine")
     set_languages("c++17")
-    set_rundir(".")
     set_encodings("utf-8")
 
     add_files("Launcher/*.cpp")

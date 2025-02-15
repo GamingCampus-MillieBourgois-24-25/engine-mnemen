@@ -67,6 +67,8 @@ Application::~Application()
     AudioSystem::Exit();
     PhysicsSystem::Exit();
     Input::Exit();
+
+    LOG_INFO("Mnemen is done!");
 }
 
 void Application::OnAwake()

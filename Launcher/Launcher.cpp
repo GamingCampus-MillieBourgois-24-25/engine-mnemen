@@ -6,6 +6,7 @@
 #include "Launcher.hpp"
 
 #include <Utility/Dialog.hpp>
+#include <windows.h>
 
 #include <imgui.h>
 
@@ -103,6 +104,10 @@ void Launcher::OnImGui(const Frame& frame)
     ImGui::Separator();
     for (auto& project : mLoadedProjects) {
         ImGui::Text(project.first.c_str());
+        ImGui::SameLine();
+        if (ImGui::Button("Open")) {
+            LaunchProject(project.second);
+        }
         ImGui::TextColored(ImVec4(1, 1, 1, 0.6), project.second.c_str());
         ImGui::Separator();
     }
@@ -111,12 +116,24 @@ void Launcher::OnImGui(const Frame& frame)
     ImGui::End();
 }
 
+void Launcher::PostPresent()
+{
+    if (!SelectedProject.empty()) {
+        mWindow->Close();
+    }
+}
+
 void Launcher::LoadProjects()
 {
     nlohmann::json root = File::LoadJSON(".cache/launcher.json");
     for (auto project : root["projects"]) {
         mLoadedProjects[project["name"]] = project["path"];
     }
+}
+
+void Launcher::LaunchProject(const String& path)
+{
+    SelectedProject = path;
 }
 
 void Launcher::CenteredImage(ImTextureID id, ImVec2 size)

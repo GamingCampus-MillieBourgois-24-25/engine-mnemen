@@ -38,7 +38,9 @@ Window::Window(int width, int height, const String& title)
 
 Window::~Window()
 {
-    SDL_DestroyWindow(mWindow);
+    if (mWindow || mRunning) {
+        SDL_DestroyWindow(mWindow);
+    }
     SDL_Quit();
 }
 
@@ -67,4 +69,5 @@ void* Window::GetHandle()
 void Window::Close()
 {
     mRunning = false;
+    SDL_DestroyWindow(mWindow);
 }

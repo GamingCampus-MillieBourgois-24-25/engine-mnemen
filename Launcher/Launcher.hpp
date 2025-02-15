@@ -16,11 +16,15 @@ public:
     virtual void OnUpdate(float dt) override;
     virtual void OnPhysicsTick() override;
     virtual void OnImGui(const Frame& frame) override;
+    virtual void PostPresent() override;
+
+    String SelectedProject = "";
 private:
     void LoadProjects();
     void CenteredImage(ImTextureID id, ImVec2 size);
     void CenteredText(const char* str);
     bool CenteredButton(const char* str);
+    void LaunchProject(const String& path);
 
     Texture::Ref mLogo;
     View::Ref mView;
