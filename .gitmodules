@@ -1,0 +1,31 @@
+[submodule "ThirdParty/spdlog"]
+	path = ThirdParty/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "ThirdParty/GLM"]
+	path = ThirdParty/GLM
+	url = https://github.com/g-truc/glm
+[submodule "ThirdParty/ImGui"]
+	path = ThirdParty/ImGui
+	url = https://github.com/ocornut/imgui
+	branch = docking
+[submodule "ThirdParty/stb"]
+	path = ThirdParty/stb
+	url = https://github.com/nothings/stb
+[submodule "ThirdParty/meshopt"]
+	path = ThirdParty/meshopt
+	url = https://github.com/zeux/meshoptimizer/
+[submodule "ThirdParty/Jolt"]
+	path = ThirdParty/Jolt
+	url = https://github.com/jrouwe/JoltPhysics
+[submodule "ThirdParty/miniaudio"]
+	path = ThirdParty/miniaudio
+	url = https://github.com/mackron/miniaudio
+[submodule "ThirdParty/Recast"]
+	path = ThirdParty/Recast
+	url = https://github.com/recastnavigation/recastnavigation/
+[submodule "ThirdParty/JSON"]
+	path = ThirdParty/JSON
+	url = https://github.com/nlohmann/json
+[submodule "ThirdParty/ImGuizmo"]
+	path = ThirdParty/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo

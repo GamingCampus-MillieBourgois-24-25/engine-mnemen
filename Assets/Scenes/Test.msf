@@ -1,0 +1,62 @@
+{
+    "entities": [
+        {
+            "camera": {
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true,
+                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
+            },
+            "id": 1,
+            "name": "Camera",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -7.8328046798706055,
+                    4.88821268081665,
+                    -0.2677389681339264
+                ],
+                "rotation": [
+                    0.19970601797103882,
+                    0.662881076335907,
+                    -0.19403091073036194,
+                    0.6950238943099976
+                ],
+                "scale": [
+                    0.9999992847442627,
+                    0.9999989867210388,
+                    0.9999974966049194
+                ]
+            }
+        },
+        {
+            "id": 0,
+            "mesh": {
+                "path": "Assets/Models/Sponza/Sponza.gltf"
+            },
+            "name": "Sponza",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ]
+}
