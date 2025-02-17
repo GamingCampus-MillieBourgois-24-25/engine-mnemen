@@ -125,16 +125,30 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
     frame.CommandBuffer->SetMeshPipeline(mPipeline);
 
     // Draw function for each model
-    std::function<void(Frame frame, MeshNode*, Mesh* model, glm::mat4 transform)> drawNode = [&](Frame frame, MeshNode* node, Mesh* model, glm::mat4 transform) {
+    std::function<void(Frame frame, MeshNode*, Mesh* model, glm::mat4 transform, MaterialComponent* material)> drawNode = [&](Frame frame, MeshNode* node, Mesh* model, glm::mat4 transform, MaterialComponent* material) {
         if (!node) {
             return;
         }
         glm::mat4 globalTransform = transform * node->Transform;
         for (MeshPrimitive primitive : node->Primitives) {
             Statistics::Get().InstanceCount++;
-            MeshMaterial material = model->Materials[primitive.MaterialIndex];
-            int albedoIndex = material.Albedo ? material.AlbedoView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
-            int normalIndex = material.Normal ? material.NormalView->GetDescriptor().Index : -1;
+            MeshMaterial meshMaterial = model->Materials[primitive.MaterialIndex];
+
+            // NOTE(ame): Ugly disgusting piece of shit code but it'll do the trick. Yippee!!!
+            int albedoIndex = whiteTexture->Descriptor(ViewType::ShaderResource);
+            int normalIndex = whiteTexture->Descriptor(ViewType::ShaderResource);
+            if (material) {
+                if (material->InheritFromModel) {
+                    albedoIndex = meshMaterial.Albedo ? meshMaterial.AlbedoView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
+                    normalIndex = meshMaterial.Normal ? meshMaterial.NormalView->GetDescriptor().Index : -1;
+                } else {
+                    albedoIndex = material->Albedo ? material->Albedo->ShaderView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
+                    normalIndex = material->Normal ? material->Normal->ShaderView->GetDescriptor().Index : -1;
+                }
+            } else {
+                albedoIndex = meshMaterial.Albedo ? meshMaterial.AlbedoView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
+                normalIndex = meshMaterial.Normal ? meshMaterial.NormalView->GetDescriptor().Index : -1;
+            }
 
             struct PushConstants {
                 int Matrices;
@@ -173,7 +187,7 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
         }
         if (!node->Children.empty()) {
             for (MeshNode* child : node->Children) {
-                drawNode(frame, child, model, globalTransform);
+                drawNode(frame, child, model, globalTransform, material);
             }
         }
     };
@@ -185,7 +199,12 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
             Entity entity(registry);
             entity.ID = id;
             if (mesh.Loaded) {
-                drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, entity.GetWorldTransform());
+                MaterialComponent* component = nullptr;
+                if (entity.HasComponent<MaterialComponent>()) {
+                    component = &entity.GetComponent<MaterialComponent>();
+                }
+
+                drawNode(frame, mesh.MeshAsset->Mesh.Root, &mesh.MeshAsset->Mesh, entity.GetWorldTransform(), component);
             }
         }
     }

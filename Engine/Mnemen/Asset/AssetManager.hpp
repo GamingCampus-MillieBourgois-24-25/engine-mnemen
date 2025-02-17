@@ -43,6 +43,7 @@ struct Asset
 
     Mesh Mesh;                ///< Mesh data if the asset is a mesh.
     Texture::Ref Texture;     ///< Pointer to texture data if the asset is a texture.
+    View::Ref ShaderView;     ///< Shader resource view of the texture data if the asset is a texture.
     Shader Shader;            ///< Shader data if the asset is a shader.
     Script::Ref Script;       ///< Script data if the asset is a script.
     AudioFile::Ref Audio;     ///< Audio data if the asset is audio.

@@ -13,6 +13,7 @@ void MaterialComponent::LoadAlbedo(const String& string)
         return;
     }
 
+    if (Albedo) AssetManager::GiveBack(Albedo->Path);
     Albedo = AssetManager::Get(string, AssetType::Texture);
 }
 
@@ -22,6 +23,7 @@ void MaterialComponent::LoadNormal(const String& string)
         return;
     }
 
+    if (Normal) AssetManager::GiveBack(Normal->Path);
     Normal = AssetManager::Get(string, AssetType::Texture);
 }
 

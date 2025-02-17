@@ -172,7 +172,7 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
         auto m = entityJson["material"];
         material.InheritFromModel = m["inherit"];
         material.LoadAlbedo(m["albedo"]);
-        material.LoadAlbedo(m["normal"]);
+        material.LoadNormal(m["normal"]);
     }
     for (auto& script : entityJson["scripts"]) {
         auto& sc = entity.GetComponent<ScriptComponent>();

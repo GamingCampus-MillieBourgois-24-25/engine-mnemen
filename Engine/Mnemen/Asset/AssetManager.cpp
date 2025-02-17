@@ -97,9 +97,11 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
                 desc.Name = path;
                 desc.Format = format == CompressionFormat::BC7 ? TextureFormat::BC7 : TextureFormat::BC3;
                 desc.Usage = TextureUsage::ShaderResource;
+
                 asset->Texture = sData.mRHI->CreateTexture(desc);
                 asset->Texture->Tag(ResourceTag::ModelTexture);
-        
+                asset->ShaderView = sData.mRHI->CreateView(asset->Texture, ViewType::ShaderResource);
+
                 Uploader::EnqueueTextureUpload(file.Bytes, asset->Texture);
             } else {
                 Image image;
