@@ -607,7 +607,7 @@ void Editor::EntityEditor()
         if (mSelectedEntity.HasComponent<MaterialComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_TREE " Material Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
                 auto& material = mSelectedEntity.GetComponent<MaterialComponent>();
-                
+
                 bool shouldDelete = false;
                 ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
@@ -620,6 +620,79 @@ void Editor::EntityEditor()
                 ImGui::PopStyleVar();
 
                 ImGui::Checkbox("Inherit from Model", &material.InheritFromModel);
+                
+                // Albedo
+                if (material.Albedo) {
+                    char temp[512];
+                    sprintf(temp, "%s %s", ICON_FA_FILE, material.Albedo->Path.c_str());
+                    if (ImGui::Button(temp, ImVec2(70, 0))) {
+                        String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
+                        if (!path.empty()) {
+                            material.LoadAlbedo(path);
+                        }
+                    }
+                    ImGui::SameLine();
+                } else {
+                    if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(70, 0))) {
+                        String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
+                        if (!path.empty()) {
+                            material.LoadAlbedo(path);
+                        }
+                    }
+                    ImGui::SameLine();
+                }
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+				        std::filesystem::path scriptPath(path);
+                        std::string string = scriptPath.string();
+                        if (string.find(".png") != std::string::npos || string.find(".jpg") != std::string::npos || string.find(".jpeg") != std::string::npos) {
+                            for (int i = 0; i < string.size(); i++) {
+                                string[i] = string[i] == '\\' ? '/' : string[i];
+                            }
+                            material.LoadAlbedo(string);
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                ImGui::Text("Albedo Texture");
+
+                // Normal
+                if (material.Normal) {
+                    char temp[512];
+                    sprintf(temp, "%s %s", ICON_FA_FILE, material.Normal->Path.c_str());
+                    if (ImGui::Button(temp, ImVec2(70, 0))) {
+                        String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
+                        if (!path.empty()) {
+                            material.LoadNormal(path);
+                        }
+                    }
+                    ImGui::SameLine();
+                } else {
+                    if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(70, 0))) {
+                        String path = Dialog::Open({ ".png", ".jpg", ".jpeg" });
+                        if (!path.empty()) {
+                            // Load script
+                            material.LoadAlbedo(path);
+                        }
+                    }
+                    ImGui::SameLine();
+                }
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+				        std::filesystem::path scriptPath(path);
+                        std::string string = scriptPath.string();
+                        if (string.find(".png") != std::string::npos || string.find(".jpg") != std::string::npos || string.find(".jpeg") != std::string::npos) {
+                            for (int i = 0; i < string.size(); i++) {
+                                string[i] = string[i] == '\\' ? '/' : string[i];
+                            }
+                            material.LoadNormal(string);
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                ImGui::Text("Normal Texture");
             
                 ImGui::TreePop();
             

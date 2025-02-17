@@ -1,38 +1,39 @@
 {
     "entities": [
         {
-            "camera": {
-                "far": 200.0,
-                "fov": 90.0,
-                "near": 0.10000000149011612,
-                "primary": true,
-                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
+            "id": 2,
+            "material": {
+                "albedo": "Assets/Models/DamagedHelmet/Default_albedo.jpg",
+                "inherit": true,
+                "normal": "Assets/Models/DamagedHelmet/Default_normal.jpg"
             },
-            "id": 1,
-            "name": "Camera",
+            "mesh": {
+                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
+            },
+            "name": "DamagedHelmet",
             "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
-                    -7.8328046798706055,
-                    4.88821268081665,
-                    -0.2677389681339264
+                    0.019140081480145454,
+                    0.49516406655311584,
+                    -0.12172741442918777
                 ],
                 "rotation": [
-                    0.19970601797103882,
-                    0.662881076335907,
-                    -0.19403091073036194,
-                    0.6950238943099976
+                    -7.193852070486173e-06,
+                    -0.7020409107208252,
+                    -5.598471034318209e-06,
+                    0.7121366262435913
                 ],
                 "scale": [
-                    0.9999992847442627,
-                    0.9999989867210388,
-                    0.9999974966049194
+                    0.4499998986721039,
+                    0.44999998807907104,
+                    0.4499998986721039
                 ]
             }
         },
         {
-            "id": 0,
+            "id": 1,
             "mesh": {
                 "path": "Assets/Models/Sponza/Sponza.gltf"
             },
@@ -55,6 +56,37 @@
                     1.0,
                     1.0,
                     1.0
+                ]
+            }
+        },
+        {
+            "camera": {
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true,
+                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
+            },
+            "id": 0,
+            "name": "Camera",
+            "parent": null,
+            "scripts": [],
+            "transform": {
+                "position": [
+                    -7.8328046798706055,
+                    4.88821268081665,
+                    -0.2677389681339264
+                ],
+                "rotation": [
+                    0.19970566034317017,
+                    0.662887692451477,
+                    -0.19403283298015594,
+                    0.6950170993804932
+                ],
+                "scale": [
+                    0.9999992251396179,
+                    0.9999989867210388,
+                    0.9999974966049194
                 ]
             }
         }
