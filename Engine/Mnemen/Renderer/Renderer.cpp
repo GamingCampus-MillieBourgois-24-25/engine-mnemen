@@ -5,6 +5,7 @@
 
 #include "Renderer.hpp"
 #include "RendererTools.hpp"
+#include "SkyboxCooker.hpp"
 
 #include "Passes/GBuffer.hpp"
 #include "Passes/Deferred.hpp"
@@ -23,6 +24,7 @@
 Renderer::Renderer(RHI::Ref rhi)
 {
     RendererTools::Init(rhi);
+    SkyboxCooker::Init(rhi);
 
     mPasses = {
         MakeRef<GBuffer>(rhi),

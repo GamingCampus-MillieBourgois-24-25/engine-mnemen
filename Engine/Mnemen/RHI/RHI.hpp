@@ -97,6 +97,11 @@ public:
     /// @return A reference to the created `ComputePipeline` object.
     ComputePipeline::Ref CreateComputePipeline(Shader shader, RootSignature::Ref signature);
 
+    /// @brief Creates a new command buffer to execute GPU operations
+    /// @param close Whether to reset the command buffer when created
+    /// @return A reference to the created `CommandBuffer` object
+    CommandBuffer::Ref CreateCommandBuffer(bool close);
+
     /// @brief Creates a new buffer resource.
     /// @param size The size of the buffer in bytes.
     /// @param stride The stride (size of one element) in the buffer.

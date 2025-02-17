@@ -23,4 +23,8 @@ struct Image
     /// @brief Loads an image from a file.
     /// @param path The file path of the image to load.
     void Load(const String& path);
+
+    /// @brief Loads an HDR image from a file.
+    /// @param path The file path of the HDR image to load.
+    void LoadHDR(const String& path);
 };

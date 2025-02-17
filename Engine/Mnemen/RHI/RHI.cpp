@@ -189,6 +189,11 @@ ComputePipeline::Ref RHI::CreateComputePipeline(Shader shader, RootSignature::Re
     return MakeRef<ComputePipeline>(mDevice, shader, signature);
 }
 
+CommandBuffer::Ref RHI::CreateCommandBuffer(bool close)
+{
+    return MakeRef<CommandBuffer>(mDevice, mGraphicsQueue, mDescriptorHeaps, close);
+}
+
 Buffer::Ref RHI::CreateBuffer(UInt64 size, UInt64 stride, BufferType type, const String& name)
 {
     return MakeRef<Buffer>(mDevice, mDescriptorHeaps, size, stride, type, name);
