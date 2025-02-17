@@ -7,7 +7,7 @@
 
 JPH::PhysicsSystem* sPhysicsSystem;
 JPH::BodyInterface* sPhysicsWorld;
-JPH::Vec3 sGravity;
+//JPH::Vec3 sGravity;
 JPH::TempAllocatorMalloc* sAllocator;
 constexpr JPH::BroadPhaseLayer sNonMoving(0) ;
 constexpr JPH::BroadPhaseLayer sMoving(1);
@@ -15,7 +15,6 @@ constexpr int mLayers(2);
 constexpr JPH::ObjectLayer sNonMovingLayer = 0;
 constexpr JPH::ObjectLayer sMovingLayer = 1;
 constexpr JPH::ObjectLayer sLayers = 2;
-
 
 
 #include <Core/Logger.hpp>
@@ -127,27 +126,25 @@ void PhysicsSystem::Init()
     // Registering one is entirely optional.
     MyContactListener contact_listener;
     sPhysicsSystem->SetContactListener(&contact_listener);
-    sGravity = JPH::Vec3(0.0f, -9.81f, 0.0f);
+    JPH::Vec3 sGravity = JPH::Vec3(0.0f, -9.81f, 0.0f);
     sPhysicsSystem->SetGravity(sGravity);
 
-    //Create the physics world
-    //sPhysicsWorld = &sPhysicsSystem->GetBodyInterface();
 
-    JPH::BodyInterface& body_interface = sPhysicsSystem->GetBodyInterface();
+    sPhysicsWorld = &sPhysicsSystem->GetBodyInterface();
     JPH::BoxShapeSettings floor_shape_settings(JPH::Vec3(100.0f, 1.0f, 100.0f));
     floor_shape_settings.SetEmbedded();
     JPH::ShapeSettings::ShapeResult floor_shape_result = floor_shape_settings.Create();
     JPH::ShapeRefC floor_shape = floor_shape_result.Get(); // We don't expect an error here, but you can check floor_shape_result for HasError() / GetError()
     JPH::BodyCreationSettings floor_settings(floor_shape, JPH::RVec3(0.0f, -1.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Static, sNonMovingLayer);
-    JPH::Body* floor = body_interface.CreateBody(floor_settings);
-    body_interface.AddBody(floor->GetID(), JPH::EActivation::DontActivate);
+    JPH::Body* floor = sPhysicsWorld->CreateBody(floor_settings);
+    sPhysicsWorld->AddBody(floor->GetID(), JPH::EActivation::DontActivate);
 
     JPH::BodyCreationSettings sphere_settings(new JPH::SphereShape(0.5f), JPH::RVec3(0.0f, 2.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Dynamic, sMovingLayer);
-    JPH::BodyID sphere_id = body_interface.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
+    JPH::BodyID sphere_id = sPhysicsWorld->CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
 
     // Now you can interact with the dynamic body, in this case we're going to give it a velocity.
     // (note that if we had used CreateBody then we could have set the velocity straight on the body before adding it to the physics system)
-    body_interface.SetLinearVelocity(sphere_id, JPH::Vec3(0.0f, -5.0f, 0.0f));
+    sPhysicsWorld->SetLinearVelocity(sphere_id, JPH::Vec3(0.0f, -5.0f, 0.0f));
     sPhysicsSystem->OptimizeBroadPhase();
 
 

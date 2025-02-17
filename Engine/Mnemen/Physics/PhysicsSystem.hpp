@@ -124,9 +124,8 @@ public:
     /// @param scene The scene object that provides the current state of entities for physics processing.
     /// @param minStepDuration The minimum duration (in seconds) of a physics simulation step.
     static void Update(Ref<Scene> scene, float minStepDuration);
-//private:
+private:
     
-
-     
+    //static JPH::Vec3 sGravity;
 };
 
