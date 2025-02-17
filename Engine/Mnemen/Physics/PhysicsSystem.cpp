@@ -153,6 +153,15 @@ void PhysicsSystem::Init()
 
 void PhysicsSystem::Exit()
 {
+    // Remove the sphere from the physics system. Note that the sphere itself keeps all of its state and can be re-added at any time.
+    /*sPhysicsWorld->RemoveBody(sphere_id);
+
+    // Destroy the sphere. After this the sphere ID is no longer valid.
+    sPhysicsWorld->DestroyBody(sphere_id);
+
+    // Remove and destroy the floor
+    sPhysicsWorld->RemoveBody(floor->GetID());
+    sPhysicsWorld->DestroyBody(floor->GetID());*/
     JPH::UnregisterTypes();
     delete JPH::Factory::sInstance;
     JPH::Factory::sInstance = nullptr;
