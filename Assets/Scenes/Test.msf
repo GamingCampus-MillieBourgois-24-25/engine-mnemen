@@ -1,34 +1,33 @@
 {
     "entities": [
         {
+            "camera": {
+                "far": 200.0,
+                "fov": 90.0,
+                "near": 0.10000000149011612,
+                "primary": true,
+                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
+            },
             "id": 2,
-            "material": {
-                "albedo": "Assets/Models/DamagedHelmet/Default_albedo.jpg",
-                "inherit": true,
-                "normal": "Assets/Models/DamagedHelmet/Default_normal.jpg"
-            },
-            "mesh": {
-                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
-            },
-            "name": "DamagedHelmet",
+            "name": "Camera",
             "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
-                    0.019140081480145454,
-                    0.49516406655311584,
-                    -0.12172741442918777
+                    -7.8328046798706055,
+                    4.88821268081665,
+                    -0.2677389681339264
                 ],
                 "rotation": [
-                    -7.193852070486173e-06,
-                    -0.7020409107208252,
-                    -5.598471034318209e-06,
-                    0.7121366262435913
+                    0.1997055560350418,
+                    0.6628877520561218,
+                    -0.19403274357318878,
+                    0.6950171589851379
                 ],
                 "scale": [
-                    0.4499998986721039,
-                    0.44999998807907104,
-                    0.4499998986721039
+                    0.9999991655349731,
+                    0.9999989867210388,
+                    0.9999974370002747
                 ]
             }
         },
@@ -60,33 +59,34 @@
             }
         },
         {
-            "camera": {
-                "far": 200.0,
-                "fov": 90.0,
-                "near": 0.10000000149011612,
-                "primary": true,
-                "volumePath": "Assets/Volumes/DefaultVolume.mfx"
-            },
             "id": 0,
-            "name": "Camera",
+            "material": {
+                "albedo": "Assets/Models/DamagedHelmet/Default_albedo.jpg",
+                "inherit": true,
+                "normal": "Assets/Models/DamagedHelmet/Default_normal.jpg"
+            },
+            "mesh": {
+                "path": "Assets/Models/DamagedHelmet/DamagedHelmet.gltf"
+            },
+            "name": "DamagedHelmet",
             "parent": null,
             "scripts": [],
             "transform": {
                 "position": [
-                    -7.8328046798706055,
-                    4.88821268081665,
-                    -0.2677389681339264
+                    0.019140081480145454,
+                    0.49516406655311584,
+                    -0.12172741442918777
                 ],
                 "rotation": [
-                    0.19970566034317017,
-                    0.662887692451477,
-                    -0.19403283298015594,
-                    0.6950170993804932
+                    -7.193852070486173e-06,
+                    -0.7020409107208252,
+                    -5.598471034318209e-06,
+                    0.7121366262435913
                 ],
                 "scale": [
-                    0.9999992251396179,
-                    0.9999989867210388,
-                    0.9999974966049194
+                    0.4499998986721039,
+                    0.44999998807907104,
+                    0.4499998986721039
                 ]
             }
         }

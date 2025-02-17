@@ -252,8 +252,15 @@ void Editor::HierarchyPanel()
     ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
 
     // Add entity button
-    if (ImGui::Button(ICON_FA_PLUS " Add Entity", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
-        mSelectedEntity = mScene->AddEntity("New Entity");
+    if (ImGui::BeginMenu(ICON_FA_PLUS " New Entity")) {
+        if (ImGui::MenuItem(ICON_FA_QUESTION " Empty")) mSelectedEntity = mScene->AddEntity("New Entity");
+        if (ImGui::MenuItem(ICON_FA_CAMERA " Camera")) mSelectedEntity = mScene->AddDefaultCamera();
+        if (ImGui::MenuItem(ICON_FA_CUBE " Cube")) mSelectedEntity = mScene->AddDefaultCube();
+        if (ImGui::MenuItem(ICON_FA_CIRCLE_O " Capsule")) mSelectedEntity = mScene->AddDefaultCapsule();
+        if (ImGui::MenuItem(ICON_FA_CIRCLE_THIN " Cylinder")) mSelectedEntity = mScene->AddDefaultCylinder();
+        if (ImGui::MenuItem(ICON_FA_SQUARE " Plane")) mSelectedEntity = mScene->AddDefaultPlane();
+        if (ImGui::MenuItem(ICON_FA_CIRCLE " Sphere")) mSelectedEntity = mScene->AddDefaultSphere();
+        ImGui::EndMenu();
     }
     ImGui::Button("Drag me here to detach!", ImVec2(ImGui::GetContentRegionAvail().x, 0));
     if (ImGui::BeginDragDropTarget()) {

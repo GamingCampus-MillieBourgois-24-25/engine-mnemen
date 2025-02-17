@@ -114,3 +114,62 @@ void Scene::RemoveEntity(Entity e)
     }
     mRegistry.destroy(e.ID);
 }
+
+Entity Scene::AddDefaultCamera(const String& name)
+{
+    Entity result = AddEntity(name);
+
+    auto& c = result.AddComponent<CameraComponent>(true);
+
+    return result;
+}
+
+Entity Scene::AddDefaultCube(const String& name)
+{
+    Entity result = AddEntity(name);
+
+    auto& m = result.AddComponent<MeshComponent>();
+    m.Init("Assets/Models/Primitives/Cube.gltf");
+
+    return result;
+}
+
+Entity Scene::AddDefaultSphere(const String& name)
+{
+    Entity result = AddEntity(name);
+
+    auto& m = result.AddComponent<MeshComponent>();
+    m.Init("Assets/Models/Primitives/Sphere.gltf");
+
+    return result;
+}
+
+Entity Scene::AddDefaultPlane(const String& name)
+{
+    Entity result = AddEntity(name);
+
+    auto& m = result.AddComponent<MeshComponent>();
+    m.Init("Assets/Models/Primitives/Plane.gltf");
+
+    return result;
+}
+
+Entity Scene::AddDefaultCapsule(const String& name)
+{
+    Entity result = AddEntity(name);
+
+    auto& m = result.AddComponent<MeshComponent>();
+    m.Init("Assets/Models/Primitives/Capsule.gltf");
+
+    return result;
+}
+
+Entity Scene::AddDefaultCylinder(const String& name)
+{
+    Entity result = AddEntity(name);
+
+    auto& m = result.AddComponent<MeshComponent>();
+    m.Init("Assets/Models/Primitives/Cylinder.gltf");
+
+    return result;
+}

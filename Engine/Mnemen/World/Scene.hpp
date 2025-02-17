@@ -55,6 +55,17 @@ public:
     /// 
     /// @param e A pointer to the entity to be removed.
     void RemoveEntity(Entity e);
+
+    /// Default entities
+
+    Entity AddDefaultCamera(const String& name = "Camera");
+    Entity AddDefaultCube(const String& name = "Cube");
+    Entity AddDefaultSphere(const String& name = "Sphere");
+    Entity AddDefaultPlane(const String& name = "Plane");
+    Entity AddDefaultCapsule(const String& name = "Capsule");
+    Entity AddDefaultCylinder(const String& name = "Cylinder");
+
+    ///
 private:
     friend class Entity; ///< Allows Entity to access private members of Scene.
     friend class Renderer; ///< Allows Renderer to access private members of Scene.
