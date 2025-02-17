@@ -34,7 +34,7 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     if (ThreadID.x <= Width && ThreadID.y <= Height)
     {
-        float3 MappedColor = ACESFilm(HDRTexture[ThreadID.xy].xyz);
+        float3 MappedColor = ACESFilm(float3(HDRTexture[ThreadID.xy].x, HDRTexture[ThreadID.xy].x, HDRTexture[ThreadID.xy].x));
         LDRTexture[ThreadID.xy] = float4(pow(MappedColor.rgb, 1.0 / Settings.Gamma), 1.0);
     }
 }

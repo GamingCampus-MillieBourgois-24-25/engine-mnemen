@@ -7,6 +7,7 @@ struct PushConstants
     uint OutputIndex;  // Index for output texture
     uint2 Padding; // Padding
 
+    column_major float4x4 Projection;
     column_major float4x4 InverseProjection; // The inverse of the projection matrix
 };
 
@@ -15,46 +16,26 @@ ConstantBuffer<PushConstants> Settings : register(b0);
 
 // SSAO Parameters
 #define SAMPLE_COUNT 16
-#define RADIUS 0.5
-#define BIAS 0.025
-
-// Sample kernel (define 16 precomputed offsets in a hemisphere)
-static const float3 KernelSamples[SAMPLE_COUNT] = {
-    float3( 0.5381,  0.1856, -0.4319),
-    float3( 0.1379,  0.2486,  0.4430),
-    float3( 0.3371, -0.7696,  0.3490),
-    float3( 0.6475, -0.1764, -0.7776),
-    float3( 0.2594,  0.9035,  0.3427),
-    float3( 0.9442, -0.3420,  0.0200),
-    float3(-0.1854,  0.5159, -0.8327),
-    float3(-0.8743, -0.3690, -0.3122),
-    float3( 0.7633, -0.7202,  0.0020),
-    float3( 0.6442,  0.7243, -0.2482),
-    float3( 0.1234, -0.4257,  0.8264),
-    float3(-0.6774,  0.1133,  0.7244),
-    float3(-0.3489, -0.5014, -0.7911),
-    float3(-0.7163,  0.2271,  0.6590),
-    float3(-0.6663, -0.5206,  0.5356),
-    float3( 0.5697, -0.2816, -0.7717)
-};
+#define RADIUS 5
+#define BIAS 0.00005
 
 // Function to reconstruct view-space position from depth
 float4 GetViewPosition(float2 uv, float depth, column_major float4x4 inverseProj)
 {
-    float4 result = float4(float3(uv * 2. - 1., depth), 1.);
-    result = mul(inverseProj, result);
-    result.xyz /= result.w;
-    result.y *= -1.0;
+    float4 result = float4(float3(uv * 2.0f - 1.0f, depth), 1.0f); // Convert to normalized device coordinates
+    result = mul(inverseProj, result); // Inverse projection to get view-space position
+    result.xyz /= result.w; // Perspective divide
+    result.y *= -1.0f; // Flip y axis
     return result;
 }
 
-// Random function
-float2 hash2(inout float HASH2SEED) 
+// Random function (hash2)
+float2 hash2(inout float HASH2SEED)
 {
     HASH2SEED += 0.1f;
-    float2 x= frac(sin(float2(HASH2SEED, HASH2SEED + 0.1f)) * float2(43758.5453123, 22578.1459123));
+    float2 x = frac(sin(float2(HASH2SEED, HASH2SEED + 0.1f)) * float2(43758.5453123f, 22578.1459123f));
     HASH2SEED += 0.2f;
-	return x;
+    return x;
 }
 
 // SSAO Shader
@@ -74,53 +55,58 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     // Get the current pixel depth
     float depth = DepthTexture.Load(uint3(ThreadID.xy, 0));
-    // Compute the UV (texture coordinate) in range [-1, 1]
-    // Meanwhile, ThreadID.xy (pixel position) is in range [0, Width] and [0, Height]
-    float2 uv = (ThreadID.xy + 0.5) / float2(Width, Height);
+    // Compute the UV (texture coordinate) in range [0, 1]
+    float2 uv = (ThreadID.xy + 0.5f) / float2(Width, Height);
 
     // Use the function GetViewPosition to get the pixel depth in view space
-    float3 viewPos = GetViewPosition(uv, depth, Settings.InverseProjection).xyz;
+    float3 viewPos = GetViewPosition(uv, depth, Settings.Projection).xyz;
 
     // Default size (can be changed)
     int noiseWidth = 4, noiseHeight = 4;
 
     float2 NoiseScale = float2(Width / noiseWidth, Height / noiseHeight);
-    float2 TexCoords = TexelToUV(ThreadID.xy, 1.0 / float2(Width, Height));
+    float2 TexCoords = TexelToUV(ThreadID.xy, 1.0f / float2(Width, Height));
     
-	float Hash2Seed;
-	Hash2Seed = (TexCoords.x * TexCoords.y) * Height;
+    // Seed for random noise generation
+    float Hash2Seed = (TexCoords.x * TexCoords.y) * Height;
 
     // Sample random noise
-    float2 noise = float2(hash2(Hash2Seed).x, hash2(Hash2Seed).y);
-
-    // Generate a tangent space basis
-    float3 tangent = normalize(cross(float3(0, 1, 0), viewPos));
-    float3 bitangent = cross(viewPos, tangent);
-    float3x3 TBN = float3x3(tangent, bitangent, viewPos);
+    float2 noise = hash2(Hash2Seed);
+    
+    // Generate a tangent space basis (normal, tangent, bitangent)
+    float3 normal = normalize(viewPos); // Approximate normal from view position
+    float3 tangent = normalize(cross(float3(0, 1, 0), normal));
+    float3 bitangent = cross(normal, tangent);
+    float3x3 TBN = float3x3(tangent, bitangent, normal);
 
     // SSAO Computation
-    float occlusion = 0.0;
+    float occlusion = 0.0f;
     for (int i = 0; i < SAMPLE_COUNT; i++)
     {
+        // Sample hemisphere (random samples)
+        float3 rv = normalize(float3(hash2(Hash2Seed) * 2.0f - 1.0f, hash2(Hash2Seed).x)) * hash2(Hash2Seed).x;
+
         // Rotate sample using noise
-        float3 sampleVec = normalize(mul(TBN, KernelSamples[i]));
-        sampleVec = viewPos + sampleVec * RADIUS;
+        float3 sampleVec = normalize(mul(TBN, rv));
+
+        sampleVec = sampleVec + viewPos;
 
         // Project back to screen space
-        float4 projected = mul(Settings.InverseProjection, float4(sampleVec, 1.0));
-        projected.xy /= projected.w;
-        projected.xy = projected.xy * 0.5 + 0.5;
+        float4 projected = mul(Settings.InverseProjection, float4(sampleVec, 1.0f));
+        projected.xy /= projected.w;  // Perspective divide
+        projected.xy = projected.xy * 0.5f + 0.5f; // Transform back to [0, 1] range
 
         // Sample depth at new position
         uint2 samplePosition = UVToTexel(projected.xy, uint2(Width, Height));
         float sampleDepth = DepthTexture.Load(uint3(samplePosition, 0)).r;
-        float3 sampleViewPos = GetViewPosition(projected.xy, sampleDepth, Settings.InverseProjection).xyz;
+        float3 sampleViewPos = GetViewPosition(projected.xy, sampleDepth, Settings.Projection).xyz;
 
-        // Accumulate occlusion
-        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / abs(viewPos.z - sampleViewPos.z));
-        occlusion += (sampleViewPos.z >= viewPos.z + BIAS ? 1.0 : 0.0) * rangeCheck;
+        // Accumulate occlusion based on depth comparison and distance
+        float rangeCheck = smoothstep(0.0f, 1.0f, RADIUS / max(abs(viewPos.z - sampleViewPos.z), 0.0001f));
+        occlusion += (sampleViewPos.z >= viewPos.z + BIAS ? 1.0f : 0.0f) * rangeCheck;
     }
-    occlusion = 1.0 - (occlusion / SAMPLE_COUNT);
+    
+    occlusion = 1.0f - (occlusion / SAMPLE_COUNT);
     
     // Store AO value
     OutputAO[ThreadID.xy] = occlusion;

@@ -19,7 +19,7 @@ SSAO::SSAO(RHI::Ref rhi)
 {
     Asset::Handle computeShader = AssetManager::Get("Assets/Shaders/SSAO/Compute.hlsl", AssetType::Shader);
 
-    auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 4 + sizeof(glm::mat4));
+    auto signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 4 + sizeof(glm::mat4) * 2);
 
     mPipeline = mRHI->CreateComputePipeline(computeShader->Shader, signature);
 
@@ -55,12 +55,14 @@ void SSAO::Render(const Frame& frame, ::Ref<Scene> scene)
         int DepthOutput;           // The output texture we will write to (storage view)
         int OutputIndex;
         glm::vec2 Pad;       // Padding for alignment purposes (16-byte boundary)
+        glm::mat4 Projection;
         glm::mat4 InverseProjection;
     } PushConstants = {
         // Descriptor of the HDR texture to write to (storage view type)
         depth->Descriptor(ViewType::ShaderResource),
         color->Descriptor(ViewType::Storage),
         glm::vec2(0),         // Padding vector,
+        camera->Projection,
         glm::inverse(camera->Projection)
     };
     
