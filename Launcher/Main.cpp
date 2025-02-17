@@ -24,7 +24,7 @@ int main()
     
     String workDir = projectDir;
     size_t pos = workDir.find_last_of('/');
-    if (pos != std::string::npos) {
+    if (pos != String::npos) {
         workDir = workDir.substr(0, pos);
     }
     const char* exePath = "Editor.exe";

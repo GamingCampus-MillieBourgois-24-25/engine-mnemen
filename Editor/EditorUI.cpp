@@ -70,8 +70,8 @@ void Editor::Viewport(const Frame& frame)
             if (payload) {
                 const wchar_t* path = (const wchar_t*)payload->Data;
                 std::filesystem::path scenePath(path);
-                std::string sceneString = scenePath.string();
-                if (sceneString.find(".msf") != std::string::npos) {
+                String sceneString = scenePath.string();
+                if (sceneString.find(".msf") != String::npos) {
                     for (int i = 0; i < sceneString.size(); i++) {
                         sceneString[i] = sceneString[i] == '\\' ? '/' : sceneString[i];
                     }
@@ -456,7 +456,7 @@ void Editor::EntityEditor()
             mEntityNameBuffer[mSelectedEntity.ID] = tag.Tag;
         }
 
-        std::string& inputBuffer = mEntityNameBuffer[mSelectedEntity.ID];
+        String& inputBuffer = mEntityNameBuffer[mSelectedEntity.ID];
 
         // ImGui Input Text
         char tempBuffer[256];
@@ -523,8 +523,8 @@ void Editor::EntityEditor()
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path fxPath(path);
-                        std::string fxString = fxPath.string();
-                        if (fxString.find(".mfx") != std::string::npos) {
+                        String fxString = fxPath.string();
+                        if (fxString.find(".mfx") != String::npos) {
                             for (int i = 0; i < fxString.size(); i++) {
                                 fxString[i] = fxString[i] == '\\' ? '/' : fxString[i];
                             }
@@ -584,8 +584,8 @@ void Editor::EntityEditor()
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path modelPath(path);
-                        std::string modelString = modelPath.string();
-                        if (modelString.find(".gltf") != std::string::npos || modelString.find(".obj") != std::string::npos || modelString.find(".fbx") != std::string::npos) {
+                        String modelString = modelPath.string();
+                        if (modelString.find(".gltf") != String::npos || modelString.find(".obj") != String::npos || modelString.find(".fbx") != String::npos) {
                             for (int i = 0; i < modelString.size(); i++) {
                                 modelString[i] = modelString[i] == '\\' ? '/' : modelString[i];
                             }
@@ -645,8 +645,8 @@ void Editor::EntityEditor()
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                         const wchar_t* path = (const wchar_t*)payload->Data;
 				        std::filesystem::path scriptPath(path);
-                        std::string string = scriptPath.string();
-                        if (string.find(".png") != std::string::npos || string.find(".jpg") != std::string::npos || string.find(".jpeg") != std::string::npos) {
+                        String string = scriptPath.string();
+                        if (string.find(".png") != String::npos || string.find(".jpg") != String::npos || string.find(".jpeg") != String::npos) {
                             for (int i = 0; i < string.size(); i++) {
                                 string[i] = string[i] == '\\' ? '/' : string[i];
                             }
@@ -682,8 +682,8 @@ void Editor::EntityEditor()
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                         const wchar_t* path = (const wchar_t*)payload->Data;
 				        std::filesystem::path scriptPath(path);
-                        std::string string = scriptPath.string();
-                        if (string.find(".png") != std::string::npos || string.find(".jpg") != std::string::npos || string.find(".jpeg") != std::string::npos) {
+                        String string = scriptPath.string();
+                        if (string.find(".png") != String::npos || string.find(".jpg") != String::npos || string.find(".jpeg") != String::npos) {
                             for (int i = 0; i < string.size(); i++) {
                                 string[i] = string[i] == '\\' ? '/' : string[i];
                             }
@@ -746,8 +746,8 @@ void Editor::EntityEditor()
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                         const wchar_t* path = (const wchar_t*)payload->Data;
 				        std::filesystem::path scriptPath(path);
-                        std::string scriptString = scriptPath.string();
-                        if (scriptString.find(".lua") != std::string::npos) {
+                        String scriptString = scriptPath.string();
+                        if (scriptString.find(".lua") != String::npos) {
                             for (int i = 0; i < scriptString.size(); i++) {
                                 scriptString[i] = scriptString[i] == '\\' ? '/' : scriptString[i];
                             }
@@ -804,9 +804,9 @@ void Editor::EntityEditor()
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path audioPath(path);
-                        std::string audioString = audioPath.string();
+                        String audioString = audioPath.string();
                         audioString = StringUtil::Lowercase(audioString);
-                        if (audioString.find(".mp3") != std::string::npos || audioString.find(".wav") != std::string::npos || audioString.find(".ogg") != std::string::npos) {
+                        if (audioString.find(".mp3") != String::npos || audioString.find(".wav") != String::npos || audioString.find(".ogg") != String::npos) {
                             for (int i = 0; i < audioString.size(); i++) {
                                 audioString[i] = audioString[i] == '\\' ? '/' : audioString[i];
                             }
@@ -964,7 +964,7 @@ void Editor::AssetBrowser()
     for (auto& directoryEntry : std::filesystem::directory_iterator(mCurrentDirectory))
 	{
 		const auto& path = directoryEntry.path();
-		std::string filenameString = path.filename().string();
+		String filenameString = path.filename().string();
 		
 		ImGui::PushID(filenameString.c_str());
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
@@ -974,19 +974,19 @@ void Editor::AssetBrowser()
             icon = ICON_FA_FOLDER;
         }
         auto extension = path.extension().string();
-        if (extension.find("hlsl") != std::string::npos) {
+        if (extension.find("hlsl") != String::npos) {
             icon = ICON_FA_PAINT_BRUSH;
-        } else if (extension.find("lua") != std::string::npos) {
+        } else if (extension.find("lua") != String::npos) {
             icon = ICON_FA_CODE;
-        } else if (extension.find("png") != std::string::npos || extension.find("jpg") != std::string::npos || extension.find("jpeg") != std::string::npos) {
+        } else if (extension.find("png") != String::npos || extension.find("jpg") != String::npos || extension.find("jpeg") != String::npos) {
             icon = ICON_FA_FILE_IMAGE_O;
-        } else if (extension.find("gltf") != std::string::npos || extension.find("obj") != std::string::npos || extension.find("fbx") != std::string::npos) {
+        } else if (extension.find("gltf") != String::npos || extension.find("obj") != String::npos || extension.find("fbx") != String::npos) {
             icon = ICON_FA_CUBE;
-        } else if (extension.find("msf") != std::string::npos) {
+        } else if (extension.find("msf") != String::npos) {
             icon = ICON_FA_GLOBE;
-        } else if (extension.find(".mp3") != std::string::npos || extension.find(".ogg") != std::string::npos || extension.find(".wav") != std::string::npos) {
+        } else if (extension.find(".mp3") != String::npos || extension.find(".ogg") != String::npos || extension.find(".wav") != String::npos) {
             icon = ICON_FA_MUSIC;
-        } else if (extension.find(".mfx") != std::string::npos) {
+        } else if (extension.find(".mfx") != String::npos) {
             icon = ICON_FA_CAMERA_RETRO;
         }
 
@@ -1076,8 +1076,8 @@ void Editor::FXVolumeEditor()
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
             const wchar_t* path = (const wchar_t*)payload->Data;
             std::filesystem::path fxPath(path);
-            std::string fxString = fxPath.string();
-            if (fxString.find(".mfx") != std::string::npos) {
+            String fxString = fxPath.string();
+            if (fxString.find(".mfx") != String::npos) {
                 for (int i = 0; i < fxString.size(); i++) {
                     fxString[i] = fxString[i] == '\\' ? '/' : fxString[i];
                 }
@@ -1128,7 +1128,7 @@ void Editor::FXVolumeEditor()
     ImGui::End();
 }
 
-void Editor::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth)
+void Editor::DrawVec3Control(const String& label, glm::vec3& values, float resetValue, float columnWidth)
 {
     if (!mScene)
         return;

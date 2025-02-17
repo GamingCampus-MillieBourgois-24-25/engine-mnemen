@@ -21,8 +21,8 @@ void ScriptSystem::LogCallback(const sol::variadic_args& args)
     for (int i = 0; i < args.size(); i++) {
         if (i > 0)
             ss << " ";
-        if (args[i].is<std::string>()) {
-            ss << args[i].as<std::string>();
+        if (args[i].is<String>()) {
+            ss << args[i].as<String>();
         } else if (args[i].is<int>()) {
             ss << args[i].as<int>();
         } else if (args[i].is<double>()) {

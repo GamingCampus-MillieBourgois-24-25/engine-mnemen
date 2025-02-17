@@ -151,7 +151,7 @@ String Dialog::OpenFolder()
         return "";
     }
 
-    // Convert the path to a std::string
+    // Convert the path to a String
     WideString wstr(pszPath);
     String folderPath = UTF::WideToAscii(wstr);
 

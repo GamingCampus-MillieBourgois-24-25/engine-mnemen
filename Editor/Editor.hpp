@@ -44,7 +44,7 @@ private:
     void AssetBrowser();
     void LogWindow();
     void FXVolumeEditor();
-    void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
+    void DrawVec3Control(const String& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
     void DrawEntityNode(Entity entity);
 
     Camera mCamera;
