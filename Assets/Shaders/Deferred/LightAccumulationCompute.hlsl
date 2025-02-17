@@ -23,6 +23,8 @@ void CSMain(uint3 ThreadID : SV_DispatchThreadID)
 
     if (ThreadID.x < width || ThreadID.y < height) {
         Texture2D<float4> albedo = ResourceDescriptorHeap[Settings.AlbedoTexture];
-        output[ThreadID.xy] = albedo.Load(ThreadID);
+
+        float4 color = albedo.Load(ThreadID);
+        output[ThreadID.xy] = float4(color.rgb, 1.0);
     }
 }

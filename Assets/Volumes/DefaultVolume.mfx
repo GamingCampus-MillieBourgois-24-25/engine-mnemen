@@ -34,7 +34,7 @@
         "focusRange": 20.0
     },
     "gammaCorrect": {
-        "factor": 2.200000047683716
+        "factor": 2.24399995803833
     },
     "geometry": {
         "visualizeMeshlets": false

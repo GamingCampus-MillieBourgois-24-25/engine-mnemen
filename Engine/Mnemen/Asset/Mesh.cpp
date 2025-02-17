@@ -198,13 +198,27 @@ void Mesh::ProcessPrimitive(aiMesh *mesh, MeshNode* node, const aiScene *scene, 
     material->Get(AI_MATKEY_COLOR_DIFFUSE, flatColor);
     meshMaterial.MaterialColor = glm::vec3(flatColor.r, flatColor.g, flatColor.b);
     
-    aiString str;
-    material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
-    if (str.length) {
-        String texturePath = Directory + '/' + str.C_Str();
+    // Albedo
+    {
+        aiString str;
+        material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
+        if (str.length) {
+            String texturePath = Directory + '/' + str.C_Str();
 
-        meshMaterial.Albedo = AssetManager::Get(texturePath, AssetType::Texture);
-        meshMaterial.AlbedoView = mRHI->CreateView(meshMaterial.Albedo->Texture, ViewType::ShaderResource);
+            meshMaterial.Albedo = AssetManager::Get(texturePath, AssetType::Texture);
+            meshMaterial.AlbedoView = mRHI->CreateView(meshMaterial.Albedo->Texture, ViewType::ShaderResource);
+        }
+    }
+    // Normal
+    {
+        aiString str;
+        material->GetTexture(aiTextureType_NORMALS, 0, &str);
+        if (str.length) {
+            String texturePath = Directory + '/' + str.C_Str();
+
+            meshMaterial.Normal = AssetManager::Get(texturePath, AssetType::Texture);
+            meshMaterial.NormalView = mRHI->CreateView(meshMaterial.Normal->Texture, ViewType::ShaderResource);
+        }
     }
 
     Uploader::EnqueueBufferUpload(vertices.data(), out.VertexBuffer->GetSize(), out.VertexBuffer);

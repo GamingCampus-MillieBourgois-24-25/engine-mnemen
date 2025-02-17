@@ -30,12 +30,16 @@ struct PushConstants
     int MeshletBuffer;
     int MeshletVertices;
     int MeshletTriangleBuffer;
+    
     int AlbedoTexture;
+    int NormalTexture;
     int LinearSampler;
+    
     int ShowMeshlets;
-    int3 Padding;
+    int2 Padding;
 
     column_major float4x4 Transform;
+    column_major float4x4 InvTransform;
 };
 
 ConstantBuffer<PushConstants> Constants : register(b0);
@@ -45,6 +49,27 @@ struct GBufferOutput
     float3 Normal : SV_Target0;
     float4 Albedo : SV_Target1;
 };
+
+float3 GetNormalFromMap(MeshInput Input)
+{
+    Texture2D NormalTexture = ResourceDescriptorHeap[Constants.NormalTexture];
+    SamplerState Sampler = SamplerDescriptorHeap[Constants.LinearSampler];
+
+    float3 tangentNormal = NormalTexture.Sample(Sampler, Input.UV.xy).rgb * 2.0 - 1.0;
+    float3 normal = normalize(Input.Normal.xyz);
+
+    float3 Q1 = ddx(Input.Position.xyz);
+    float3 Q2 = ddy(Input.Position.xyz);
+    float2 ST1 = ddx(Input.UV.xy);
+    float2 ST2 = ddy(Input.UV.xy);
+
+    float3 T = Q1 * ST2.y - Q2 * ST1.y + 0.0001;
+    float3 B = cross(normal, T) + 0.0001;
+    float3 N = normal + 0.0001;
+    float3x3 TBN = float3x3(normalize(T), normalize(B), N);
+
+    return normalize(mul(tangentNormal, TBN));
+}
 
 GBufferOutput PSMain(MeshInput input)
 {
@@ -59,8 +84,13 @@ GBufferOutput PSMain(MeshInput input)
         discard;
     textureColor.rgb = pow(textureColor.rgb, 2.2);
 
+    float3 normal = normalize(input.Normal);
+    if (Constants.NormalTexture != -1) {
+        normal = GetNormalFromMap(input);
+    }
+
     GBufferOutput output;
     output.Albedo = Constants.ShowMeshlets ? float4(meshletColor, 1.0) : textureColor;
-    output.Normal = input.Normal;
+    output.Normal = normal;
     return output;
 }

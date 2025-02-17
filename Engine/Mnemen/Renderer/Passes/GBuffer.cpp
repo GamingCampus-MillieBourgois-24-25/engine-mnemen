@@ -82,7 +82,7 @@ GBuffer::GBuffer(RHI::Ref rhi)
         specs.DepthEnabled = true;
         specs.DepthFormat = TextureFormat::Depth32;
         specs.CCW = false;
-        specs.Signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 12 + sizeof(glm::mat4));
+        specs.Signature = mRHI->CreateRootSignature({ RootType::PushConstant }, sizeof(int) * 12 + (sizeof(glm::mat4) * 2));
 
         mPipeline = mRHI->CreateMeshPipeline(specs);
     }
@@ -134,6 +134,8 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
             Statistics::Get().InstanceCount++;
             MeshMaterial material = model->Materials[primitive.MaterialIndex];
             int albedoIndex = material.Albedo ? material.AlbedoView->GetDescriptor().Index : whiteTexture->Descriptor(ViewType::ShaderResource);
+            int normalIndex = material.Normal ? material.NormalView->GetDescriptor().Index : -1;
+
             struct PushConstants {
                 int Matrices;
                 int VertexBuffer;
@@ -141,11 +143,15 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 int MeshletBuffer;
                 int MeshletVertices;
                 int MeshletTriangleBuffer;
+                
                 int Albedo;
+                int Normal;
                 int Sampler;
                 int ShowMeshlets;
-                glm::ivec3 Padding;
+                
+                glm::ivec2 Padding;
                 glm::mat4 Transform;
+                glm::mat4 InvTransform;
             } data = {
                 cameraBuffer->Descriptor(ViewType::None, frame.FrameIndex),
                 primitive.VertexBuffer->SRV(),
@@ -154,11 +160,13 @@ void GBuffer::Render(const Frame& frame, ::Ref<Scene> scene)
                 primitive.MeshletVertices->SRV(),
                 primitive.MeshletTriangles->SRV(),
                 albedoIndex,
+                normalIndex,
                 sampler->Descriptor(),
                 camera->Volume->Volume.VisualizeMeshlets,
-                glm::ivec3(0),
+                glm::ivec2(0),
                 
-                transform
+                transform,
+                glm::inverse(transform)
             };
             frame.CommandBuffer->GraphicsPushConstants(&data, sizeof(data), 0);
             frame.CommandBuffer->DispatchMesh(primitive.MeshletCount, primitive.IndexCount / 3);

@@ -3,6 +3,8 @@
 // > Create Time: 2025-02-03 22:09:51
 //
 
+#include "Assets/Shaders/Common/Math.hlsl"
+
 struct Vertex
 {
     float3 Position : POSITION;
@@ -46,12 +48,16 @@ struct PushConstants
     int MeshletBuffer;
     int MeshletVertices;
     int MeshletTriangleBuffer;
+
     int AlbedoTexture;
+    int NormalTexture;
     int LinearSampler;
+    
     int ShowMeshlets;
-    int3 Padding;
+    int2 Padding;
 
     column_major float4x4 Transform;
+    column_major float4x4 InvTransform;
 };
 
 ConstantBuffer<PushConstants> Constants : register(b0);
@@ -68,7 +74,7 @@ VertexOut GetVertexAttributes(uint meshletIndex, uint vertexIndex)
     VertexOut Output = (VertexOut)0;
     Output.Position = mul(Matrices.Projection, mul(Matrices.View, mul(Constants.Transform, pos)));
     Output.UV = v.TexCoords;
-    Output.Normals = v.Normals;
+    Output.Normals = normalize(float4(mul(Constants.InvTransform, float4(v.Normals, 1.0))).xyz);
     Output.MeshletIndex = meshletIndex;
 
     return Output;
