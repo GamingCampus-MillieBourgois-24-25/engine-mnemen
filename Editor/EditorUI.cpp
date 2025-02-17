@@ -603,6 +603,33 @@ void Editor::EntityEditor()
             }
         }
 
+        // MATERIAL
+        if (mSelectedEntity.HasComponent<MaterialComponent>()) {
+            if (ImGui::TreeNodeEx(ICON_FA_TREE " Material Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                auto& material = mSelectedEntity.GetComponent<MaterialComponent>();
+                
+                bool shouldDelete = false;
+                ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(7.0f, 0.8f, 0.8f));
+                ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+                if (ImGui::Button(ICON_FA_TRASH " Delete", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                    shouldDelete = true;
+                }
+                ImGui::PopStyleColor(3);
+                ImGui::PopStyleVar();
+
+                ImGui::Checkbox("Inherit from Model", &material.InheritFromModel);
+            
+                ImGui::TreePop();
+            
+                if (shouldDelete) {
+                    material.Free();
+                    mSelectedEntity.RemoveComponent<MaterialComponent>();
+                }
+            }
+        }
+
         // SCRIPT
         ScriptComponent& scripts = mSelectedEntity.GetComponent<ScriptComponent>();
         for (int i = 0; i < scripts.Instances.size(); i++) {
@@ -750,6 +777,11 @@ void Editor::EntityEditor()
             if (!mSelectedEntity.HasComponent<AudioSourceComponent>()) {
                 if (ImGui::MenuItem(ICON_FA_MUSIC " Audio Source Component")) {
                     mSelectedEntity.AddComponent<AudioSourceComponent>();
+                }
+            }
+            if (!mSelectedEntity.HasComponent<MaterialComponent>()) {
+                if (ImGui::MenuItem(ICON_FA_TREE " Material Component")) {
+                    mSelectedEntity.AddComponent<MaterialComponent>();
                 }
             }
             if (ImGui::MenuItem(ICON_FA_CODE " Script Component")) {

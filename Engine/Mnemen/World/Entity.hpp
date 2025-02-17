@@ -163,9 +163,6 @@ struct TransformComponent
 /// @brief A component holding a mesh
 struct MeshComponent
 {
-    /// @brief Used for debugging
-    Entity ParentEntity;
-
     /// @brief The asset handle pointing to the mesh
     Asset::Handle MeshAsset;
 
@@ -177,6 +174,26 @@ struct MeshComponent
     void Init(const String& string);
 
     /// @brief Manually free the mesh asset
+    void Free();
+};
+
+/// @brief A component holding a material
+struct MaterialComponent
+{
+    /// @brief Whether or not the material should just use the model's loaded textures
+    bool InheritFromModel = true;
+    /// @brief The color texture map
+    Asset::Handle Albedo;
+    /// @brief The normal texture map
+    Asset::Handle Normal;
+
+    /// @brief Loads the albedo map
+    /// @param string The path of the albedo texture map
+    void LoadAlbedo(const String& string);
+    /// @brief Loads the normal map
+    /// @param string The path of the normal texture map
+    void LoadNormal(const String& string);
+    /// @brief Manually free the texture assets
     void Free();
 };
 

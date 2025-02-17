@@ -86,6 +86,15 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
             { "path", mesh.MeshAsset->Path }
         };
     }
+
+    if (entity.HasComponent<MaterialComponent>()) {
+        auto& material = entity.GetComponent<MaterialComponent>();
+        entityJson["material"] = {
+            { "inherit", material.InheritFromModel },
+            { "albedo", material.Albedo ? material.Albedo->Path : "" },
+            { "normal", material.Normal ? material.Normal->Path : "" }
+        };
+    }
     
     // Camera Component
     if (entity.HasComponent<CameraComponent>()) {
@@ -157,6 +166,13 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
         audio.Looping = a["looping"];
         audio.PlayOnAwake = a["playOnAwake"];
         audio.Volume = a["volume"];
+    }
+    if (entityJson.contains("material")) {
+        auto& material = entity.AddComponent<MaterialComponent>();
+        auto m = entityJson["material"];
+        material.InheritFromModel = m["inherit"];
+        material.LoadAlbedo(m["albedo"]);
+        material.LoadAlbedo(m["normal"]);
     }
     for (auto& script : entityJson["scripts"]) {
         auto& sc = entity.GetComponent<ScriptComponent>();

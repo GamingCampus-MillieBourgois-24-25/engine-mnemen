@@ -26,6 +26,9 @@ Scene::~Scene()
         if (entity.HasComponent<CameraComponent>()) {
             entity.GetComponent<CameraComponent>().Free();
         }
+        if (entity.HasComponent<MaterialComponent>()) {
+            entity.GetComponent<MaterialComponent>().Free();
+        }
         mRegistry.destroy(id);
     }
 }
@@ -105,6 +108,9 @@ void Scene::RemoveEntity(Entity e)
     }
     if (e.HasComponent<CameraComponent>()) {
         e.GetComponent<CameraComponent>().Free();
+    }
+    if (e.HasComponent<MaterialComponent>()) {
+        e.GetComponent<MaterialComponent>().Free();
     }
     mRegistry.destroy(e.ID);
 }
