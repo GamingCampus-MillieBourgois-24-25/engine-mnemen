@@ -7,10 +7,12 @@
 
 #include "Common.hpp"
 #include "Window.hpp"
-#include "../RHI/RHI.hpp"
-#include "../Renderer/Renderer.hpp"
-#include "World/Scene.hpp"
 #include "Timer.hpp"
+#include "Project.hpp"
+
+#include <RHI/RHI.hpp>
+#include <Renderer/Renderer.hpp>
+#include <World/Scene.hpp>
 
 /// @struct ApplicationSpecs
 /// @brief Stores configuration settings for the application.
@@ -19,11 +21,8 @@ struct ApplicationSpecs
     int Width; ///< Width of the application window in pixels.
     int Height; ///< Height of the application window in pixels.
 
-    float PhysicsRefreshRate = 90.0f; ///< Physics update rate in Hertz.
-
-    String GameName; ///< Name of the game/application.
     String WindowTitle; ///< Title displayed on the game window.
-    String StartScene; ///< The path of the start scene. If empty, will create an empty scene.
+    String ProjectPath; ///< The path of the project.
 
     bool CopyToBackBuffer; ///< If set to true, the output color will be copied to the swapchain. Used in Runtime.
 };
@@ -72,6 +71,10 @@ public:
     /// @brief Retrieves the current scene
     /// @return The active scene that the application is manipulating
     Ref<Scene> GetScene() { return mScene; }
+
+    /// @brief Returns the loaded project
+    /// @return The project that the application is running
+    Ref<Project> GetProject() { return mProject; }
     
     /// @brief Returns the settings of the application.
     /// @return The settings of the application.
@@ -97,6 +100,7 @@ protected:
     RHI::Ref mRHI = nullptr; ///< Rendering Hardware Interface.
     Renderer::Ref mRenderer = nullptr; ///< Renderer instance.
     
+    Ref<Project> mProject = nullptr; ///< Currently active project.
     Ref<Scene> mScene = nullptr; ///< Currently active scene.
 
     bool mUIFocused = true; ///< Whether or not UI elements are focused.

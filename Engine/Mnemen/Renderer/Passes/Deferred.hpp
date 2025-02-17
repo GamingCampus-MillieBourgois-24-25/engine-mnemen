@@ -38,17 +38,8 @@ public:
     /// @param scene The scene to be rendered.
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
 
-    /// @brief Renders the user interface for configuring deferred pass settings.
-    /// 
-    /// This method renders the UI elements that allow users to adjust settings related to the deferred 
-    /// rendering pass, such as lighting.
-    /// 
-    /// @param frame The frame data used to render the deferred rendering UI.
-    void UI(const Frame& frame) override;
-
 private:
     MeshPipeline::Ref mPipeline; ///< A reference to the mesh pipeline used for rendering.
     ComputePipeline::Ref mLightPipeline; ///< A reference to the light pipeline used for calculating screen space lighting.
-    bool mShowMeshlets = false; ///< Whether or not to draw the meshlets by their group color.
 };
 

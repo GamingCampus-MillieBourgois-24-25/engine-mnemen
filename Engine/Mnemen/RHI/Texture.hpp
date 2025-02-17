@@ -21,6 +21,7 @@ enum class TextureFormat
     RGB11Float = DXGI_FORMAT_R11G11B10_FLOAT, ///< RGB texture with 11 bits for RGB and 10 bits for the alpha channel.
     RG8 = DXGI_FORMAT_R8G8_UNORM, ///< 8-bit per channel RG texture.
     R8 = DXGI_FORMAT_R8_UNORM, ///< 8-bit single channel texture.
+    BC3 = DXGI_FORMAT_BC3_UNORM, ///< BC3 compressed texture format.
     BC7 = DXGI_FORMAT_BC7_UNORM, ///< BC7 compressed texture format.
     R32Float = DXGI_FORMAT_R32_FLOAT, ///< 32-bit floating point R texture.
     Depth32 = DXGI_FORMAT_D32_FLOAT ///< Depth texture with 32-bit floating point precision.

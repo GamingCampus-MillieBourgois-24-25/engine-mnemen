@@ -5,6 +5,8 @@
 
 #include "Dialog.hpp"
 
+#include <Core/UTF.hpp>
+
 #include <windows.h>
 #include <commdlg.h>
 #include <shlwapi.h>
@@ -12,6 +14,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <shlobj.h>
+#include <atlbase.h>
 
 String BuildFilterString(const Vector<String>& extensions)
 {
@@ -98,4 +102,65 @@ String Dialog::Save(const Vector<String>& extensions)
     }
     SetCurrentDirectoryA(initialDir);
     return "";
+}
+
+String Dialog::OpenFolder()
+{
+    // Create the FileOpenDialog object
+    CComPtr<IFileOpenDialog> pFileOpenDialog;
+
+    // Initialize COM library
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
+    // Create the file dialog
+    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pFileOpenDialog));
+    if (FAILED(hr)) {
+        std::cout << "Failed to create the FileOpenDialog instance!" << std::endl;
+        CoUninitialize();
+        return "";
+    }
+
+    // Set the dialog to pick a folder by using a custom filter (folder picker mode)
+    DWORD dwOptions;
+    pFileOpenDialog->GetOptions(&dwOptions);
+    pFileOpenDialog->SetOptions(dwOptions | FOS_PICKFOLDERS);
+
+    // Show the dialog
+    hr = pFileOpenDialog->Show(NULL);
+    if (FAILED(hr)) {
+        std::cout << "Dialog failed or was canceled" << std::endl;
+        CoUninitialize();
+        return "";
+    }
+
+    // Retrieve the selected folder
+    CComPtr<IShellItem> pItem;
+    hr = pFileOpenDialog->GetResult(&pItem);
+    if (FAILED(hr)) {
+        std::cout << "Failed to retrieve the folder" << std::endl;
+        CoUninitialize();
+        return "";
+    }
+
+    // Get the folder path from the selected item
+    PWSTR pszPath = NULL;
+    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszPath);
+    if (FAILED(hr)) {
+        std::cout << "Failed to get the folder path" << std::endl;
+        CoUninitialize();
+        return "";
+    }
+
+    // Convert the path to a std::string
+    WideString wstr(pszPath);
+    String folderPath = UTF::WideToAscii(wstr);
+
+    // Clean up and release COM resources
+    CoTaskMemFree(pszPath);
+    CoUninitialize();
+
+    // Normalize backslashes to forward slashes
+    std::replace(folderPath.begin(), folderPath.end(), '\\', '/');
+
+    return folderPath;
 }

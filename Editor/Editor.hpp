@@ -30,8 +30,10 @@ private:
     bool SaveScene();
     bool SaveSceneAs();
     void NewScene();
+    void ReloadScene(const String& path);
 
     // UI
+    void ProjectEditor();
     void Viewport(const Frame& frame);
     void BeginDockSpace();
     void EndDockSpace();
@@ -41,6 +43,7 @@ private:
     void EntityEditor();
     void AssetBrowser();
     void LogWindow();
+    void FXVolumeEditor();
     void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
     void DrawEntityNode(Entity entity);
 
@@ -50,8 +53,10 @@ private:
     // Entity stuff
     Entity mCameraEntity;
     Entity mSelectedEntity = {};
+    Asset::Handle mSelectedVolume = nullptr;
     bool mMarkForDeletion = false;
     bool mMarkForClose = false;
+    bool mMarkForStop = false;
     String mModelChange = "";
     UnorderedMap<entt::entity, String> mEntityNameBuffer;
 
@@ -69,4 +74,5 @@ private:
     // Asset browing
     std::filesystem::path mBaseDirectory;
     std::filesystem::path mCurrentDirectory;
+    char mFileNameBuffer[256] = {};
 };

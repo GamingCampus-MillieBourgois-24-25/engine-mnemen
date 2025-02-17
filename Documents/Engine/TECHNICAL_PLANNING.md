@@ -58,7 +58,7 @@ Jolt provides all the necessary physics features for our project, and its active
 - **Asset Loading & Compression**: NVTT (NVIDIA Texture Tools) for texture compression + Assimp for cross-format model loading.
 - **ECS (Entity Component System)**: **entt**, a lightweight and easy-to-use ECS framework.
 - **Scene Format**: JSON (simple to work with and widely used).
-- **Profiler**: **Optick**, chosen due to previous experience and ease of integration into the project.
+- **Profiler**: Custom;
 - **Developers**: Amélie.
 
 ### **Physics**

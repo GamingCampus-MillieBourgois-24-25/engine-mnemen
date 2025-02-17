@@ -95,7 +95,7 @@ nlohmann::json SceneSerializer::SerializeEntity(Entity entity)
             { "fov", camera.FOV },
             { "near", camera.Near },
             { "far", camera.Far },
-            { "aspectRatio", camera.AspectRatio }
+            { "volumePath", camera.Volume->Path }
         };
     }
 
@@ -145,7 +145,8 @@ Entity SceneSerializer::DeserializeEntity(Ref<Scene> scene, const nlohmann::json
         camera.FOV = c["fov"];
         camera.Near = c["near"];
         camera.Far = c["far"];
-        camera.AspectRatio = c["aspectRatio"];
+        if (!c["volumePath"].get<std::string>().empty())
+            camera.Volume = AssetManager::Get(c["volumePath"], AssetType::PostFXVolume);
     }
     if (entityJson.contains("audioSource")) {
         auto& audio = entity.AddComponent<AudioSourceComponent>();

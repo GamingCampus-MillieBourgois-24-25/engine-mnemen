@@ -10,6 +10,7 @@
 #include <Asset/Mesh.hpp>
 #include <Script/Script.hpp>
 #include <Audio/AudioFile.hpp>
+#include <Renderer/PostProcessVolume.hpp>
 
 #include <RHI/RHI.hpp>
 
@@ -26,6 +27,7 @@ enum class AssetType
     EnvironmentMap,   ///< An environment map asset.
     Script,           ///< A game script.
     Audio,            ///< An audio file.
+    PostFXVolume,     ///< A post processing volume.
     MAX               ///< Max enum.
 };
 
@@ -39,15 +41,18 @@ struct Asset
     String Path;       ///< File path to the asset.
     AssetType Type;    ///< Type of the asset.
 
-    Mesh Mesh;              ///< Mesh data if the asset is a mesh.
-    Texture::Ref Texture;   ///< Pointer to texture data if the asset is a texture.
-    Shader Shader;          ///< Shader data if the asset is a shader.
-    Script::Ref Script;     ///< Script data if the asset is a script.
-    AudioFile::Ref Audio;   ///< Audio data if the asset is audio.
+    Mesh Mesh;                ///< Mesh data if the asset is a mesh.
+    Texture::Ref Texture;     ///< Pointer to texture data if the asset is a texture.
+    Shader Shader;            ///< Shader data if the asset is a shader.
+    Script::Ref Script;       ///< Script data if the asset is a script.
+    AudioFile::Ref Audio;     ///< Audio data if the asset is audio.
+    PostProcessVolume Volume; ///< Volume data if the asset is a postfx volume.
 
     Int32 RefCount;         ///< Reference count for asset management.
 
     using Handle = Ref<Asset>; ///< Alias for asset pointer handle.
+
+    ~Asset();
 };
 
 /// @class AssetManager
@@ -63,6 +68,9 @@ public:
 
     /// @brief Cleans up and releases resources held by the asset manager.
     static void Clean();
+
+    /// @brief Checks if the current assets still exist -- if they don't, they're out!
+    static void Update();
 
     /// @brief Retrieves an asset based on its path and type.
     /// @param path The file path of the asset.

@@ -46,17 +46,8 @@ public:
     /// @param scene The scene to apply the composite render pass to.
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
 
-    /// @brief Renders the user interface for configuring composite settings.
-    /// 
-    /// This method renders the UI elements that allow users to adjust settings related to the composite pass.
-    /// 
-    /// @param frame The frame data used to render the composite UI.
-    void UI(const Frame& frame) override;
-
 private:
     ComputePipeline::Ref mPipeline; ///< A reference to the compute pipeline used for the composite pass.
     RootSignature::Ref mSignature;  ///< A reference to the root signature for the composite pass.
-
-    float mGamma = 2.2f;
 };
 

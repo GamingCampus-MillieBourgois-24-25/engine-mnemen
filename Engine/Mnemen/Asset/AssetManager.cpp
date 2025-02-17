@@ -8,8 +8,17 @@
 
 #include <Core/Logger.hpp>
 #include <RHI/Uploader.hpp>
+#include <Core/Profiler.hpp>
+#include <Core/Application.hpp>
 
 AssetManager::Data AssetManager::sData;
+
+Asset::~Asset()
+{
+    if (!Path.empty() && Type == AssetType::PostFXVolume) {
+        Volume.Save(Path);
+    }
+}
 
 void AssetManager::Init(RHI::Ref rhi)
 {
@@ -21,6 +30,22 @@ void AssetManager::Init(RHI::Ref rhi)
 void AssetManager::Clean()
 {
     sData.mAssets.clear();
+}
+
+void AssetManager::Update()
+{
+    PROFILE_FUNCTION();
+
+    if (sData.mAssets.empty())
+        return;
+    for (auto it = sData.mAssets.begin(); it != sData.mAssets.end(); ) {
+        if (!File::Exists(it->first)) {
+            it->second.reset();
+            it = sData.mAssets.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void AssetManager::GiveBack(const String& path)
@@ -37,6 +62,8 @@ void AssetManager::GiveBack(const String& path)
 
 Asset::Handle AssetManager::Get(const String& path, AssetType type)
 {
+    CompressionFormat format = Application::Get()->GetProject()->Settings.Format;
+
     if (!File::Exists(path))
         return nullptr;
 
@@ -68,7 +95,7 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
                 desc.Levels = file.Header.TextureHeader.Levels;
                 desc.Depth = 1;
                 desc.Name = path;
-                desc.Format = TextureFormat::BC7;
+                desc.Format = format == CompressionFormat::BC7 ? TextureFormat::BC7 : TextureFormat::BC3;
                 desc.Usage = TextureUsage::ShaderResource;
                 asset->Texture = sData.mRHI->CreateTexture(desc);
                 asset->Texture->Tag(ResourceTag::ModelTexture);
@@ -124,6 +151,10 @@ Asset::Handle AssetManager::Get(const String& path, AssetType type)
                 nullptr;
             }
             break;
+        }
+        case AssetType::PostFXVolume: {
+            LOG_INFO("Loading post processing volume {0}", path);
+            asset->Volume.Load(path);
         }
     }
 

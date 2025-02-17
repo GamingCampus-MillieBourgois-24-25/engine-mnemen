@@ -128,11 +128,15 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
     auto colorBuffer = RendererTools::Get("HDRColorBuffer");
     auto whiteTexture = RendererTools::Get("WhiteTexture");
 
-    SceneCamera camera = {};
+    CameraComponent* camera = {};
     if (scene) {
         camera = scene->GetMainCamera();
     }
-    cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(&camera, sizeof(camera));
+    glm::mat4 matrices[] = {
+        camera->View,
+        camera->Projection
+    };
+    cameraBuffer->RBuffer[frame.FrameIndex]->CopyMapped(matrices, sizeof(matrices));
 
     frame.CommandBuffer->BeginMarker("Deferred");
     // GBuffer
@@ -183,7 +187,7 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
                     primitive.MeshletTriangles->SRV(),
                     albedoIndex,
                     sampler->Descriptor(),
-                    mShowMeshlets,
+                    camera->Volume->Volume.VisualizeMeshlets,
                     glm::ivec3(0),
                     
                     transform
@@ -239,12 +243,4 @@ void Deferred::Render(const Frame& frame, ::Ref<Scene> scene)
         frame.CommandBuffer->EndMarker();
     }
     frame.CommandBuffer->EndMarker();
-}
-
-void Deferred::UI(const Frame& frame)
-{
-    if (ImGui::TreeNodeEx("Geometry Pass", ImGuiTreeNodeFlags_Framed)) {
-        ImGui::Checkbox("Visualize Meshlets", &mShowMeshlets);
-        ImGui::TreePop();
-    }
 }

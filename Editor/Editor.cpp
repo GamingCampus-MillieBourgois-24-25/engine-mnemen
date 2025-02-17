@@ -14,9 +14,15 @@
 Editor::Editor(ApplicationSpecs specs)
     : Application(specs)
 {
-    mCurrentScenePath = specs.StartScene;
-    if (mCurrentScenePath.empty())
+    mCurrentScenePath = mProject->StartScenePathRelative;
+    if (mCurrentScenePath.empty()) {
         NewScene();
+    } else {
+        mCameraEntity = mScene->AddEntity("Editor Camera");
+        mCameraEntity.AddComponent<PrivateComponent>();
+        auto& cam = mCameraEntity.AddComponent<CameraComponent>(true);
+        cam.Primary = 2;
+    }
     mScenePlaying = false;
 
     SetColors();
@@ -66,6 +72,12 @@ void Editor::PostPresent()
         mSelectedEntity = nullptr;
         mMarkForDeletion = false;
     }
+    if (mMarkForStop) {
+        mSelectedEntity = {};
+        String pathCopy = mCurrentScenePath;
+        ReloadScene(pathCopy);
+        mMarkForStop = false;
+    }
     // Purge unused assets every frame
     AssetManager::Purge();
 
@@ -91,8 +103,9 @@ void Editor::OnImGui(const Frame& frame)
     PROFILE_FUNCTION();
 
     BeginDockSpace();
+    ProjectEditor();
     Profiler::OnUI();
-    mRenderer->UI(frame);
+    FXVolumeEditor();
     Viewport(frame);
     LogWindow();
     HierarchyPanel();

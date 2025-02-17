@@ -19,10 +19,12 @@ Scene::~Scene()
 
         if (entity.HasComponent<AudioSourceComponent>()) {
             entity.GetComponent<AudioSourceComponent>().Free();
-            entity.RemoveComponent<AudioSourceComponent>();
         }
         if (entity.HasComponent<MeshComponent>()) {
             entity.GetComponent<MeshComponent>().Free();
+        }
+        if (entity.HasComponent<CameraComponent>()) {
+            entity.GetComponent<CameraComponent>().Free();
         }
         mRegistry.destroy(id);
     }
@@ -47,26 +49,26 @@ void Scene::Update()
     }
 }
 
-SceneCamera Scene::GetMainCamera()
+CameraComponent* Scene::GetMainCamera()
 {
     // NOTE(amelie): This is professional grade spaghetti bullshit but lowkey iterating through entities is fast as hell. Love EnTT x
 
-    Vector<CameraComponent> cameras;
+    Vector<CameraComponent*> cameras;
     auto view = mRegistry.view<CameraComponent>();
     for (auto [entity, camera] : view.each()) {
-        cameras.push_back(camera);
+        cameras.push_back(&camera);
     }
 
-    std::sort(cameras.begin(), cameras.end(), [](const CameraComponent& a, const CameraComponent& b) {
-        return a.Primary > b.Primary;
+    std::sort(cameras.begin(), cameras.end(), [](CameraComponent* a, CameraComponent* b) {
+        return a->Primary > b->Primary;
     });
 
     if (!cameras.empty()) {
         const auto& bestCamera = cameras.front();
-        if (bestCamera.Primary > 0)
-            return { bestCamera.View, bestCamera.Projection };
+        if (bestCamera->Primary > 0)
+            return bestCamera;
     }
-    return { glm::mat4(0.0f), glm::mat4(0.0f) };
+    return nullptr;
 }
 
 Entity Scene::AddEntity(const String& name)
@@ -97,10 +99,12 @@ void Scene::RemoveEntity(Entity e)
     // Cleanup entity data
     if (e.HasComponent<AudioSourceComponent>()) {
         e.GetComponent<AudioSourceComponent>().Free();
-        e.RemoveComponent<AudioSourceComponent>();
     }
     if (e.HasComponent<MeshComponent>()) {
         e.GetComponent<MeshComponent>().Free();
+    }
+    if (e.HasComponent<CameraComponent>()) {
+        e.GetComponent<CameraComponent>().Free();
     }
     mRegistry.destroy(e.ID);
 }

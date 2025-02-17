@@ -54,13 +54,6 @@ public:
     /// @param scene The scene to render for.
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
 
-    /// @brief Draws the debug UI for the given frame.
-    ///
-    /// This function is used to render any debug UI overlays for the given frame.
-    ///
-    /// @param frame The frame to render the UI for.
-    void UI(const Frame& frame) override;
-
     /// @brief Draws a line from one point to another with a given color.
     ///
     /// This static function draws a line between two 3D points.

@@ -32,11 +32,12 @@ bool File::IsDirectory(const String& path)
 
 void File::CreateFileFromPath(const String& path)
 {
-    HANDLE handle = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    HANDLE handle = CreateFileA(path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (!handle) {
         LOG_ERROR("Error when creating file {0}", path.c_str());
         return;
     }
+    LOG_INFO("Creating file {0}", path);
     CloseHandle(handle);
 }
 
@@ -160,6 +161,16 @@ void File::WriteBytes(const String& path, const void* data, UInt64 size)
     int bytesWritten = 0;
     ::WriteFile(handle, reinterpret_cast<LPCVOID>(data), size, reinterpret_cast<LPDWORD>(&bytesWritten), nullptr);
     CloseHandle(handle);
+}
+
+void File::WriteString(const String& path, const String& str)
+{
+    std::ofstream stream(path);
+    if (!stream.is_open()) {
+        LOG_ERROR("Failed to write {0}", path);
+    }
+    stream << str;
+    stream.close();
 }
 
 File::Filetime File::GetLastModified(const String& path)

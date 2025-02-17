@@ -5,6 +5,7 @@
 
 #include <Asset/AssetCacher.hpp>
 #include <Core/Logger.hpp>
+#include <Core/Application.hpp>
 
 #include <filesystem>
 
@@ -239,6 +240,8 @@ AssetType AssetCacher::GetAssetTypeFromPath(const String& normalPath)
 
 void AssetCacher::CacheAsset(const String& normalPath)
 {
+    CompressionFormat format = Application::Get()->GetProject()->Settings.Format;
+
     AssetType type = GetAssetTypeFromPath(normalPath);
     if (type == AssetType::None) {
         return;
@@ -287,7 +290,7 @@ void AssetCacher::CacheAsset(const String& normalPath)
             outputOptions.setOutputHandler(reinterpret_cast<nvtt::OutputHandler*>(&writer));
 
             nvtt::CompressionOptions compressionOptions;
-            compressionOptions.setFormat(nvtt::Format::Format_BC7);
+            compressionOptions.setFormat(format == CompressionFormat::BC7 ? nvtt::Format::Format_BC7 : nvtt::Format::Format_BC3);
 
             for (int i = 0; i < finalMipCount; i++) {
                 if (!sData.mContext.compress(image, 0, i, compressionOptions, outputOptions)) {
@@ -341,6 +344,9 @@ void AssetCacher::Init(const String& assetDirectory)
     }
 
     sData.mContext.enableCudaAcceleration(true);
+    if (!sData.mContext.isCudaAccelerationEnabled()) {
+        LOG_WARN("No CUDA compression for you, good luck!");
+    }
 
     for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(assetDirectory)) {
         String entryPath = dirEntry.path().string();

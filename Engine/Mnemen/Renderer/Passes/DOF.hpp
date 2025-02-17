@@ -18,8 +18,9 @@ class DOF : public RenderPass
 public:
     DOF(RHI::Ref rhi);
     ~DOF() = default;
+    
+    ComputePipeline::Ref mPipeline;
 
     void Bake(::Ref<Scene> scene) {}
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
-    void UI(const Frame& frame) override;
 };

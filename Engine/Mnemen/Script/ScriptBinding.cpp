@@ -14,17 +14,25 @@ void ScriptBinding::InitBindings(sol::state& state)
     InitVec(state);
     InitQuat(state);
     InitTransform(state);
+    InitCameraComponent(state);
+    InitAudioSourceComponent(state);
     InitKeycode(state);
     InitInput(state);
     InitEntity(state);
+
+    // TODO: Assert, File, Logger, Random, Timer, Math, ImGui
 }
 
 void ScriptBinding::InitEntity(sol::state& state)
 {
     state["Entity"] = state.create_table();
+    state["Entity"]["DeleteEntity"] = &LuaWrapper::LuaEntity::DeleteEntity;
     state["Entity"]["GetName"] = &LuaWrapper::LuaEntity::GetName;
     state["Entity"]["SetName"] = &LuaWrapper::LuaEntity::SetName;
+    state["Entity"]["GetEntityByName"] = &LuaWrapper::LuaEntity::GetEntityByName;
     state["Entity"]["GetTransform"] = &LuaWrapper::LuaEntity::GetTransform;
+    state["Entity"]["GetCamera"] = &LuaWrapper::LuaEntity::GetCamera;
+    state["Entity"]["GetAudioSource"] = &LuaWrapper::LuaEntity::GetAudioSource;
 }
 
 void ScriptBinding::InitVec(sol::state& state)
@@ -93,6 +101,31 @@ void ScriptBinding::InitTransform(sol::state& state)
         "position", &TransformComponent::Position,
         "scale", &TransformComponent::Scale,
         "rotation", &TransformComponent::Rotation
+    );
+}
+
+void ScriptBinding::InitCameraComponent(sol::state& state)
+{
+    state.new_usertype<CameraComponent>(
+        "CameraComponent",
+        sol::constructors<CameraComponent()>(),
+        "Primary", &CameraComponent::Primary,
+        "FOV", &CameraComponent::FOV,
+        "Near", &CameraComponent::Near,
+        "Far", &CameraComponent::Far
+    );
+}
+
+void ScriptBinding::InitAudioSourceComponent(sol::state& state)
+{
+    state.new_usertype<AudioSourceComponent>(
+        "AudioSourceComponent",
+        sol::constructors<AudioSourceComponent()>(),
+        "Looping", &AudioSourceComponent::Looping,
+        "PlayOnAwake", &AudioSourceComponent::PlayOnAwake,
+        "Volume", &AudioSourceComponent::Volume,
+        "Play", &AudioSourceComponent::Play,
+        "Stop", &AudioSourceComponent::Stop
     );
 }
 

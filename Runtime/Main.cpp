@@ -11,8 +11,7 @@ int main()
     specs.Width = 1280;
     specs.Height = 720;
     specs.WindowTitle = "Game Demo";
-    specs.GameName = "DEMO";
-    specs.StartScene = "Assets/Scenes/Test.msf";
+    specs.ProjectPath = "TestGame.mpj";
     specs.CopyToBackBuffer = true;
 
     Runtime runtime(specs);

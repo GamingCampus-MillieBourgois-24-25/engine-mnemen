@@ -47,6 +47,10 @@ void Editor::UpdateShortcuts()
     }
     if (Input::IsKeyPressed(SDLK_ESCAPE)) {
         mSelectedEntity = {};
+        if (mSelectedVolume) {
+            AssetManager::GiveBack(mSelectedVolume->Path);
+            mSelectedVolume = nullptr;
+        }
     }
 }
 
@@ -55,12 +59,11 @@ void Editor::OpenScene(const String& path)
     CloseScene();
 
     mCurrentScenePath = path;
-    mScene = SceneSerializer::DeserializeScene(mCurrentScenePath);
+    mScene = SceneSerializer::DeserializeScene(path);
     
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
-    
-    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>(true);
     cam.Primary = 2;
 }
 
@@ -75,6 +78,7 @@ void Editor::CloseScene()
 
 bool Editor::SaveScene()
 {
+    mProject->Save(mApplicationSpecs.ProjectPath);
     if (mCurrentScenePath.empty()) {
         return SaveSceneAs();
     }
@@ -103,6 +107,20 @@ void Editor::NewScene()
 
     mCameraEntity = mScene->AddEntity("Editor Camera");
     mCameraEntity.AddComponent<PrivateComponent>();
-    auto& cam = mCameraEntity.AddComponent<CameraComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>(true);
+    cam.Primary = 2;
+}
+
+void Editor::ReloadScene(const String& path)
+{
+    mCurrentScenePath = {};
+    mScene.reset();
+
+    mCurrentScenePath = path;
+    mScene = SceneSerializer::DeserializeScene(path);
+
+    mCameraEntity = mScene->AddEntity("Editor Camera");
+    mCameraEntity.AddComponent<PrivateComponent>();
+    auto& cam = mCameraEntity.AddComponent<CameraComponent>(true);
     cam.Primary = 2;
 }

@@ -19,4 +19,6 @@ private:
     static void InitQuat(sol::state& state);
     static void InitInput(sol::state& state);
     static void InitTransform(sol::state& state);
+    static void InitCameraComponent(sol::state& state);
+    static void InitAudioSourceComponent(sol::state& state);
 };

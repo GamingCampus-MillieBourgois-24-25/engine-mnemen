@@ -8,6 +8,7 @@
 #include <Asset/AssetManager.hpp>
 #include <Asset/Shader.hpp>
 #include <Core/File.hpp>
+#include <Core/Project.hpp>
 
 #include <nvtt/nvtt.h>
 

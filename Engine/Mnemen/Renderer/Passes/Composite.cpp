@@ -40,6 +40,7 @@ void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
 {
     PROFILE_FUNCTION();
 
+    auto camera = scene->GetMainCamera();
     auto hdr = RendererTools::Get("HDRColorBuffer");
     auto ldr = RendererTools::Get("LDRColorBuffer");
 
@@ -53,7 +54,7 @@ void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
     } PushConstants = {
         hdr->Descriptor(ViewType::ShaderResource),
         ldr->Descriptor(ViewType::Storage),
-        mGamma,
+        camera->Volume->Volume.GammaCorrection,
         0
     };
 
@@ -82,12 +83,4 @@ void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
     //
 
     frame.CommandBuffer->EndMarker();
-}
-
-void Composite::UI(const Frame& frame)
-{
-    if (ImGui::TreeNodeEx("Composite", ImGuiTreeNodeFlags_Framed)) {
-        ImGui::SliderFloat("Gamma", &mGamma, 0.1f, 10.0f);
-        ImGui::TreePop();
-    }
 }

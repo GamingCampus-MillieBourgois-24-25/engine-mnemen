@@ -7,6 +7,7 @@ This folder contains a variety of documents related to the engine, coding style,
 ### Logs
 
 - [Alpha Release Log](Versions/ALPHA.md)
+- [Beta Release Log](Versions/BETA.md)
 
 ### Engine
 - [Technical Planning](Engine/TECHNICAL_PLANNING.md)

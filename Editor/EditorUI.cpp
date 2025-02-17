@@ -14,6 +14,13 @@
 #include <Utility/Dialog.hpp>
 #include <Utility/String.hpp>
 
+void Editor::ProjectEditor()
+{
+    ImGui::Begin(ICON_FA_GITHUB " Project Settings");
+
+    ImGui::End();
+}
+
 void Editor::Viewport(const Frame& frame)
 {
     if (!mScene)
@@ -29,12 +36,17 @@ void Editor::Viewport(const Frame& frame)
     // Play/Stop
     ImGui::SetCursorPosX(10.0f);
     if (ImGui::Button(ICON_FA_PLAY)) {
-        OnAwake();
+        SaveScene();
+        if (!mCurrentScenePath.empty()) {
+            OnAwake();
+        }
     }
     ImGui::SameLine();
     if (ImGui::Button(ICON_FA_STOP)) {
-        if (mScenePlaying)
+        if (mScenePlaying) {
             OnStop();
+            mMarkForStop = true;
+        }
     }
     ImGui::SameLine();
     if (ImGui::RadioButton("Translate", mOperation == ImGuizmo::OPERATION::TRANSLATE)) mOperation = ImGuizmo::OPERATION::TRANSLATE;
@@ -260,7 +272,12 @@ void Editor::HierarchyPanel()
 
     // Draw root entities only
     ImGui::BeginChild("EntityNodes");
+
+    // Fetch all entities first
     auto view = mScene->GetRegistry()->view<TagComponent>();
+    std::vector<Entity> entities;
+
+    // Collect entities
     for (auto id : view) {
         Entity entity(mScene->GetRegistry());
         entity.ID = id;
@@ -271,9 +288,20 @@ void Editor::HierarchyPanel()
             continue;
 
         if (!entity.HasParent()) {
-            DrawEntityNode(entity);
+            entities.push_back(entity);
         }
     }
+
+    // Sort entities alphabetically based on TagComponent
+    std::sort(entities.begin(), entities.end(), [](Entity& a, Entity& b) {
+        return a.GetComponent<TagComponent>().Tag < b.GetComponent<TagComponent>().Tag;
+    });
+
+    // Draw sorted entities
+    for (const auto& entity : entities) {
+        DrawEntityNode(entity);
+    }
+
     ImGui::EndChild();
     ImGui::End();
 }
@@ -363,6 +391,10 @@ void Editor::AssetPanel()
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem(ICON_FA_FILE_IMAGE_O " Loaded Assets")) {
+            if (ImGui::Button("Run Asset Cache")) {
+                AssetCacher::Init("Assets");
+            }
+
             const char* tags[] = {
                 ICON_FA_QUESTION " Unknown",
                 ICON_FA_CUBE " Models",
@@ -370,7 +402,8 @@ void Editor::AssetPanel()
                 ICON_FA_PAINT_BRUSH " Shaders",
                 ICON_FA_SUN_O " Environment Maps",
                 ICON_FA_CODE " Scripts",
-                ICON_FA_MUSIC " Audio Files"
+                ICON_FA_MUSIC " Audio Files",
+                ICON_FA_CAMERA_RETRO " Post Process Volumes"
             };
             for (int i = 1; i < (int)AssetType::MAX; i++) {
                 ImGui::PushStyleColor(ImGuiCol_Header, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
@@ -388,7 +421,8 @@ void Editor::AssetPanel()
                             ICON_FA_PAINT_BRUSH,
                             ICON_FA_SUN_O,
                             ICON_FA_CODE,
-                            ICON_FA_MUSIC
+                            ICON_FA_MUSIC,
+                            ICON_FA_CAMERA_RETRO
                         };
 
                         char temp[256];
@@ -455,6 +489,8 @@ void Editor::EntityEditor()
         // CAMERA
         if (mSelectedEntity.HasComponent<CameraComponent>()) {
             if (ImGui::TreeNodeEx(ICON_FA_CAMERA " Camera Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+                CameraComponent& camera = mSelectedEntity.GetComponent<CameraComponent>();
+
                 bool shouldDelete = false;
                 ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 0.7f, 0.7f));
@@ -464,12 +500,44 @@ void Editor::EntityEditor()
                     shouldDelete = true;
                 }
                 ImGui::PopStyleColor(3);
-                ImGui::PopStyleVar();
 
-                CameraComponent& camera = mSelectedEntity.GetComponent<CameraComponent>();
+                if (camera.Volume) {
+                    char temp[512];
+                    sprintf(temp, "%s %s", ICON_FA_FILE, camera.Volume->Path.c_str());
+                    if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".mfx" });
+                        if (!path.empty()) {
+                            camera.Load(path);
+                        }
+                    }
+                } else {
+                    if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+                        String path = Dialog::Open({ ".mfx" });
+                        if (!path.empty()) {
+                            camera.Load(path);
+                        }
+                    }
+                }
+                ImGui::PopStyleVar();
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path fxPath(path);
+                        std::string fxString = fxPath.string();
+                        if (fxString.find(".mfx") != std::string::npos) {
+                            for (int i = 0; i < fxString.size(); i++) {
+                                fxString[i] = fxString[i] == '\\' ? '/' : fxString[i];
+                            }
+                            camera.Load(fxString);
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+                ImGui::Separator();
+
                 ImGui::Checkbox("Primary", (bool*)&camera.Primary);
                 ImGui::SliderFloat("FOV", &camera.FOV, 0.0f, 360.0f);
-                ImGui::SliderFloat("Near", &camera.Near, 0.0f, camera.Far);
+                ImGui::SliderFloat("Near", &camera.Near, 0.1f, camera.Far);
                 ImGui::SliderFloat("Far", &camera.Far, camera.Near, 1000.0f);
                 ImGui::TreePop();
 
@@ -676,7 +744,7 @@ void Editor::EntityEditor()
             }
             if (!mSelectedEntity.HasComponent<CameraComponent>()) {
                 if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera Component")) {
-                    mSelectedEntity.AddComponent<CameraComponent>();
+                    mSelectedEntity.AddComponent<CameraComponent>(true);
                 }
             }
             if (!mSelectedEntity.HasComponent<AudioSourceComponent>()) {
@@ -704,11 +772,79 @@ void Editor::AssetBrowser()
         return;
 
     if (mCurrentDirectory != std::filesystem::path(mBaseDirectory)) {
-        if (ImGui::Button("<-")) {
+        if (ImGui::Button(ICON_FA_FOLDER " Back")) {
             mCurrentDirectory = mCurrentDirectory.parent_path();
         }
+        ImGui::SameLine();
     }
-    
+    ImGui::InputText("##FilePath", mFileNameBuffer, sizeof(mFileNameBuffer));
+    ImGui::SameLine();
+    if (ImGui::BeginMenu(ICON_FA_PLUS " Create...")) {
+        if (ImGui::MenuItem(ICON_FA_FILE " File")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s", mCurrentDirectory.string().c_str(), mFileNameBuffer);
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateFileFromPath(newBuffer);
+            }
+            memset(newBuffer, 0, sizeof(newBuffer));
+        }
+        if (ImGui::MenuItem(ICON_FA_FOLDER " Directory")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s", mCurrentDirectory.string().c_str(), mFileNameBuffer);
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateDirectoryFromPath(newBuffer);
+            }
+            memset(newBuffer, 0, sizeof(newBuffer));
+        }
+        if (ImGui::MenuItem(ICON_FA_CODE " Script")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s%s", mCurrentDirectory.string().c_str(), mFileNameBuffer, ".lua");
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateFileFromPath(newBuffer);
+                File::WriteString(newBuffer, R"(
+                    return function(entityID)
+                        local self = {}
+
+                        function self.awake()
+                        end
+
+                        function self.update(dt)
+                        end
+
+                        function self.quit()
+                        end
+
+                        return self
+                    end
+                )");
+            }
+            memset(mFileNameBuffer, 0, sizeof(mFileNameBuffer));
+        }
+        if (ImGui::MenuItem(ICON_FA_GLOBE " Scene")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s%s", mCurrentDirectory.string().c_str(), mFileNameBuffer, ".msf");
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateFileFromPath(newBuffer);
+
+                Ref<Scene> scene = MakeRef<Scene>();
+                SceneSerializer::SerializeScene(scene, newBuffer);
+            }
+            memset(mFileNameBuffer, 0, sizeof(mFileNameBuffer));
+        }
+        if (ImGui::MenuItem(ICON_FA_CAMERA_RETRO " Post Process Volume")) {
+            char newBuffer[256];
+            sprintf(newBuffer, "%s/%s%s", mCurrentDirectory.string().c_str(), mFileNameBuffer, ".mfx");
+            if (!File::Exists(newBuffer) && strlen(mFileNameBuffer) > 0) {
+                File::CreateFileFromPath(newBuffer);
+
+                PostProcessVolume volume;
+                volume.Save(newBuffer);
+            }
+            memset(mFileNameBuffer, 0, sizeof(mFileNameBuffer));
+        }
+        ImGui::EndMenu();
+    }
+
     static float padding = 16.0f;
 	static float thumbnailSize = 92.0f;
 	float cellSize = thumbnailSize + padding;
@@ -745,12 +881,24 @@ void Editor::AssetBrowser()
             icon = ICON_FA_GLOBE;
         } else if (extension.find(".mp3") != std::string::npos || extension.find(".ogg") != std::string::npos || extension.find(".wav") != std::string::npos) {
             icon = ICON_FA_MUSIC;
+        } else if (extension.find(".mfx") != std::string::npos) {
+            icon = ICON_FA_CAMERA_RETRO;
         }
 
         ImGui::PushFont(mRHI->GetLargeIconFont());
         ImVec2 buttonPos = ImGui::GetCursorPos();
         ImGui::Button(icon, ImVec2(thumbnailSize, thumbnailSize));
+        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+            ImGui::OpenPopup("FileContextMenu");
+        }
         ImGui::PopFont();
+
+        if (ImGui::BeginPopup("FileContextMenu")) {
+            if (ImGui::Button("Delete")) {
+                File::Delete(directoryEntry.path().string());
+            }
+            ImGui::EndPopup();
+        }
 		
         if (ImGui::BeginDragDropSource())
 		{
@@ -783,7 +931,7 @@ void Editor::LogWindow()
     if (!mScene)
         return;
 
-    ImGui::Begin("Log");
+    ImGui::Begin(ICON_FA_TERMINAL " Log");
     if (ImGui::Button(ICON_FA_ERASER " Clear")) {
         Logger::sEntries.clear();
     }
@@ -796,6 +944,82 @@ void Editor::LogWindow()
             ImGui::TextColored(entry.Color, entry.Message.c_str());
     }
     ImGui::EndChild();
+    ImGui::End();
+}
+
+void Editor::FXVolumeEditor()
+{
+    ImGui::Begin(ICON_FA_PAINT_BRUSH " Post Process Volume");
+    if (mSelectedVolume) {
+        char temp[512];
+        sprintf(temp, "%s %s", ICON_FA_FILE, mSelectedVolume->Path.c_str());
+        if (ImGui::Button(temp, ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+            String path = Dialog::Open({ ".mfx" });
+            if (!path.empty()) {
+                mSelectedVolume = AssetManager::Get(path, AssetType::PostFXVolume);
+            }
+        }
+    } else {
+        if (ImGui::Button(ICON_FA_FILE " Open...", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+            String path = Dialog::Open({ ".mfx" });
+            if (!path.empty()) {
+                mSelectedVolume = AssetManager::Get(path, AssetType::PostFXVolume);
+            }
+        }
+    }
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+            const wchar_t* path = (const wchar_t*)payload->Data;
+            std::filesystem::path fxPath(path);
+            std::string fxString = fxPath.string();
+            if (fxString.find(".mfx") != std::string::npos) {
+                for (int i = 0; i < fxString.size(); i++) {
+                    fxString[i] = fxString[i] == '\\' ? '/' : fxString[i];
+                }
+                mSelectedVolume = AssetManager::Get(fxString, AssetType::PostFXVolume);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+    if (mSelectedVolume) {
+        auto* volume = &mSelectedVolume->Volume;
+
+        if (ImGui::TreeNodeEx("Geometry Pass", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Visualize Meshlets", &volume->VisualizeMeshlets);
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Color Grading", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnableColorGrading);
+            ImGui::SliderFloat("Brightness", &volume->Brightness, 0.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Exposure", &volume->Exposure, 0.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Saturation", &volume->Saturation, -10.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Contrast", &volume->Contrast, -10.0f, 10.0f, "%.2f");
+            ImGui::SliderFloat("Hue Shift", &volume->HueShift, -180.0f, 180.0f, "%.1f");
+            ImGui::SliderFloat("Temperature", &volume->Temperature, -1.0f, 1.0f, "%.1f");
+            ImGui::SliderFloat("Tint", &volume->Tint, -1.0f, 1.0f, "%.1f");
+            if (ImGui::TreeNodeEx("Split Toning", ImGuiTreeNodeFlags_Framed)){
+                ImGui::ColorPicker3("Shadows", glm::value_ptr(volume->Shadows), ImGuiColorEditFlags_PickerHueBar);
+                ImGui::ColorPicker3("Hightlights", glm::value_ptr(volume->Highlights), ImGuiColorEditFlags_PickerHueBar);
+                ImGui::SliderFloat("Balance", &volume->Balance, -100.0f, 100.0f, "%.1f");
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNodeEx("Color Filter", ImGuiTreeNodeFlags_Framed)) {
+                ImGui::ColorPicker3("Color Filter", glm::value_ptr(volume->ColorFilter), ImGuiColorEditFlags_PickerHueBar);
+                ImGui::TreePop();
+            }
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Depth of Field", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::Checkbox("Enable", &volume->EnableDOF);
+            ImGui::SliderFloat("Focus Point", &volume->FocusPoint, 0.1f, 200.0f, "%.3f");
+            ImGui::SliderFloat("Focal Range", &volume->FocusRange, 0.1f, 200.0f, "%.3f");
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Composite", ImGuiTreeNodeFlags_Framed)) {
+            ImGui::SliderFloat("Gamma", &volume->GammaCorrection, 0.1f, 10.0f);
+            ImGui::TreePop();
+        }
+    }
     ImGui::End();
 }
 
