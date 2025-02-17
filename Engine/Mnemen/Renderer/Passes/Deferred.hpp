@@ -39,7 +39,6 @@ public:
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
 
 private:
-    MeshPipeline::Ref mPipeline; ///< A reference to the mesh pipeline used for rendering.
     ComputePipeline::Ref mLightPipeline; ///< A reference to the light pipeline used for calculating screen space lighting.
 };
 

@@ -6,6 +6,7 @@
 #include "Renderer.hpp"
 #include "RendererTools.hpp"
 
+#include "Passes/GBuffer.hpp"
 #include "Passes/Deferred.hpp"
 #include "Passes/Composite.hpp"
 #include "Passes/DOF.hpp"
@@ -24,8 +25,9 @@ Renderer::Renderer(RHI::Ref rhi)
     RendererTools::Init(rhi);
 
     mPasses = {
-        MakeRef<Deferred>(rhi),
+        MakeRef<GBuffer>(rhi),
         MakeRef<SSAO>(rhi),
+        MakeRef<Deferred>(rhi),
         MakeRef<DOF>(rhi),
         MakeRef<ColorGrading>(rhi),
         MakeRef<Composite>(rhi),
