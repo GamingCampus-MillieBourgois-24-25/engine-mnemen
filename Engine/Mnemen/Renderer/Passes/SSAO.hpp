@@ -18,6 +18,8 @@ public:
     SSAO(RHI::Ref rhi);
     ~SSAO() = default;
 
-    void Bake(::Ref<Scene> scene) {}
+    void Bake(::Ref<Scene> scene) {};
     void Render(const Frame& frame, ::Ref<Scene> scene) override;
+private:
+    ComputePipeline::Ref mPipeline;
 };

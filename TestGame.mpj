@@ -5,7 +5,7 @@
         "TestScene": "Assets/Scenes/Test.msf"
     },
     "settings": {
-        "compressionFormat": "bc3",
+        "compressionFormat": "bc7",
         "physicsRefreshRate": 90.0
     },
     "startScene": "TestScene"

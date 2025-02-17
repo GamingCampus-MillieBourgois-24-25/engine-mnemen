@@ -41,7 +41,7 @@ void Composite::Render(const Frame& frame, ::Ref<Scene> scene)
     PROFILE_FUNCTION();
 
     auto camera = scene->GetMainCamera();
-    auto hdr = RendererTools::Get("HDRColorBuffer");
+    auto hdr = RendererTools::Get("ssaoColorBuffer");
     auto ldr = RendererTools::Get("LDRColorBuffer");
 
     frame.CommandBuffer->BeginMarker("Composite");

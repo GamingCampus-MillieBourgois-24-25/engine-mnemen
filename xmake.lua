@@ -4,7 +4,6 @@
 --
 
 add_rules("mode.debug", "mode.release", "mode.releasedbg")
-add_requires("cargo::eframe 0.31.0")
 
 includes("ThirdParty")
 
